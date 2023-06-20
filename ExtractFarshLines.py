@@ -61,7 +61,7 @@ def insert_comments_sqlite(comments):
     conn = sqlite3.connect('E:/Qeraat/farsh_v5.db')
     c = conn.cursor()
     # Delete rows with value "WA" in the field "qaree"
-    c.execute("DELETE FROM shmrly WHERE qaree = ?", ("WA",))
+    c.execute("DELETE FROM shmrly WHERE qaree = ?", ("A",))
 
     for comment in comments:
         print(comment['content'], comment['coordinates'], comment['color'])
@@ -74,7 +74,7 @@ def insert_comments_sqlite(comments):
         color_type = get_color_type(color_values)
 
         c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("WA", comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),float((float(x2) - float(x1))/443.0),str(comment['style'])))  # Use converted values
+                  ("A", comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),float((float(x2) - float(x1))/443.0),str(comment['style'])))  # Use converted values
 
     conn.commit()
     conn.close()
@@ -109,7 +109,13 @@ def get_color_name(color_values):
     # if rgb_values == (204, 153, 0):
     #     rgb_values = (128, 128, 0)
     
-    color_name = webcolors.rgb_to_name(rgb_values)
+    try:
+         color_name = webcolors.rgb_to_name(rgb_values)
+    except ValueError:
+    # Handle the case of an unknown color
+        color_name = 'black'
+    if (color_name == "lime"):
+        (color_values == "green") 
     return color_name
 
 
