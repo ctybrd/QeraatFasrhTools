@@ -115,7 +115,7 @@ def get_color_name(color_values):
     # Handle the case of an unknown color
         color_name = 'black'
     if (color_name == "lime"):
-        (color_values == "green") 
+        color_name = "green"
     return color_name
 
 
