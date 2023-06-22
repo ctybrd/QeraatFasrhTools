@@ -1,3 +1,4 @@
+import shutil
 import pyodbc
 import sqlite3
 import re
@@ -122,4 +123,17 @@ line_comments = extract_line_comments(pdf_path)
 # Insert line comments into SQLite
 insert_comments_sqlite(line_comments,qaree_key)
 
+file_path = 'E:/Qeraat/farsh_v5.db'
+destination_folders = [
+    'E:/Qeraat/Wursha_QuranHolder/other/data/',
+    'E:/Qeraat/Wursha_QuranHolder/platforms/android/app/build/intermediates/assets/debug/mergeDebugAssets/www/',
+    'E:/Qeraat/Wursha_QuranHolder/platforms/android/app/src/main/assets/www/',
+    'E:/Qeraat/Wursha_QuranHolder/www/'
+]
 
+
+for folder in destination_folders:
+    destination_file = folder + 'farsh_v4.db'
+    shutil.copy(file_path, destination_file)
+
+print("File copied to the specified folders.")
