@@ -71,7 +71,7 @@ def insert_comments_sqlite(comments,qaree_key):
         color_type = get_color_type(color_values)
 
         c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),float((float(x2) - float(x1))/443.0),str(comment['style'])))  # Use converted values
+                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style'])))  # Use converted values
 
     conn.commit()
     conn.close()
