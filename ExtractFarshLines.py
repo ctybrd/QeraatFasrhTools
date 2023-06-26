@@ -59,7 +59,7 @@ def insert_comments_sqlite(comments,qaree_key):
     c = conn.cursor()
     # Delete rows with value "A" in the field "qaree"
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
-
+    c.execute("UPDATE shmrly SET style='S' where style is null")
     for comment in comments:
         print(comment['content'], comment['coordinates'], comment['color'])
 
