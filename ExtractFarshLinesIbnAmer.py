@@ -32,6 +32,7 @@ def extract_line_comments(pdf_path):
                             'color': annotation.get_object()['/C']
                         }
                         comment['style'] = 'S'
+                        comment['circle'] = ''
                         if '/BS' in annotation.get_object():
                             if '/S' in annotation.get_object()['/BS']:
                                 comment['style'] = str(annotation.get_object()['/BS']['/S'])
@@ -39,12 +40,12 @@ def extract_line_comments(pdf_path):
                             comment['style'] = 'D'
                         if '/LE' in annotation.get_object():
                             if(str(annotation.get_object()['/LE'])) == "['/Circle', '/None']":
-                                comment['style'] =comment['style']+'2'
+                                comment['circle'] ='2'
                             elif (str(annotation.get_object()['/LE'])) == "['/None', '/Circle']":
-                                comment['style'] =comment['style']+'1'
+                                comment['circle'] ='1'
 
                         comments.append(comment)
-                        print(comment)
+                        #print(comment)
         except Exception as e:
             print(f"Error processing annotations on page {pageno}: {e}")
 
@@ -69,7 +70,7 @@ def insert_comments_sqlite(comments,qaree_key):
         c.execute("DELETE FROM shmrly WHERE qaree = 'W' and color in ('blue','olive')")
 
     for comment in comments:
-        print(comment['content'], comment['coordinates'], comment['color'])
+        #print(comment['content'], comment['coordinates'], comment['color'])
 
         coordinates = str(comment['coordinates'])
         matches = re.findall(r'(\d+\.?\d*)', coordinates)
@@ -78,20 +79,21 @@ def insert_comments_sqlite(comments,qaree_key):
         color_values = get_color_name(str(comment['color']))
         color_type = get_color_type(color_values)
 
-        c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style'])))  # Use converted values
+        c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
             #Insert blue lines and olive for both warsh and asbahani
         if (qaree_key == "A") and (str(color_values) in("olive","blue")):
-            c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style'])))  
+            c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
 
     c.execute("UPDATE shmrly SET style='S' where style is null")
+    c.execute("UPDATE shmrly SET circle='' where circle is null")
     conn.commit()
     conn.close()
 
 def get_color_name(color_values):
     fraction_values = eval(color_values)
-    print(color_values)
+    #print(color_values)
     rgb_values = tuple(int(round(val * 255 / 128) * 128) for val in fraction_values)
    
     try:
@@ -125,8 +127,8 @@ def get_color_type(color_values):
 
 
 # Extract line comments from the PDF
-qaree_key = "A" 
-pdf_path = 'e:/Qeraat/Warsh.pdf'
+qaree_key = "I" 
+pdf_path = 'e:/Qeraat/IbnAmer.pdf'
 line_comments = extract_line_comments(pdf_path)
 
 
