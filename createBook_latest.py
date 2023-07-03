@@ -2,8 +2,9 @@ import sqlite3
 from docx import Document
 from docx.shared import Inches
 from bs4 import BeautifulSoup
-from docx.enum.section import WD_SECTION
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from docx.shared import Pt
+
 # Connect to the SQLite database
 conn = sqlite3.connect('e:/qeraat/data_v15.db')
 cursor = conn.cursor()
@@ -19,6 +20,23 @@ data = cursor.fetchall()
 
 # Create a new Word document
 doc = Document()
+
+# Set consistent page margins for all sections
+for section in doc.sections:
+    section.left_margin = Inches(1.27)
+    section.right_margin = Inches(1.27)
+    section.top_margin = Inches(1.27)
+    section.bottom_margin = Inches(1.27)
+
+# Set default font size and justification for the document
+for style in doc.styles:
+    if style.type == 1:
+        paragraph_format = style.paragraph_format
+        paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+        paragraph_format.space_after = Pt(6)
+        paragraph_format.space_before = Pt(6)
+        run = style.font
+        run.size = Pt(12)
 
 # Initialize variables for tracking current page number and concatenated text
 current_page = None
@@ -43,27 +61,15 @@ for text, page_number in data:
         # Add the image to the page
         image_path = f'E:/Qeraat/pages/{current_page}.jpg'  # Replace with the actual path to the folder and image file extension
 
-        # Check if the page number is even or odd
+        # Add the image to a new paragraph with left or right alignment based on page number
+        paragraph = doc.add_paragraph()
+        run = paragraph.add_run()
+        run.add_picture(image_path, width=Inches(3))
+
         if current_page % 2 == 0:
-            # Create a new section and set the alignment to left
-            section = doc.add_section(WD_SECTION.NEW_PAGE)
-            section.left_margin = Inches(1)
-            section.right_margin = Inches(2)
-
-            # Add the image with left alignment
-            run = doc.add_paragraph().add_run()
-            run.add_picture(image_path, width=Inches(3))
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         else:
-            # Create a new section and set the alignment to right
-            section = doc.add_section(WD_SECTION.NEW_PAGE)
-            section.left_margin = Inches(2)
-            section.right_margin = Inches(1)
-
-            # Add the image to a new paragraph with right alignment
-            paragraph = doc.add_paragraph()
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-            run = paragraph.add_run()
-            run.add_picture(image_path, width=Inches(3))
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
     # Process the HTML text and concatenate it
     soup = BeautifulSoup(text, 'html.parser')
