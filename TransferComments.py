@@ -39,7 +39,7 @@ def add_comments_as_text_boxes(source_pdf_path, destination_pdf_path, comments):
         writer.write(destination_file)
 
 # Usage example
-source_pdf_path = 'E:\Qeraat\Tayseer\Tayseer10.pdf'
+source_pdf_path = 'E:\Qeraat\Tayseer\shamarly10th.pdf"'
 destination_pdf_path = 'E:\Qeraat\Tayseer\Target.pdf'
 
 comments = extract_comments(source_pdf_path)
