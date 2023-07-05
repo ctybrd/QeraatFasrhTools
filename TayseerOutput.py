@@ -11,7 +11,9 @@ from PIL import Image, ImageDraw, ImageFont
 def read_comments_from_database():
     conn = sqlite3.connect('comments.db')
     c = conn.cursor()
-    c.execute("SELECT page_number, id, comment, icon, x_coordinate, y_coordinate FROM comments WHERE (comment IS NOT NULL) AND (comment <> '') AND (icon IN ('/Comment', '/Circle', '/Key')) ORDER BY page_number, y_coordinate desc, x_coordinate desc")
+    c.execute(
+        "SELECT page_number, id, comment, icon, x_coordinate, y_coordinate FROM comments WHERE (comment IS NOT NULL) AND (comment <> '') AND (icon IN ('/Comment', '/Circle', '/Key')) ORDER BY page_number, y_coordinate desc, x_coordinate desc"
+    )
     rows = c.fetchall()
     comments_table = {}
     for row in rows:
@@ -21,7 +23,6 @@ def read_comments_from_database():
             'icon': icon,
             'x_coordinate': x_coordinate,
             'y_coordinate': y_coordinate,
-            'color': get_color_for_icon(icon)  # Replace with your logic to get the color based on the icon
         }
         comments_table.setdefault(page_number, []).append((comment_id, comment_info))
     conn.close()
@@ -51,24 +52,17 @@ def create_word_document(comments_table):
         image_path = os.path.join(image_folder, image_file)
         image = Image.open(image_path)
 
-        # Add image to the page
-        paragraph = doc.add_paragraph()
-        run = paragraph.add_run()
-        run.add_picture(image_path, width=Inches(4))
-
-        if page_number % 2 == 0:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-        else:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+        # Create a copy of the image for drawing comments
+        image_with_comments = image.copy()
+        draw = ImageDraw.Draw(image_with_comments)
 
         # Retrieve comments from the table for the current page
         page_comments = comments_table.get(page_number, [])
 
-        # Add comments to the document
+        # Add comments to the image copy
         for i, (comment_id, comment_info) in enumerate(page_comments, start=1):
             comment_text = comment_info['comment']
             icon = comment_info['icon']
-            color = comment_info['color']
             x_coordinate = comment_info['x_coordinate']
             y_coordinate = comment_info['y_coordinate']
 
@@ -77,40 +71,55 @@ def create_word_document(comments_table):
                 cleaned_comment = cleaned_comment.replace('\r', ' ـ ')
                 cleaned_comment = cleaned_comment.replace('\n', ' ـ ')
 
-                # Create a drawing object
-                draw = ImageDraw.Draw(image)
-
                 # Calculate the position to draw the comment code
                 font = ImageFont.truetype('arial.ttf', size=18)
                 text_width, text_height = draw.textsize(str(i) + get_icon_for_comment(icon), font=font)
-                
+
                 if int(x_coordinate) < 200:
                     text_x = 50
                 else:
-                    text_x = image.width - 50 - text_width
+                    text_x = image_with_comments.width - 50 - text_width
 
-                text_y = (800 - int(y_coordinate) + text_height // 2) * (1669/800)
+                text_y = (800 - int(y_coordinate) + text_height // 2) * (1669 / 800)
 
-                # Draw the comment code on the image
+                # Draw the comment code on the image copy
                 draw.text((text_x, text_y), str(i) + get_icon_for_comment(icon), font=font, fill=(0, 0, 0))
 
-                # Save the modified image
-                image.save(image_path)
-
-                # Add the image with the comments to the document
+                # Add the comment text to the document
                 paragraph = doc.add_paragraph()
                 run = paragraph.add_run()
-                run.add_picture(image_path, width=Inches(4))
-
-                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-
                 run.text = cleaned_comment
-                run.font.color.rgb = color
+                run.font.color.rgb = get_color_for_icon(icon)
+
+                # Set paragraph alignment
+                if page_number % 2 == 0:
+                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+                else:
+                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
                 # Set line spacing
                 paragraph.paragraph_format.line_spacing = Pt(12)
 
-        # Add separator after each comment
+        # Save the image copy with comments
+        image_with_comments.save(f'page_{page_number}_with_comments.png')
+
+        # Add the image with comments to the document
+        paragraph = doc.add_paragraph()
+        run = paragraph.add_run()
+        run.add_picture(f'page_{page_number}_with_comments.png', width=Inches(4))
+
+        # Set paragraph alignment
+        if page_number % 2 == 0:
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+        else:
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+
+        # Add the original image to the document
+        paragraph = doc.add_paragraph()
+        run = paragraph.add_run()
+        run.add_picture(image_path, width=Inches(4))
+
+        # Add separator after each page
         doc.add_paragraph()
         doc.add_page_break()
 
@@ -123,7 +132,6 @@ def create_word_document(comments_table):
 
     # Save the document
     doc.save('TayseerOutput.docx')
-
 
 
 # Helper function to get the icon representation for a comment
@@ -140,14 +148,12 @@ def get_icon_for_comment(icon):
 
 # Helper function to get the color based on the icon
 def get_color_for_icon(icon):
-    if icon == '/Circle':
-        return RGBColor(0x00, 0x00, 0xFF)  # Blue color
-    elif icon == '/Comment':
-        return RGBColor(0x00, 0x00, 0x00)  # Black color
-    elif icon == '/Key':
-        return RGBColor(0x00, 0x64, 0x00)  # Dark green color
-    else:
-        return None
+    icon_colors = {
+        '/Circle': RGBColor(0x00, 0x00, 0xFF),  # Blue color
+        '/Comment': RGBColor(0x00, 0x00, 0x00),  # Black color
+        '/Key': RGBColor(0x00, 0x64, 0x00),  # Dark green color
+    }
+    return icon_colors.get(icon)
 
 
 # Read comments from the database
