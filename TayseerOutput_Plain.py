@@ -78,16 +78,19 @@ def create_word_document(comments_table):
 def add_comment_keys_to_images(comments_table):
     source_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages_Bak'
     image_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages'
-    shutil.copytree(source_folder, image_folder)
+    for file in os.listdir(image_folder):
+        os.remove(os.path.join(image_folder, file))
+    # if os.path.exists(image_folder):
+    #     os.rmdir(image_folder)
+    # shutil.copytree(source_folder, image_folder)
 
     # Get the list of page images from the folder
-    image_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages'
-    image_files = sorted(os.listdir(image_folder), key=lambda x: int(x.split('.')[0]))
+    image_files = sorted(os.listdir(source_folder), key=lambda x: int(x.split('.')[0]))
 
     # Iterate over each page and add the comment keys to the corresponding image
     for page_number, image_file in enumerate(image_files, start=1):
         # Open the image using PIL
-        image_path = os.path.join(image_folder, image_file)
+        image_path = os.path.join(source_folder, image_file)
         image = Image.open(image_path)
         draw = ImageDraw.Draw(image)
 
@@ -101,22 +104,22 @@ def add_comment_keys_to_images(comments_table):
             y_coordinate = comment_info['y_coordinate']
 
             # Calculate the position to draw the comment key
-            font = ImageFont.truetype('arial.ttf', size=18)
+            font = ImageFont.truetype('arial.ttf', size=24)
             text = str(i) + get_icon_for_comment(icon)
             text_width, text_height = draw.textsize(text, font=font)
 
             if int(x_coordinate) < 200:
-                text_x = 50
+                text_x = 30
             else:
-                text_x = image.width - 50 - text_width
+                text_x = image.width - 30 - text_width
 
             text_y = (800 - int(y_coordinate) + text_height // 2) * (1669 / 800)
 
             # Draw the comment key on the image
             draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
 
-        # Save the modified image
-        modified_image_path = os.path.join(image_folder, f"page_{page_number}_modified.jpg")
+        # Save the modified image (overwrite the original image)
+        modified_image_path = os.path.join(image_folder, f"{page_number}.jpg")
         image.save(modified_image_path)
 
 
