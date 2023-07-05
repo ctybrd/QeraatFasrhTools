@@ -9,8 +9,8 @@ def create_database():
     c.execute('''CREATE TABLE IF NOT EXISTS comments (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     page_number INTEGER,
-                    x_coordinate TEXT,
-                    y_coordinate TEXT,
+                    x_coordinate NUMERIC,
+                    y_coordinate NUMERIC,
                     annotation_type TEXT,
                     comment TEXT,
                     icon TEXT,
@@ -24,7 +24,7 @@ def insert_comment(page_number, x_coordinate, y_coordinate, annotation_type, com
     conn = sqlite3.connect('comments.db')
     c = conn.cursor()
     c.execute('''INSERT INTO comments (page_number, x_coordinate, y_coordinate, annotation_type, comment, icon, color, width)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (page_number, str(x_coordinate), str(y_coordinate), annotation_type, comment, icon, str(color), str(width)))
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (page_number, x_coordinate, y_coordinate, annotation_type, comment, icon, str(color), str(width)))
     conn.commit()
     conn.close()
 
