@@ -92,10 +92,7 @@ def create_word_document(comments_table):
                 run.font.color.rgb = get_color_for_icon(icon)
 
                 # Set paragraph alignment
-                if page_number % 2 == 0:
-                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-                else:
-                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
                 # Set line spacing
                 paragraph.paragraph_format.line_spacing = Pt(12)
