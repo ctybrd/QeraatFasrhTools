@@ -5,6 +5,7 @@ import sqlite3
 from docx.enum.section import WD_ORIENTATION
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import RGBColor
+from PIL import Image, ImageDraw, ImageFont
 
 
 def read_comments_from_database():
@@ -46,10 +47,14 @@ def create_word_document(comments_table):
         section.page_width = Inches(8.27)
         section.page_height = Inches(11.69)
 
+        # Open the image using PIL
+        image_path = os.path.join(image_folder, image_file)
+        image = Image.open(image_path)
+
         # Add image to the page
         paragraph = doc.add_paragraph()
         run = paragraph.add_run()
-        run.add_picture(os.path.join(image_folder, image_file), width=Inches(4))
+        run.add_picture(image_path, width=Inches(4))
 
         if page_number % 2 == 0:
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
@@ -64,18 +69,42 @@ def create_word_document(comments_table):
             comment_text = comment_info['comment']
             icon = comment_info['icon']
             color = comment_info['color']
+            x_coordinate = comment_info['x_coordinate']
+            y_coordinate = comment_info['y_coordinate']
 
             if comment_text:  # Add comment only if it's not empty
                 cleaned_comment = comment_text.replace('\n\r', ' ـ ')
                 cleaned_comment = cleaned_comment.replace('\r', ' ـ ')
                 cleaned_comment = cleaned_comment.replace('\n', ' ـ ')
 
+                # Create a drawing object
+                draw = ImageDraw.Draw(image)
+
+                # Calculate the position to draw the comment code
+                font = ImageFont.truetype('arial.ttf', size=18)
+                text_width, text_height = draw.textsize(str(i) + get_icon_for_comment(icon), font=font)
+                
+                if int(x_coordinate) < 200:
+                    text_x = 50
+                else:
+                    text_x = image.width - 50 - text_width
+
+                text_y = (800 - int(y_coordinate) + text_height // 2) * (1669/800)
+
+                # Draw the comment code on the image
+                draw.text((text_x, text_y), str(i) + get_icon_for_comment(icon), font=font, fill=(0, 0, 0))
+
+                # Save the modified image
+                image.save(image_path)
+
+                # Add the image with the comments to the document
                 paragraph = doc.add_paragraph()
+                run = paragraph.add_run()
+                run.add_picture(image_path, width=Inches(4))
+
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
-                run = paragraph.add_run()
-
-                run.text = get_icon_for_comment(icon) + str(i) + ' - ' + cleaned_comment
+                run.text = cleaned_comment
                 run.font.color.rgb = color
 
                 # Set line spacing
@@ -94,6 +123,7 @@ def create_word_document(comments_table):
 
     # Save the document
     doc.save('TayseerOutput.docx')
+
 
 
 # Helper function to get the icon representation for a comment
