@@ -4,82 +4,101 @@ from docx.shared import Inches
 from bs4 import BeautifulSoup
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
+from docx.shared import RGBColor
+from PIL import Image, ImageOps
 
-# Connect to the SQLite database
-conn = sqlite3.connect('e:/qeraat/data_v15.db')
-cursor = conn.cursor()
+def connect_to_database(database_path):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    return conn, cursor
 
-# Execute the query to retrieve data from both tables
-query = '''
-SELECT mj.text, ms.page_number
-FROM book_jlalin AS mj
-JOIN mosshf_shmrly AS ms ON mj.aya_index = ms.aya_index
-'''
-cursor.execute(query)
-data = cursor.fetchall()
+def retrieve_data(cursor):
+    query = '''
+    SELECT mj.text, ms.page_number, ms.aya_number
+    FROM book_jlalin AS mj
+    JOIN mosshf_shmrly AS ms ON mj.aya_index = ms.aya_index
+    '''
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
 
-# Create a new Word document
-doc = Document()
+def process_html_text(html_text):
+    soup = BeautifulSoup(html_text, 'html.parser')
+    return soup.get_text()
 
-# Set consistent page margins for all sections
-for section in doc.sections:
-    section.left_margin = Inches(1.27)
-    section.right_margin = Inches(1.27)
-    section.top_margin = Inches(1.27)
-    section.bottom_margin = Inches(1.27)
+def add_frame_to_image(image_path):
+    image = Image.open(image_path)
+    framed_image = ImageOps.expand(image, border=10, fill='black')
+    framed_image_path = 'framed_image.jpg'
+    framed_image.save(framed_image_path)
+    return framed_image_path
 
-# Set default font size and justification for the document
-for style in doc.styles:
-    if style.type == 1:
-        paragraph_format = style.paragraph_format
-        paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
-        paragraph_format.space_after = Pt(6)
-        paragraph_format.space_before = Pt(6)
-        run = style.font
-        run.size = Pt(12)
+def create_word_document(data):
+    doc = Document()
 
-# Initialize variables for tracking current page number and concatenated text
-current_page = None
-concatenated_text = ""
+    # Set consistent page margins for all sections
+    for section in doc.sections:
+        section.left_margin = Inches(1.27)
+        section.right_margin = Inches(1.27)
+        section.top_margin = Inches(1.27)
+        section.bottom_margin = Inches(1.27)
 
-# Iterate over the retrieved data
-for text, page_number in data:
-    # Check if the page has changed
-    if current_page is None or current_page != page_number:
-        # Add the concatenated text and image to the document (except for the first iteration)
-        if current_page is not None:
-            # Add a new paragraph with the concatenated text
-            doc.add_paragraph(concatenated_text)
+    current_page = None
+    color_switch = False  # Flag to switch between black and blue colors
 
-            # Add a page break
-            doc.add_page_break()
+    for text, page_number, aya_number in data:
+        if current_page is None or current_page != page_number:
+            if current_page is not None:
+                doc.add_page_break()
 
-        # Update the current page number and reset the concatenated text
-        current_page = page_number
-        concatenated_text = ""
+            current_page = page_number
 
-        # Add the image to the page
-        image_path = f'E:/Qeraat/pages/{current_page}.jpg'  # Replace with the actual path to the folder and image file extension
+            image_path = f'E:/Qeraat/pages/{current_page}.jpg'  # Replace with the actual path to the folder and image file extension
 
-        # Add the image to a new paragraph with left or right alignment based on page number
+            # Add frame to the image
+            framed_image_path = add_frame_to_image(image_path)
+
+            paragraph = doc.add_paragraph()
+            run = paragraph.add_run()
+            run.add_picture(framed_image_path, width=Inches(4))
+
+            if current_page % 2 == 0:
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+            else:
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+
+        processed_text = process_html_text(text)
+        processed_text = processed_text.replace('.', '')
+        processed_text = processed_text.replace('\n\r', ' ـ ')
+        processed_text = processed_text.replace('\r', ' ـ ')
+        processed_text = processed_text.replace('\n', ' ـ ')
+        processed_text = 'ـ' + str(aya_number) + 'ـ ' + processed_text
+
         paragraph = doc.add_paragraph()
         run = paragraph.add_run()
-        run.add_picture(image_path, width=Inches(3))
 
-        if current_page % 2 == 0:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+        # Set text color to black or blue based on the color_switch flag
+        if color_switch:
+            run.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)  # Blue color
         else:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+            run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Black color
 
-    # Process the HTML text and concatenate it
-    soup = BeautifulSoup(text, 'html.parser')
-    concatenated_text += soup.get_text() + " "  # Modify the separator as needed
+        paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+        run.text = processed_text
+        paragraph.paragraph_format.line_spacing = Pt(10)
 
-# Add the last page's text to the document
-doc.add_paragraph(concatenated_text)
+        color_switch = not color_switch  # Toggle the color_switch flag
 
-# Save the Word document
-doc.save('output.docx')
+    doc.save('output.docx')
 
-# Close the database connection
-conn.close()
+def close_database_connection(connection):
+    connection.close()
+
+# Main code
+database_path = 'e:/qeraat/data_v15.db'
+image_folder = 'E:/Qeraat/pages/'
+
+conn, cursor = connect_to_database(database_path)
+data = retrieve_data(cursor)
+create_word_document(data)
+close_database_connection(conn)
