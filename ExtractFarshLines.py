@@ -9,13 +9,15 @@ import matplotlib.colors as mcolors
 import webcolors
 
 def extract_line_comments(pdf_path):
+    #column style (S = solid D =dashed H hollow circle)
+    #column circle (empty = line only 1= line with right circle 2 = line with left circle 4 circle only for future use 3 will be center circle of the line )
     comments = []
     pdf = PdfReader(pdf_path)
 
     for pageno, page in enumerate(pdf.pages):
         #for test
-        #if pageno >= 7:
-        #     break  # Exit the loop after processing the 7th page
+        # if pageno >= 3:
+        #      break  # Exit the loop after processing the 7th page
         try:
             annotations = page['/Annots']        
             if annotations:
@@ -24,7 +26,7 @@ def extract_line_comments(pdf_path):
                         annotation = pdf.get_object(annotation)
                     elif isinstance(annotation, dict):
                         annotation = pdf._buildIndirectObject(annotation)
-
+                    print(annotation.get_object()['/Subtype'])
                     if annotation.get_object()['/Subtype'] == '/Line':
                         comment = {
                             'content': ' ',
@@ -44,9 +46,35 @@ def extract_line_comments(pdf_path):
                                 comment['circle'] ='2'
                             elif (str(annotation.get_object()['/LE'])) == "['/None', '/Circle']":
                                 comment['circle'] ='1'
-
                         comments.append(comment)
-                        print(comment)
+                        
+                    if annotation.get_object()['/Subtype'] == '/Circle':
+                        comment = {
+                            'content': ' ',
+                            'pageno': pageno + 1,
+                            'coordinates': annotation.get_object()['/Rect'],
+                            'color': annotation.get_object()['/C']
+                        }
+                        print(annotation.get_object())
+                        comment['style'] = 'S'
+                        comment['circle'] = '4'
+                        # if '/BS' in annotation.get_object():
+                        #     if '/S' in annotation.get_object()['/BS']:
+                        #         comment['style'] = str(annotation.get_object()['/BS']['/S'])
+                        
+                        # Check if the oval fill color is none
+                        # if '/MK' in annotation.get_object() and '/BG' in annotation.get_object()['/MK']:
+                        if '/IC' in annotation.get_object():
+                            fill_color = annotation.get_object()['/IC']
+                            if fill_color == '[0 0 0]':
+                                comment['style'] = 'H'
+                        else:
+                            comment['style'] = 'H'
+                        
+                        comments.append(comment)
+                    
+
+                        
         except Exception as e:
             print(f"Error processing annotations on page {pageno}: {e}")
 
@@ -62,6 +90,19 @@ def create_table_sqlite():
     conn.commit()
     conn.close()
 
+"""
+Circle Column Specification:
+- '1' indicates a circle at the right edge of the line.
+- '2' indicates a circle at the left edge of the line.
+- '4' indicates only a circle (no line).
+
+Style Column Specification:
+- 'D' indicates a dashed line.
+- 'S' indicates a solid line and filled circle (only applicable when '4' is present in circle).
+- 'H' indicates a solid line and hollow circle (only applicable when '4' is present in circle).
+"""
+
+
 def insert_comments_sqlite(comments,qaree_key):
     conn = sqlite3.connect('E:/Qeraat/farsh_v5.db')
     c = conn.cursor()
@@ -69,6 +110,10 @@ def insert_comments_sqlite(comments,qaree_key):
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
     if qaree_key == "A":
         c.execute("DELETE FROM shmrly WHERE qaree = 'W' and color in ('blue','olive')")
+    if qaree_key == 'T':
+        xshift = 61.0  
+    else:
+        xshift = 81.0
 
     for comment in comments:
         print(comment['content'], comment['coordinates'], comment['color'])
@@ -78,14 +123,16 @@ def insert_comments_sqlite(comments,qaree_key):
         x1, y1, x2, y2 = matches
 
         color_values = get_color_name(str(comment['color']))
-        color_type = get_color_type(color_values)
-
+        if qaree_key != 'T':
+            color_type = get_color_type(color_values)
+        else:
+            color_type = 'Tayseer'
         c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
+                  (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
             #Insert blue lines and olive for both warsh and asbahani
         if (qaree_key == "A") and (str(color_values) in("olive","blue")):
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-81.0)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
 
     c.execute("UPDATE shmrly SET style='S' where style is null")
     c.execute("UPDATE shmrly SET circle='' where circle is null")
@@ -104,8 +151,9 @@ def get_color_name(color_values):
         color_name = 'black'
     if (color_name == "lime"):
         color_name = "green"
+    if (color_name == "black"):
+        color_name = "purple"
     return color_name
-
 
 
 def get_color_type(color_values):
@@ -128,8 +176,8 @@ def get_color_type(color_values):
 
 
 # Extract line comments from the PDF
-qaree_key = "A" 
-pdf_path = 'e:/Qeraat/Warsh.pdf'
+qaree_key = "T" 
+pdf_path = 'e:/Qeraat/Tayseer.pdf'
 line_comments = extract_line_comments(pdf_path)
 
 

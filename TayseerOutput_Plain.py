@@ -12,13 +12,36 @@ from PIL import Image, ImageDraw, ImageFont
 def create_word_document(comments_table):
     # Copy the images folder
     doc = Document()
-
+    #quran holder database update
+    conn = sqlite3.connect('E:\Qeraat\data_v15.db')
+    cursor = conn.cursor()
+    # Create the table if it doesn't already exist
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS book_tayseer10 (
+            aya_index INTEGER NOT NULL,
+            text TEXT NOT NULL,
+            PRIMARY KEY (aya_index)
+        )
+    ''')
+    # Truncate the table if it exists
+    cursor.execute("DELETE FROM book_tayseer10")
     # Get the list of page images from the folder
     image_folder = './tayseer/Pages/'
     image_files = sorted(os.listdir(image_folder), key=lambda x: int(x.split('.')[0]))
 
     # Iterate over each page and add the corresponding image, comments, and separator
     for page_number, image_file in enumerate(image_files, start=1):
+        #prepare for quran holder app
+        aggregated_comment = ''
+        # Retrieve the minimum aya_index for the current page from the database
+        query = f"SELECT MIN(aya_index) as maya FROM mosshf_shmrly WHERE page_number = {page_number}"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        aya_index = result[0] if result is not None else 0
+        if aya_index is None:
+            aya_index = 0
+        print(page_number,aya_index)
+
         section = doc.sections[-1] if doc.sections else doc.add_section()
         section.orientation = WD_ORIENTATION.PORTRAIT
         section.page_width = Inches(8.27)
@@ -43,11 +66,16 @@ def create_word_document(comments_table):
             icon = comment_info['icon']
             x_coordinate = comment_info['x_coordinate']
             y_coordinate = comment_info['y_coordinate']
-
-            if comment:  # Add comment only if it's not empty
-                cleaned_comment = comment.replace('\n\r', ' ـ ')
-                cleaned_comment = cleaned_comment.replace('\r', ' ـ ')
-                cleaned_comment = cleaned_comment.replace('\n', ' ـ ')
+            cleaned_comment = comment.replace('\r\n', ' ')
+            cleaned_comment = cleaned_comment.replace('\r', ' ')
+            cleaned_comment = cleaned_comment.replace('\n', ' ')
+            cleaned_comment = cleaned_comment.replace('  ', '')
+            cleaned_comment = cleaned_comment.replace('  ', '')
+            cleaned_comment = cleaned_comment.replace('  ', '')
+            cleaned_comment = cleaned_comment.strip()
+            if cleaned_comment:  # Add comment only if it's not empty
+                #to use with quran holder data the whole text for the page
+                aggregated_comment += cleaned_comment + '\r\n'
                 # Add the comment text to the document
                 paragraph = doc.add_paragraph()
                 run = paragraph.add_run()
@@ -55,14 +83,19 @@ def create_word_document(comments_table):
                 paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 # Set line spacing
                 paragraph.paragraph_format.line_spacing = Pt(12)
-                run.text = get_icon_for_comment(icon)+str(i)+' - ' + cleaned_comment
+                run.text = get_icon_for_comment(icon)+str(i)+' ـ ' + cleaned_comment
                 run.font.color.rgb = get_color_for_icon(icon)
-                paragraph.paragraph_format.line_spacing = Pt(12)
+                if (page_number==7) or (page_number==46) or (page_number==263):
+                    paragraph.paragraph_format.line_spacing = Pt(10)
+                else:
+                    paragraph.paragraph_format.line_spacing = Pt(12)
 
-
-        # Add separator after each comment
-        doc.add_paragraph()
-        doc.add_page_break()
+        if page_number!=522:
+            doc.add_page_break()
+        query = f"INSERT INTO book_tayseer10 (aya_index, text) VALUES ({aya_index}, '{aggregated_comment}')"
+        print (query)
+        cursor.execute(query)
+        conn.commit()
 
     # Set consistent page margins for all sections
     for section in doc.sections:
@@ -72,6 +105,8 @@ def create_word_document(comments_table):
         section.bottom_margin = Inches(1.27)
 
     # Save the document
+    cursor.close()
+    conn.close()
     doc.save('TayseerOutput.docx')
 
 
