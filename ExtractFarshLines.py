@@ -111,7 +111,7 @@ def insert_comments_sqlite(comments,qaree_key):
     if qaree_key == "A":
         c.execute("DELETE FROM shmrly WHERE qaree = 'W' and color in ('blue','olive')")
     if qaree_key == 'T':
-        xshift = 61.0  
+        xshift = 70.0  
     else:
         xshift = 81.0
 
