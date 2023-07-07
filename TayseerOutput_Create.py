@@ -7,7 +7,8 @@ from docx.enum.section import WD_ORIENTATION
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import RGBColor
 from PIL import Image, ImageDraw, ImageFont
-
+from docx.oxml.ns import nsdecls
+from docx.oxml import parse_xml
 
 def create_word_document(comments_table):
     # Copy the images folder
@@ -90,6 +91,10 @@ def create_word_document(comments_table):
                     paragraph.paragraph_format.line_spacing = Pt(10)
                 else:
                     paragraph.paragraph_format.line_spacing = Pt(12)
+                # # Set Sakkal Majalla font for Arabic text
+                # arabic_text = run._element
+                # arabic_text.rPr.rFonts.set(nsdecls('w:eastAsia'), 'Sakkal Majalla')
+
 
         if page_number!=522:
             doc.add_page_break()
