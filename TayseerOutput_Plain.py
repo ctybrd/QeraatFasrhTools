@@ -75,8 +75,8 @@ def create_word_document(comments_table):
             cleaned_comment = cleaned_comment.strip()
             if cleaned_comment:  # Add comment only if it's not empty
                 #to use with quran holder data the whole text for the page
-                # aggregated_comment += cleaned_comment + '\r\n'
-                aggregated_comment += f'<p style="color: {get_color_for_icon(icon)};">{cleaned_comment}</p>'
+                # aggregated_comment += get_icon_for_comment(icon)+' - '+ cleaned_comment + '\r\n'
+                aggregated_comment += f'<p> {get_icon_for_comment(icon)} - {cleaned_comment}</p>'
                 # Add the comment text to the document
                 paragraph = doc.add_paragraph()
                 run = paragraph.add_run()

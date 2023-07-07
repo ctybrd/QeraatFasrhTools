@@ -176,8 +176,8 @@ def get_color_type(color_values):
 
 
 # Extract line comments from the PDF
-qaree_key = "T" 
-pdf_path = 'e:/Qeraat/Tayseer.pdf'
+qaree_key = "A" 
+pdf_path = 'e:/Qeraat/Warsh.pdf'
 line_comments = extract_line_comments(pdf_path)
 
 
