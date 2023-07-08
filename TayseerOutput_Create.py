@@ -1,5 +1,6 @@
 import os
-import shutil
+import re
+# import shutil
 from docx import Document
 from docx.shared import Inches, Pt
 import sqlite3
@@ -7,8 +8,8 @@ from docx.enum.section import WD_ORIENTATION
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import RGBColor
 from PIL import Image, ImageDraw, ImageFont
-from docx.oxml.ns import nsdecls
-from docx.oxml import parse_xml
+# from docx.oxml.ns import nsdecls
+# from docx.oxml import parse_xml
 
 def create_word_document(comments_table):
 
@@ -63,6 +64,10 @@ def create_word_document(comments_table):
 
         # Retrieve comments from the table for the current page
         page_comments = comments_table.get(page_number, [])
+        
+        comment_paragraph = doc.add_paragraph()
+        # comment_paragraph.keep_together = True
+        # comment_paragraph.autofit = True
 
         # Add comments to the document
         for i, (comment_id, comment_info) in enumerate(page_comments, start=1):
@@ -73,6 +78,7 @@ def create_word_document(comments_table):
             cleaned_comment = comment.replace('\r\n', ' ')
             cleaned_comment = cleaned_comment.replace('\r', ' ')
             cleaned_comment = cleaned_comment.replace('\n', ' ')
+            cleaned_comment = re.sub(' {2,}', ' ', cleaned_comment)
 
             cleaned_comment = cleaned_comment.strip()
             if cleaned_comment:  # Add comment only if it's not empty
@@ -81,18 +87,19 @@ def create_word_document(comments_table):
                     # aggregated_comment += get_icon_for_comment(icon)+' - '+ cleaned_comment + '\r\n'
                     aggregated_comment += f'<p> {get_icon_for_comment(icon)} - {cleaned_comment}</p>'
                     # Add the comment text to the document
-                paragraph = doc.add_paragraph()
-                run = paragraph.add_run()
+                run = comment_paragraph.add_run()
+
                 # Set paragraph alignment
-                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+                comment_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
                 # Set line spacing
-                paragraph.paragraph_format.line_spacing = Pt(12)
-                run.text = get_icon_for_comment(icon)+str(i)+' ـ ' + cleaned_comment
+                comment_paragraph.paragraph_format.line_spacing = Pt(12)
+                run.text = get_icon_for_comment(icon)+str(i)+' ـ ' + cleaned_comment+ '\r\n'  if i!=len(page_comments)  else ''
+
                 run.font.color.rgb = get_color_for_icon(icon)
-                if ((page_number==7) or (page_number==46) or (page_number==263)) and (madina_flag==''):
-                    paragraph.paragraph_format.line_spacing = Pt(10)
+                if ((page_number==7) or (page_number==46) or (page_number==263) or (page_number==360) or (page_number==318) ) and (madina_flag==''):
+                    comment_paragraph.paragraph_format.line_spacing = Pt(10)
                 else:
-                    paragraph.paragraph_format.line_spacing = Pt(12)
+                    comment_paragraph.paragraph_format.line_spacing = Pt(12)
                 # # Set Sakkal Majalla font for Arabic text
                 # arabic_text = run._element
                 # arabic_text.rPr.rFonts.set(nsdecls('w:eastAsia'), 'Sakkal Majalla')
@@ -211,9 +218,9 @@ def get_color_for_icon(icon):
     return icon_colors.get(icon)
 # Read comments from the database
 quran_holder_flag = False
-madina_flag = 'M' # M for mushaf al mdina
+madina_flag = '' # M for mushaf al mdina empty for shamarly
 comments_table = read_comments_from_database()
-# Call the function to add comment keys to the images
+#Call the function to add comment keys to the images
 add_comment_keys_to_images(comments_table)
 # Create the Word document
 create_word_document(comments_table)
