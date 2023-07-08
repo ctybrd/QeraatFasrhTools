@@ -134,15 +134,17 @@ def insert_comments_sqlite(comments,qaree_key):
             #Insert blue lines and olive for both warsh and asbahani
         if (qaree_key == "A") and (str(color_values) in("olive","blue")):
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
         if (qaree_key == "A") and (str(comment['circle']) =='4'):
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",            
-                ("K", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle']))) 
+                ("K", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle']))) 
 
     c.execute("UPDATE shmrly SET style='S' where style is null")
     c.execute("UPDATE shmrly SET circle='' where circle is null")
+    if (qaree_key == "A"):
+        c.execute("UPDATE shmrly SET X=x+0.02 where qaree='A'")
     conn.commit()
     conn.close()
 
