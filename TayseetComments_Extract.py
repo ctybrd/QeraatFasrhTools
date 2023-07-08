@@ -4,7 +4,7 @@ import sqlite3
 from reportlab.pdfgen import canvas
 
 def create_database():
-    conn = sqlite3.connect('comments.db')
+    conn = sqlite3.connect('comments'+madina_flag+'.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS comments (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +27,7 @@ def insert_comment(conn, page_number, x_coordinate, y_coordinate, annotation_typ
 
 def extract_comments(source_pdf_path):
     create_database()
-    conn = sqlite3.connect('comments.db')
+    conn = sqlite3.connect('comments'+madina_flag+'.db')
     comments = []
     with io.open(source_pdf_path, 'rb') as file:
         reader = PyPDF2.PdfReader(file)
@@ -52,5 +52,9 @@ def extract_comments(source_pdf_path):
     return comments
 
 # Usage example
-source_pdf_path = 'E:/Qeraat/QeraatFasrhTools/Tayseer/shamarly10th.pdf'
+madina_flag = ''
+if madina_flag == '':
+    source_pdf_path = 'E:/Qeraat/QeraatFasrhTools/Tayseer/shamarly10th.pdf'
+else:
+    source_pdf_path = 'E:/Qeraat/QeraatFasrhTools/Tayseer/madina10th.pdf'
 comments = extract_comments(source_pdf_path)

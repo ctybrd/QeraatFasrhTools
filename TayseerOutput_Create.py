@@ -11,37 +11,40 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 
 def create_word_document(comments_table):
-    # Copy the images folder
-    doc = Document()
+
+    if quran_holder_flag:
     #quran holder database update
-    conn = sqlite3.connect('E:\Qeraat\data_v15.db')
-    cursor = conn.cursor()
-    # Create the table if it doesn't already exist
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS book_tayseer10 (
-            aya_index INTEGER NOT NULL,
-            text TEXT NOT NULL,
-            PRIMARY KEY (aya_index)
-        )
-    ''')
-    # Truncate the table if it exists
-    cursor.execute("DELETE FROM book_tayseer10")
-    # Get the list of page images from the folder
-    image_folder = './tayseer/Pages/'
+        conn = sqlite3.connect('E:\Qeraat\data_v15.db')
+        cursor = conn.cursor()
+        # Create the table if it doesn't already exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS book_tayseer10 (
+                aya_index INTEGER NOT NULL,
+                text TEXT NOT NULL,
+                PRIMARY KEY (aya_index)
+            )
+        ''')
+        # Truncate the table if it exists
+        cursor.execute("DELETE FROM book_tayseer10")
+    doc = Document()
+ 
+     # Get the list of page images from the folder
+    image_folder = './tayseer/Pages' + madina_flag + '/'
     image_files = sorted(os.listdir(image_folder), key=lambda x: int(x.split('.')[0]))
 
     # Iterate over each page and add the corresponding image, comments, and separator
     for page_number, image_file in enumerate(image_files, start=1):
-        #prepare for quran holder app
-        aggregated_comment = ''
-        # Retrieve the minimum aya_index for the current page from the database
-        query = f"SELECT MIN(aya_index) as maya FROM mosshf_shmrly WHERE page_number = {page_number}"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        aya_index = result[0] if result is not None else 0
-        if aya_index is None:
-            aya_index = 0
-        print(page_number,aya_index)
+        if quran_holder_flag:
+            #prepare for quran holder app
+            aggregated_comment = ''
+            # Retrieve the minimum aya_index for the current page from the database
+            query = f"SELECT MIN(aya_index) as maya FROM mosshf_shmrly WHERE page_number = {page_number}"
+            cursor.execute(query)
+            result = cursor.fetchone()
+            aya_index = result[0] if result is not None else 0
+            if aya_index is None:
+                aya_index = 0
+            print(page_number,aya_index)
 
         section = doc.sections[-1] if doc.sections else doc.add_section()
         section.orientation = WD_ORIENTATION.PORTRAIT
@@ -70,15 +73,14 @@ def create_word_document(comments_table):
             cleaned_comment = comment.replace('\r\n', ' ')
             cleaned_comment = cleaned_comment.replace('\r', ' ')
             cleaned_comment = cleaned_comment.replace('\n', ' ')
-            cleaned_comment = cleaned_comment.replace('  ', '')
-            cleaned_comment = cleaned_comment.replace('  ', '')
-            cleaned_comment = cleaned_comment.replace('  ', '')
+
             cleaned_comment = cleaned_comment.strip()
             if cleaned_comment:  # Add comment only if it's not empty
-                #to use with quran holder data the whole text for the page
-                # aggregated_comment += get_icon_for_comment(icon)+' - '+ cleaned_comment + '\r\n'
-                aggregated_comment += f'<p> {get_icon_for_comment(icon)} - {cleaned_comment}</p>'
-                # Add the comment text to the document
+                if quran_holder_flag:
+                    #to use with quran holder data the whole text for the page
+                    # aggregated_comment += get_icon_for_comment(icon)+' - '+ cleaned_comment + '\r\n'
+                    aggregated_comment += f'<p> {get_icon_for_comment(icon)} - {cleaned_comment}</p>'
+                    # Add the comment text to the document
                 paragraph = doc.add_paragraph()
                 run = paragraph.add_run()
                 # Set paragraph alignment
@@ -87,7 +89,7 @@ def create_word_document(comments_table):
                 paragraph.paragraph_format.line_spacing = Pt(12)
                 run.text = get_icon_for_comment(icon)+str(i)+' ـ ' + cleaned_comment
                 run.font.color.rgb = get_color_for_icon(icon)
-                if (page_number==7) or (page_number==46) or (page_number==263):
+                if ((page_number==7) or (page_number==46) or (page_number==263)) and (madina_flag==''):
                     paragraph.paragraph_format.line_spacing = Pt(10)
                 else:
                     paragraph.paragraph_format.line_spacing = Pt(12)
@@ -95,13 +97,14 @@ def create_word_document(comments_table):
                 # arabic_text = run._element
                 # arabic_text.rPr.rFonts.set(nsdecls('w:eastAsia'), 'Sakkal Majalla')
 
-
-        if page_number!=522:
-            doc.add_page_break()
-        query = f"INSERT INTO book_tayseer10 (aya_index, text) VALUES ({aya_index}, '{aggregated_comment}')"
-        print (query)
-        cursor.execute(query)
-        conn.commit()
+        if madina_flag == '':
+            if page_number!=522:
+                doc.add_page_break()
+        if quran_holder_flag:
+            query = f"INSERT INTO book_tayseer10 (aya_index, text) VALUES ({aya_index}, '{aggregated_comment}')"
+            print (query)
+            cursor.execute(query)
+            conn.commit()
 
     # Set consistent page margins for all sections
     for section in doc.sections:
@@ -110,20 +113,19 @@ def create_word_document(comments_table):
         section.top_margin = Inches(1.27)
         section.bottom_margin = Inches(1.27)
 
+    if quran_holder_flag:
+        cursor.close()
+        conn.close()
     # Save the document
-    cursor.close()
-    conn.close()
-    doc.save('TayseerOutput.docx')
+    doc.save('TayseerOutput' + madina_flag + '.docx')
 
 
 def add_comment_keys_to_images(comments_table):
-    source_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages_Bak'
-    image_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages'
+    source_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages_Bak' + madina_flag
+    image_folder = 'E:/Qeraat/QeraatFasrhTools/Tayseer/Pages' + madina_flag
     for file in os.listdir(image_folder):
         os.remove(os.path.join(image_folder, file))
-    # if os.path.exists(image_folder):
-    #     os.rmdir(image_folder)
-    # shutil.copytree(source_folder, image_folder)
+
 
     # Get the list of page images from the folder
     image_files = sorted(os.listdir(source_folder), key=lambda x: int(x.split('.')[0]))
@@ -165,7 +167,7 @@ def add_comment_keys_to_images(comments_table):
 
 
 def read_comments_from_database():
-    conn = sqlite3.connect('comments.db')
+    conn = sqlite3.connect('comments'+madina_flag+'.db')
     c = conn.cursor()
     c.execute(
         "SELECT page_number, id, comment, icon, x_coordinate, y_coordinate FROM comments WHERE (comment IS NOT NULL) AND (comment <> '') AND (icon IN ('/Comment', '/Circle', '/Key')) ORDER BY page_number, y_coordinate desc, x_coordinate desc"
@@ -206,6 +208,8 @@ def get_color_for_icon(icon):
     }
     return icon_colors.get(icon)
 # Read comments from the database
+quran_holder_flag = False
+madina_flag = 'M' # M for mushaf al mdina
 comments_table = read_comments_from_database()
 # Call the function to add comment keys to the images
 add_comment_keys_to_images(comments_table)
