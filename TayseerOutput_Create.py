@@ -97,9 +97,9 @@ def create_word_document(comments_table):
                 # arabic_text = run._element
                 # arabic_text.rPr.rFonts.set(nsdecls('w:eastAsia'), 'Sakkal Majalla')
 
-        if madina_flag == '':
-            if page_number!=522:
+        if (page_number!=522) or (madina_flag == 'M'):
                 doc.add_page_break()
+
         if quran_holder_flag:
             query = f"INSERT INTO book_tayseer10 (aya_index, text) VALUES ({aya_index}, '{aggregated_comment}')"
             print (query)
@@ -155,8 +155,10 @@ def add_comment_keys_to_images(comments_table):
                 text_x = 30
             else:
                 text_x = image.width - 30 - text_width
+            image_full_height =  1669 if madina_flag == '' else 2173
+            pdf_full_height = 800 if madina_flag == '' else 1040
 
-            text_y = (800 - int(y_coordinate) + text_height // 2) * (1669 / 800)
+            text_y = (pdf_full_height - int(y_coordinate) + text_height // 2) * (image_full_height / pdf_full_height)
 
             # Draw the comment key on the image
             draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
