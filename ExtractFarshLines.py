@@ -26,7 +26,7 @@ def extract_line_comments(pdf_path):
                         annotation = pdf.get_object(annotation)
                     elif isinstance(annotation, dict):
                         annotation = pdf._buildIndirectObject(annotation)
-                    print(annotation.get_object()['/Subtype'])
+                    # print(annotation.get_object()['/Subtype'])
                     if annotation.get_object()['/Subtype'] == '/Line':
                         comment = {
                             'content': ' ',
@@ -134,17 +134,17 @@ def insert_comments_sqlite(comments,qaree_key):
             #Insert blue lines and olive for both warsh and asbahani
         if (qaree_key == "A") and (str(color_values) in("olive","blue")):
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
         if (qaree_key == "A") and (str(comment['circle']) =='4'):
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))
+                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))
             c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",            
-                ("K", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.02, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle']))) 
+                ("K", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle']))) 
 
     c.execute("UPDATE shmrly SET style='S' where style is null")
     c.execute("UPDATE shmrly SET circle='' where circle is null")
     if (qaree_key == "A"):
-        c.execute("UPDATE shmrly SET X=x+0.02 where qaree='A'")
+        c.execute("UPDATE shmrly SET X=x+0.01 where qaree='A'")
     conn.commit()
     conn.close()
 
@@ -185,8 +185,10 @@ def get_color_type(color_values):
 
 
 # Extract line comments from the PDF
+# qaree_key values
+# Kalon:K - Sho3ba:S - IbnKatheer:I - Abojaafar:J - Asbahani:W - Warsh:A - Tayseer:T
 qaree_key = "A" 
-pdf_path = 'e:/Qeraat/Warsh.pdf'
+pdf_path = 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf'
 line_comments = extract_line_comments(pdf_path)
 
 
