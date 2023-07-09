@@ -54,7 +54,7 @@ def create_word_document(data):
 
             current_page = page_number
 
-            image_path = f'E:/Qeraat/pages/{current_page}.png'  # Replace with the actual path to the folder and image file extension
+            image_path = f'E:/Qeraat/pagesC/{current_page}.jpg'  # Replace with the actual path to the folder and image file extension
 
             # Add frame to the image
             framed_image_path = add_frame_to_image(image_path)
@@ -88,7 +88,7 @@ def create_word_document(data):
 
 
         run.text = processed_text
-        comments_paragraph.paragraph_format.line_spacing = Pt(10)
+        comments_paragraph.paragraph_format.line_spacing = Pt(11)
 
         color_switch = not color_switch  # Toggle the color_switch flag
 
@@ -99,7 +99,7 @@ def close_database_connection(connection):
 
 # Main code
 database_path = 'e:/qeraat/data_v15.db'
-image_folder = 'E:/Qeraat/pages/'
+image_folder = 'E:/Qeraat/pagesC/'
 
 conn, cursor = connect_to_database(database_path)
 data = retrieve_data(cursor)
