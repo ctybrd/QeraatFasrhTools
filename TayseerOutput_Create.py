@@ -217,7 +217,7 @@ def get_color_for_icon(icon):
     }
     return icon_colors.get(icon)
 # Read comments from the database
-quran_holder_flag = False
+quran_holder_flag = True
 madina_flag = '' # M for mushaf al mdina empty for shamarly
 comments_table = read_comments_from_database()
 #Call the function to add comment keys to the images
