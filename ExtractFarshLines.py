@@ -109,9 +109,14 @@ def insert_comments_sqlite(comments,qaree_key):
     # Delete rows with value "A" in the field "qaree"
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
     if qaree_key == "A":
-        c.execute("DELETE FROM shmrly WHERE qaree = 'W' and color in ('blue','olive')")
-        c.execute("DELETE FROM shmrly WHERE qaree = 'W' and Circle='4'") #AYA COUNT MARKS
+        c.execute("DELETE FROM shmrly WHERE (qaree = 'W') and ((color in ('blue','olive')) or (circle = '4'))")
+        # c.execute("DELETE FROM shmrly WHERE qaree = 'W' and Circle='4'") #AYA COUNT MARKS
         c.execute("DELETE FROM shmrly WHERE qaree = 'K' and Circle='4'")
+    if qaree_key == "I":
+        c.execute("DELETE FROM shmrly WHERE qaree = 'H'") # Hesham is subset of ibnamer
+        c.execute("DELETE FROM shmrly WHERE qaree = 'Z'") # Ibn thakwan is a subset of ibnamer
+
+
     if qaree_key == 'T':
         xshift = 70.0  
     else:
@@ -131,20 +136,43 @@ def insert_comments_sqlite(comments,qaree_key):
             color_type = 'Tayseer'
         c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                   (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
-            #Insert blue lines and olive for both warsh and asbahani
-        if (qaree_key == "A") and (str(color_values) in("olive","blue")):
-            c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  
-        if (qaree_key == "A") and (str(comment['circle']) =='4'):
-            c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  ("W", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))
-            c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",            
-                ("K", comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0)+0.01, 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle']))) 
 
+    if (qaree_key == "A"): #if warsh add common things to asbahani and kalon todo abujafar after subject matter experts verify
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE (qaree = ?) AND ((color IN (?, ?)) or (circle = ?))
+        """, ("W", "A", "olive", "blue", "4"))
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE qaree = ? AND circle = ?
+        """, ("K", "A", "4"))
+        #c.execute("UPDATE shmrly SET X=x+0.01 where qaree='A'")
+    #twice for safety
+    c.execute("UPDATE shmrly SET circle='' where circle is null")
+
+    #if ibnamer add hesham and ibn thakwan as separate qaree
+    if (qaree_key == "I"): #if  ibn amer then create hesahm and ibn thakwan hesham = circle =1 or '' and ibnthkwan circle =2 or ''
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE (qaree = ?) AND  (circle in('','1','4'))
+        """, ("H", "I"))
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE (qaree = ?) AND  (circle in('','2','4'))
+        """, ("Z", "I"))
+    
+    # c.execute("UPDATE shmrly SET X=x+0.01 where qaree='A'")
     c.execute("UPDATE shmrly SET style='S' where style is null")
     c.execute("UPDATE shmrly SET circle='' where circle is null")
-    if (qaree_key == "A"):
-        c.execute("UPDATE shmrly SET X=x+0.01 where qaree='A'")
+
     conn.commit()
     conn.close()
 
@@ -187,10 +215,21 @@ def get_color_type(color_values):
 # Extract line comments from the PDF
 # qaree_key values
 # Kalon:K - Sho3ba:S - IbnKatheer:I - Abojaafar:J - Asbahani:W - Warsh:A - Tayseer:T
-qaree_key = "A" 
-pdf_path = 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf'
-line_comments = extract_line_comments(pdf_path)
 
+qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer): ").upper()
+
+if qaree_key == "A":
+    pdf_path = 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf'
+elif qaree_key == "W":
+    pdf_path = 'e:/Qeraat/Asbahani-PDF-Path.pdf'
+elif qaree_key == "I":
+    pdf_path = 'e:/Qeraat/IbnAmer-Shamarly-Shalaby.pdf'
+elif qaree_key == "T":
+    pdf_path = 'e:/Qeraat/Tayseer-PDF-Path.pdf'
+else:
+    print("Invalid qaree key entered!")
+
+line_comments = extract_line_comments(pdf_path)
 
 # Create the table in SQLite
 # create_table_sqlite()
