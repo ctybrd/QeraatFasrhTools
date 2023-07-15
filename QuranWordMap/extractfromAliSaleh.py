@@ -22,15 +22,16 @@ def extract_text_next_to_keyword(doc_path, keyword):
     cursor.execute("DELETE FROM Hamza_Waqf")
 
     document = Document(doc_path)
-    page_number = 1
-
+    page_number = 3
+   
     for table in document.tables:
+        incr =False
         for row in table.rows:
             for i in range(len(row.cells)):
                 cell = row.cells[i]
                 cell_text = cell.text.strip()
-                if cell_text == 'السكت':
-                     page_number += 1
+                if cell_text == 'السكت' or cell_text == 'الوقف' or cell_text == 'الإمالة':
+                    incr =True
                 if keyword == cell_text:
                     if i + 1 < len(row.cells):
                         next_cell = row.cells[i + 1]
@@ -38,8 +39,10 @@ def extract_text_next_to_keyword(doc_path, keyword):
                         replaced_text = replace_characters(next_cell_text)
                         print(page_number,replaced_text)
                         parse_text_and_insert_to_database(replaced_text, page_number, cursor)
-                        
-       
+
+        if incr:          
+            page_number += 1
+            
 
     conn.commit()
     conn.close()
