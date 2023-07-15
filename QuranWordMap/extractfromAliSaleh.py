@@ -19,6 +19,7 @@ def extract_text_next_to_keyword(doc_path, keyword):
     conn = sqlite3.connect("Hamza_Waqf_db.db")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS Hamza_Waqf (aya_number INTEGER, text TEXT, page_number INTEGER)")
+    cursor.execute("DELETE FROM Hamza_Waqf")
 
     document = Document(doc_path)
     page_number = 1
@@ -28,6 +29,8 @@ def extract_text_next_to_keyword(doc_path, keyword):
             for i in range(len(row.cells)):
                 cell = row.cells[i]
                 cell_text = cell.text.strip()
+                if cell_text == 'السكت':
+                     page_number += 1
                 if keyword == cell_text:
                     if i + 1 < len(row.cells):
                         next_cell = row.cells[i + 1]
@@ -36,7 +39,7 @@ def extract_text_next_to_keyword(doc_path, keyword):
                         print(page_number,replaced_text)
                         parse_text_and_insert_to_database(replaced_text, page_number, cursor)
                         
-        page_number += 1
+       
 
     conn.commit()
     conn.close()
