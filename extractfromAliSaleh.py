@@ -147,7 +147,7 @@ def generate_word_document():
 
         # Format the text within brackets as red font for each occurrence
         inside_brackets = False
-
+        run = paragraph.add_run(transliterate_number(aya_number) + " " )
         for char in text:
             if char in ("(",")"):
                 run = paragraph.add_run(" ")
@@ -188,7 +188,7 @@ def transliterate_number(number):
 
 
 # Provide the path to your Word document and the keyword
-doc_path = "E:/Qeraat/AliSalehHamza.docx"
+doc_path = "E:/Qeraat/QeraatFasrhTools_Data/AliSalehHamza.docx"
 keyword = "الوقف"
 
 extract_text_next_to_keyword(doc_path, keyword)
