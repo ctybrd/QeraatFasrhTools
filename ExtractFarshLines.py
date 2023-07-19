@@ -150,7 +150,7 @@ def insert_comments_sqlite(comments,qaree_key):
             FROM shmrly
             WHERE qaree = ? AND circle = ?
         """, ("K", "A", "4"))
-        #c.execute("UPDATE shmrly SET X=x+0.02 where circle='4'")
+        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4'")
     #twice for safety
     c.execute("UPDATE shmrly SET circle='' where circle is null")
 
@@ -169,7 +169,7 @@ def insert_comments_sqlite(comments,qaree_key):
             WHERE (qaree = ?) AND  (circle in('','2','4'))
         """, ("Z", "I"))
     
-    # c.execute("UPDATE shmrly SET X=x+0.01 where qaree='A'")
+    
     c.execute("UPDATE shmrly SET style='S' where style is null")
     c.execute("UPDATE shmrly SET circle='' where circle is null")
 
