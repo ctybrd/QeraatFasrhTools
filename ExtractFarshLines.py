@@ -230,6 +230,12 @@ elif qaree_key == "J":
     pdf_path = 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf'
 elif qaree_key == "K":
     pdf_path = 'e:/Qeraat/Qaloon-Shamarly-Shalaby.pdf'
+elif qaree_key == "U":
+    pdf_path = 'e:/Qeraat/AshabSela-Shamrly-Shalaby.pdf'
+elif qaree_key == "Z":
+    pdf_path = 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf'
+elif qaree_key == "B":
+    pdf_path = 'e:/Qeraat/IbnKatheer-Shmarly-Shalaby.pdf'
 else:
     print("Invalid qaree key entered!")
 
