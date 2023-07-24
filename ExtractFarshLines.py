@@ -1,3 +1,4 @@
+import os
 import shutil
 import zipfile
 import pyodbc
@@ -150,7 +151,7 @@ def insert_comments_sqlite(comments,qaree_key):
             FROM shmrly
             WHERE qaree = ? AND circle = ?
         """, ("K", "A", "4"))
-        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4'")
+        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #twice for safety
     c.execute("UPDATE shmrly SET circle='' where circle is null")
 
@@ -212,40 +213,42 @@ def get_color_type(color_values):
         return "Farsh"
 
 
+def process_qaree_key(qaree_key):
+    qaree_files = {
+        "W": 'e:/Qeraat/Asbahani-PDF-Path.pdf',
+        "I": 'e:/Qeraat/IbnAmer-Shamarly-Shalaby.pdf',
+        "T": 'e:/Qeraat/madina10th.pdf',
+        "J": 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf',
+        "K": 'e:/Qeraat/Qaloon-Shamarly-Shalaby.pdf',
+        "U": 'e:/Qeraat/AshabSela-Shamrly-Shalaby.pdf',
+        "Z": 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf',
+        "B": 'e:/Qeraat/IbnKatheer-Shmarly-Shalaby.pdf',
+        "S": 'e:/Qeraat/Sho3ba-Shamarly-Shalaby.pdf',
+        "A": 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
+    }
+
+    if qaree_key == "ALL":
+        for key, pdf_path in qaree_files.items():
+            if os.path.exists(pdf_path):
+                comments = extract_line_comments(pdf_path)
+                insert_comments_sqlite(comments, key)
+                print("Line comments extracted and inserted from", pdf_path)
+            else:
+                print("File not found:", pdf_path)
+    elif qaree_key in qaree_files:
+        pdf_path = qaree_files[qaree_key]
+        if os.path.exists(pdf_path):
+            comments = extract_line_comments(pdf_path)
+            insert_comments_sqlite(comments, qaree_key)
+            print("Line comments extracted and inserted from", pdf_path)
+        else:
+            print("File not found:", pdf_path)
+    else:
+        print("Invalid qaree key entered!")
+
 # Extract line comments from the PDF
-# qaree_key values
-# Kalon:K - Sho3ba:S - IbnKatheer:I - Abojaafar:J - Asbahani:W - Warsh:A - Tayseer:T
-
-qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer): ").upper()
-
-if qaree_key == "A":
-    pdf_path = 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf'
-elif qaree_key == "W":
-    pdf_path = 'e:/Qeraat/Asbahani-PDF-Path.pdf'
-elif qaree_key == "I":
-    pdf_path = 'e:/Qeraat/IbnAmer-Shamarly-Shalaby.pdf'
-elif qaree_key == "T":
-    pdf_path = 'e:/Qeraat/Tayseer-PDF-Path.pdf'
-elif qaree_key == "J":
-    pdf_path = 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf'
-elif qaree_key == "K":
-    pdf_path = 'e:/Qeraat/Qaloon-Shamarly-Shalaby.pdf'
-elif qaree_key == "U":
-    pdf_path = 'e:/Qeraat/AshabSela-Shamrly-Shalaby.pdf'
-elif qaree_key == "Z":
-    pdf_path = 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf'
-elif qaree_key == "B":
-    pdf_path = 'e:/Qeraat/IbnKatheer-Shmarly-Shalaby.pdf'
-else:
-    print("Invalid qaree key entered!")
-
-line_comments = extract_line_comments(pdf_path)
-
-# Create the table in SQLite
-# create_table_sqlite()
-
-# Insert line comments into SQLite
-insert_comments_sqlite(line_comments,qaree_key)
+qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, Z for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
+process_qaree_key(qaree_key)
 
 file_path = 'E:/Qeraat/farsh_v5.db'
 destination_folders = [
