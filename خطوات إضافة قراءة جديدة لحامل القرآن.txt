@@ -1,0 +1,49 @@
+خطوات إضافة مصحف جديد
+1- عمل الخطوط والهوامش
+2- تصدير الهوامش إلى ملف fdf
+3- استيراد الهوامش إلى ملف pdfأبيض بدون خلفية
+Shmrly_Pure_Sides_WideMargins
+أو
+Shmrly_Pure_Sides 
+حسب حجم الهوامش
+
+وذلك باستخدام برنامج xchange editor
+comments
+import
+4- قطع الملف بحيث يكون هوامش فقط
+left 171.5
+right 0
+top 22.9
+bottom
+30.7
+crop even
+للصفحات الزوجية
+left 0
+right 171.5
+للصفحات الفردية
+5- تصدير الصفحات إلى مجلد بصيغة png
+6- تشغيل برنامج
+removewhite.py
+على المجلد
+7- ثم تشغيل الأمر
+magick mogrify -format png8 *.png
+لتصغير حجم الملفات
+8 - دمج الصور في هوامش مع الصور القديمة
+باستخدام برنامج
+ConcatImages.py
+9 - magick mogrify -format png8 *.png
+إذا استدعى الأمر
+10- نسخ الصور الجديد إلى مجلد ال side 
+الخاص بحامل القرآن
+11- تشغيل مهمة 
+ExtractFarshLines.py
+على الملفات ال pdf التي تم تعديلها ثم نسخ قاعدة بيانات الفرش للمجلدات المعنية
+12- عمل بلد بعد تعديل البرنامج ليدعم القراءة الجديدة
+في الأماكن التي تحتاج
+E:\Qeraat\Wursha_QuranHolder\src\app\code\enums\FarshQareeEnum.ts
+
+
+E:\Qeraat\Wursha_QuranHolder\src\app\pages\safha-settings\safha-settings.page.ts
+
+
+E:\Qeraat\Wursha_QuranHolder\src\app\components\hamsh\hamsh.component.html
