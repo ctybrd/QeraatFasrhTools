@@ -2,13 +2,15 @@ from PIL import Image, ImageDraw
 import os
 
 # Path to the directory containing the original images
-original_images_dir = "E:\Qeraat\ShmrlySides\side"
+#after merging use imagemagick to reduce size
+#magick mogrify -format png8 *.png
+original_images_dir = "E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\side"
 
 # Path to the directory containing the side column images
-side_column_images_dir = "E:\Qeraat\ShmrlySides\SideI"
+side_column_images_dir = "E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideSela"
 
 # Path to the output directory for the combined images
-output_dir = "E:\Qeraat\ShmrlySides\SideNew"
+output_dir = "E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideNew"
 
 # Get a list of file names from the original images directory
 original_images_files = os.listdir(original_images_dir)
@@ -47,7 +49,7 @@ for image_file in original_images_files:
     # Check if both images were successfully loaded
     if original_image is not None and side_column_image is not None:
         # Resize the original image width to be 6/7 of the original width
-        new_width = int(original_image.width * 6 / 7)
+        new_width = original_image.width #int(original_image.width * 6 / 7)
         new_height = original_image.height
         resized_original_image = original_image.resize((new_width, new_height))
 
