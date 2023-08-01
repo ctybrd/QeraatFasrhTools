@@ -10,8 +10,8 @@ def extract_fonts(source_pdf_path):
     for page_number in range(pdf_document.page_count):
         page = pdf_document.load_page(page_number)
         fonts = page.get_fonts()
-        for font_info in fonts:
-            font_name = fonts[font_info]["name"]
+        for fontno,font_info in enumerate(fonts):
+            font_name = fonts[fontno][3]
             pdf_fonts.add(font_name)
 
     pdf_document.close()
@@ -33,15 +33,15 @@ def embed_fonts(source_pdf_path, target_pdf_path):
 
     # Move to the beginning of the buffer
     packet.seek(0)
-    new_pdf = PyPDF2.PdfFileReader(packet)
-    existing_pdf = PyPDF2.PdfFileReader(source_pdf_path)
+    new_pdf = PyPDF2.PdfReader(packet)
+    existing_pdf = PyPDF2.PdfReader(source_pdf_path)
 
-    output = PyPDF2.PdfFileWriter()
+    output = PyPDF2.PdfWriter()
 
     # Merge the two PDFs
-    for i in range(existing_pdf.getNumPages()):
-        page = existing_pdf.getPage(i)
-        page.mergePage(new_pdf.getPage(i))
+    for i in range(len(existing_pdf.pages)):
+        page = existing_pdf.pages[i-1]
+        page.mergePage(new_pdf.pages[-1])
         output.addPage(page)
 
     # Save the result to a new PDF
