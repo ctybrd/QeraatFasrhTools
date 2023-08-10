@@ -130,22 +130,27 @@ def generate_word_document():
     document = Document()
 
     # Iterate through the rows and break pages when spage_number changes
-    current_spage_number = None
+    current_page_number = None
+    # paragraph = document.add_paragraph()
+    # paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
     for row in rows:
         aya_number, text, spage_number, page_number = row
 
         # # If spage_number changes, insert a section break
-        # if spage_number != current_spage_number:
-        #     if current_spage_number is not None:
+        # if page_number != current_page_number:
+        #     if current_page_number is not None:
         #         document.add_page_break()
-        #     current_spage_number = spage_number
+        #     current_page_number = page_number
+        #     paragraph = document.add_paragraph()
+        #     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
-        # Create a new paragraph for each row of data
+        
+        #Create a new paragraph for each row of data
         paragraph = document.add_paragraph()
         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-
-        # Format the text within brackets as red font for each occurrence
+        # run = paragraph.add_run('/')
+        # Format the text within brackets as green font for each occurrence
         inside_brackets = False
         run = paragraph.add_run(transliterate_number(aya_number) + " " )
         for char in text:
@@ -155,12 +160,22 @@ def generate_word_document():
                 run = paragraph.add_run(char)
             if char == "(":
                 inside_brackets = True
-                run.font.color.rgb = RGBColor(255, 0, 0)  # Red font color
+                run.font.color.rgb = RGBColor(20, 175, 20)  # Red font color
+                run.bold = True
+                run.font.size = Pt(16)
             elif char == ")":
                 inside_brackets = False
                 run.font.color.rgb = RGBColor(0, 0, 0)  # Red font color
+                run.bold = False
+                run.font.size = Pt(14)
+
             elif inside_brackets:
-                run.font.color.rgb = RGBColor(255, 0, 0)  # Red font color
+                run.font.color.rgb = RGBColor(20, 175, 20)  # Red font color
+                run.bold = True
+                run.font.size = Pt(16)
+
+
+
 
         # Concatenate the transliterated aya number in front of the formatted text
         # formatted_text = text #transliterate_number(aya_number) + " " + text
@@ -170,6 +185,7 @@ def generate_word_document():
     document.save("extracted_data.docx")
 
     conn.close()
+
 
 def transliterate_number(number):
     mapping = {
