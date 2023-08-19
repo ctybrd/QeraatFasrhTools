@@ -177,21 +177,51 @@ def insert_comments_sqlite(comments,qaree_key):
     conn.commit()
     conn.close()
 
+import webcolors
+
+def apply_fixed_mappings(rgb_values_original):
+    fixed_mappings = {
+        (255, 173, 90): (255, 153, 51),
+        (190, 190, 0): (204, 204, 0),
+        (179, 179, 0): (204, 204, 51),
+        (229, 34, 55): (204, 0, 51)
+    }
+    
+    if rgb_values_original in fixed_mappings:
+        return fixed_mappings[rgb_values_original]
+    
+    return rgb_values_original
+
+def get_nearest_web_color(rgb_values):
+    min_distance = float('inf')
+    nearest_color_name = None
+
+    for color_name, color_rgb in webcolors.HTML4_NAMES_TO_HEX.items():
+        distance = sum((val1 - val2) ** 2 for val1, val2 in zip(rgb_values, color_rgb))
+        if distance < min_distance:
+            min_distance = distance
+            nearest_color_name = color_name
+
+    return nearest_color_name
+
 def get_color_name(color_values):
-    fraction_values = eval(color_values)
-    print(color_values)
-    rgb_values = tuple(int(round(val * 255 / 128) * 128) for val in fraction_values)
-   
     try:
-         color_name = webcolors.rgb_to_name(rgb_values)
-    except ValueError:
-    # Handle the case of an unknown color
-        color_name = 'black'
-    if (color_name == "lime"):
-        color_name = "green"
-    if (color_name == "black"):
-        color_name = "purple"
+        fraction_values = eval(color_values)
+        rgb_values_original = tuple(int(round(val * 255)) for val in fraction_values)
+        
+        # Apply fixed mappings first
+        rgb_values_mapped = apply_fixed_mappings(rgb_values_original)
+        
+        try:
+            color_name = webcolors.rgb_to_name(rgb_values_mapped)
+        except ValueError:
+            color_name = get_nearest_web_color(rgb_values_mapped)
+    except Exception:
+        color_name = 'silver'
+    
     return color_name
+
+
 
 
 def get_color_type(color_values):
@@ -221,10 +251,11 @@ def process_qaree_key(qaree_key):
         "J": 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf',
         "K": 'e:/Qeraat/Qaloon-Shamarly-Shalaby.pdf',
         "U": 'e:/Qeraat/AshabSela-Shamrly-Shalaby.pdf',
-        "Z": 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf',
+        "M": 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf',
         "B": 'e:/Qeraat/IbnKatheer-Shmarly-Shalaby.pdf',
         "S": 'e:/Qeraat/Sho3ba-Shamarly-Shalaby.pdf',
         "A": 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
+        "E": 'e:/Qeraat/Kisai-Shamarly-Shalaby.pdf',
     }
 
     if qaree_key == "ALL":
@@ -247,7 +278,7 @@ def process_qaree_key(qaree_key):
         print("Invalid qaree key entered!")
 
 # Extract line comments from the PDF
-qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, Z for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
+qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, M for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
 process_qaree_key(qaree_key)
 
 file_path = 'E:/Qeraat/farsh_v5.db'
