@@ -21,7 +21,7 @@ class QuranBrowserApp:
     def load_quran_pages(self):
         # Assuming Quran page images are named as "page1.jpg", "page2.jpg", etc.
         for i in range(2, 522):
-            page_image_path = f"E:/Qeraat/QeraatFasrhTools/QuranWordMap/pages/{i}.png"
+            page_image_path = f"E:/Qeraat/QeraatFasrhTools_Data/pages/{i}.png"
             self.quran_pages.append(page_image_path)
 
     def connect_to_database(self):
