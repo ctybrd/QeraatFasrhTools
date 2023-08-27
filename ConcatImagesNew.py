@@ -3,11 +3,14 @@ import os
 
 # Define the paths for the source folders and the destination folder
 folder_paths = [
-    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideW',
-    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideI',
-    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideSela'
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideK10',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKK',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',    
+    # r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideSela'
 ]
-destination_folder = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\Side1'
+destination_folder = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\Side2'
 
 # Ensure the destination folder exists
 if not os.path.exists(destination_folder):

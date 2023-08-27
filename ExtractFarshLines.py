@@ -256,6 +256,8 @@ def process_qaree_key(qaree_key):
         "S": 'e:/Qeraat/Sho3ba-Shamarly-Shalaby.pdf',
         "A": 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
         "E": 'e:/Qeraat/Kisai-Shamarly-Shalaby.pdf',
+        "F": 'e:/Qeraat/Khalaf-Shamarly-Shalaby.pdf',
+        "X": 'e:/Qeraat/Kisai-Khalaf-Shamarly-Shalaby.pdf',
     }
 
     if qaree_key == "ALL":
