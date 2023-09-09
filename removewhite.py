@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-folder_path = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\Side2'
+folder_path = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty'
 tolerance = 30  # Adjust this value based on your needs
 
 # Create a new folder to save the modified images

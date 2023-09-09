@@ -122,7 +122,7 @@ def insert_comments_sqlite(comments,qaree_key):
         xshift = 70.0  
     else:
         xshift = 81.0
-
+    
     for comment in comments:
         print(comment['content'], comment['coordinates'], comment['color'])
 
@@ -152,6 +152,8 @@ def insert_comments_sqlite(comments,qaree_key):
             WHERE qaree = ? AND circle = ?
         """, ("K", "A", "4"))
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
+    if qaree_key in ["C", "D", "G"]:
+        c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
     #twice for safety
     c.execute("UPDATE shmrly SET circle='' where circle is null")
 
@@ -184,9 +186,15 @@ def apply_fixed_mappings(rgb_values_original):
         (255, 173, 90): (255, 153, 51),
         (190, 190, 0): (204, 204, 0),
         (179, 179, 0): (204, 204, 51),
-        (229, 34, 55): (204, 0, 51)
+        (229, 34, 55): (204, 0, 51),
+        (204, 204, 0): (255, 255, 0),
+        (255, 104, 32): (255, 140, 0),
+        (50, 255, 50): (50, 205, 50),
+        (158, 106, 25): (139, 69, 19),   # Mapping for (158, 106, 25) to Saddle Brown
+        (0, 123, 255): (30, 144, 255),   # Mapping for (0, 123, 255) to Dodger Blue
+        (204, 0, 51): (220, 20, 60),     # Custom mapping for (204, 0, 51) to Crimson
+        (204, 204, 51): (218, 165, 32),  # Custom mapping for (204, 204, 51) to Goldenrod
     }
-    
     if rgb_values_original in fixed_mappings:
         return fixed_mappings[rgb_values_original]
     
@@ -217,6 +225,7 @@ def get_color_name(color_values):
         except ValueError:
             color_name = get_nearest_web_color(rgb_values_mapped)
     except Exception:
+        failed_colors.add(rgb_values_mapped)  # Add the failed color to the set
         color_name = 'silver'
     
     return color_name
@@ -258,6 +267,14 @@ def process_qaree_key(qaree_key):
         "E": 'e:/Qeraat/Kisai-Shamarly-Shalaby.pdf',
         "F": 'e:/Qeraat/Khalaf-Shamarly-Shalaby.pdf',
         "X": 'e:/Qeraat/Kisai-Khalaf-Shamarly-Shalaby.pdf',
+        "Y": 'e:/Qeraat/Yaaqoub-Shamarly-Shalaby.pdf',
+        "C": 'e:/Qeraat/AbuAmro-Shamarly-Shalaby.pdf',
+        "D": 'e:/Qeraat/Dori-AbuAmro-Shamarly-Shalaby.pdf',
+        "G": 'e:/Qeraat/Sosi-AbuAmro-Shamarly-Shalaby.pdf',
+        
+
+        
+        
     }
 
     if qaree_key == "ALL":
@@ -280,6 +297,7 @@ def process_qaree_key(qaree_key):
         print("Invalid qaree key entered!")
 
 # Extract line comments from the PDF
+failed_colors = set()
 qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, M for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
 process_qaree_key(qaree_key)
 
@@ -289,17 +307,16 @@ destination_folders = [
     'E:/Qeraat/Wursha_QuranHolder/platforms/android/app/build/intermediates/assets/debug/mergeDebugAssets/www/',
     'E:/Qeraat/Wursha_QuranHolder/platforms/android/app/src/main/assets/www/',
     'E:/Qeraat/Wursha_QuranHolder/www/',
-    'E:/Qeraat/'
 ]
 
 
 for folder in destination_folders:
-    destination_file = folder + 'farsh_v4.db'
+    destination_file = folder + 'farsh_v5.db'
     shutil.copy(file_path, destination_file)
 
 # #add to archive
 # zip_file_path = "E:/Qeraat/Wursha_QuranHolder/other/data/farsh_v4.db.zip"
 # with zipfile.ZipFile(zip_file_path, 'r+') as zip_file:
 #     zip_file.write(file_path, arcname='farsh_v4.db')
-
+print("Distinct Failed Colors:", failed_colors)
 print("File copied to the specified folders.")
