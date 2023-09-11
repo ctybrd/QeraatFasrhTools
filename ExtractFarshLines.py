@@ -254,7 +254,7 @@ def get_color_type(color_values):
 
 def process_qaree_key(qaree_key):
     qaree_files = {
-        "W": 'e:/Qeraat/Asbahani-PDF-Path.pdf',
+        "W": 'e:/Qeraat/Warsh-Asbahani-Shamarly-Shalaby.pdf',
         "I": 'e:/Qeraat/IbnAmer-Shamarly-Shalaby.pdf',
         "T": 'e:/Qeraat/madina10th.pdf',
         "J": 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf',
