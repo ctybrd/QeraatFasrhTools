@@ -13,25 +13,26 @@ folder_sets = [
         r'E:/Qeraat/NewSides/PNG/SideK',  # قالون
     ], r'E:/Qeraat/NewSides/side', [
         'الأصبهاني', 'ورش', 'أبو جعفر', 'ابن كثير', 'قالون'
-    ]),
-    ([
-        r'E:/Qeraat/NewSides/PNG/SideX',  # الكسائي وخلف
-        r'E:/Qeraat/NewSides/PNG/SideL',  # أصحاب التوسط
-        r'E:/Qeraat/NewSides/PNG/SideU',  # أصحاب الصلة
-        r'E:/Qeraat/NewSides/PNG/SideS',  # شعبة
-        r'E:/Qeraat/NewSides/PNG/SideI',   # ابن عامر
-    ], r'E:/Qeraat/NewSides/side1', [
-        'الكسائي وخلف', 'أصحاب التوسط', 'أصحاب الصلة', 'شعبة', 'ابن عامر'
-    ]),
-    ([
-        r'E:/Qeraat/NewSides/PNG/SideF',  # خلف العاشر
-        r'E:/Qeraat/NewSides/PNG/SideY',  # يعقوب
-        r'E:/Qeraat/NewSides/PNG/SideE',  # الكسائي
-        r'E:/Qeraat/NewSides/PNG/SideM',  # حمزة
-        r'E:/Qeraat/NewSides/PNG/SideC',  # أبو عمرو
-    ], r'E:/Qeraat/NewSides/side2', [
-        'خلف العاشر', 'يعقوب', 'الكسائي', 'حمزة', 'أبو عمرو'
-    ]),
+    ])
+    # ,
+    # ([
+    #     r'E:/Qeraat/NewSides/PNG/SideX',  # الكسائي وخلف
+    #     r'E:/Qeraat/NewSides/PNG/SideL',  # أصحاب التوسط
+    #     r'E:/Qeraat/NewSides/PNG/SideU',  # أصحاب الصلة
+    #     r'E:/Qeraat/NewSides/PNG/SideS',  # شعبة
+    #     r'E:/Qeraat/NewSides/PNG/SideI',   # ابن عامر
+    # ], r'E:/Qeraat/NewSides/side1', [
+    #     'الكسائي وخلف', 'أصحاب التوسط', 'أصحاب الصلة', 'شعبة', 'ابن عامر'
+    # ]),
+    # ([
+    #     r'E:/Qeraat/NewSides/PNG/SideF',  # خلف العاشر
+    #     r'E:/Qeraat/NewSides/PNG/SideY',  # يعقوب
+    #     r'E:/Qeraat/NewSides/PNG/SideE',  # الكسائي
+    #     r'E:/Qeraat/NewSides/PNG/SideM',  # حمزة
+    #     r'E:/Qeraat/NewSides/PNG/SideC',  # أبو عمرو
+    # ], r'E:/Qeraat/NewSides/side2', [
+    #     'خلف العاشر', 'يعقوب', 'الكسائي', 'حمزة', 'أبو عمرو'
+    # ]),
 ]
 
 # Fixed text size and spacing

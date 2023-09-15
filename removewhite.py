@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-folder_path = r'E:/Qeraat/NewSides/SideL'
+folder_path = r'E:/Qeraat/NewSides/SideK'
 tolerance = 30  # Adjust this value based on your needs
 
 # Create a new folder to save the modified images
