@@ -1,24 +1,18 @@
 from PIL import Image, ImageOps, ImageDraw
 import os
 
-# Define the paths for the source folders and the destination folder
-# folder_paths = [
-#     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideC',
-#     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideY',
-#     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideK10',
-#     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKK',
-#     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',    
-# ]
-# destination_folder = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\Side2'
-
-
+#Define the paths for the source folders and the destination folder
 folder_paths = [
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideC',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideY',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideK10',
+    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKK',
     r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',    
-    r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\SideKEmpty',    
-    r'E:/Qeraat/NewSides/SideS',
-    r'E:/Qeraat/NewSides/SideJ',
-    r'E:/Qeraat/NewSides/SideK',
 ]
+destination_folder = r'E:\Qeraat\QeraatFasrhTools_Data\ShmrlySides\Side2'
+
+
+
 destination_folder = r'E:/Qeraat/NewSides/Side'
 # Ensure the destination folder exists
 if not os.path.exists(destination_folder):
