@@ -56,7 +56,7 @@ def extract_line_comments(pdf_path):
                             'coordinates': annotation.get_object()['/Rect'],
                             'color': annotation.get_object()['/C']
                         }
-                        print(annotation.get_object())
+                        # print(annotation.get_object())
                         comment['style'] = 'S'
                         comment['circle'] = '4'
                         # if '/BS' in annotation.get_object():
@@ -77,7 +77,8 @@ def extract_line_comments(pdf_path):
 
                         
         except Exception as e:
-            print(f"Error processing annotations on page {pageno}: {e}")
+            # print(f"Error processing annotations on page {pageno}: {e}")
+            pass
 
 
     return comments
@@ -124,13 +125,13 @@ def insert_comments_sqlite(comments,qaree_key):
         xshift = 81.0
     
     for comment in comments:
-        print(comment['content'], comment['coordinates'], comment['color'])
+        # print(comment['content'], comment['coordinates'], comment['color'])
 
         coordinates = str(comment['coordinates'])
         matches = re.findall(r'(\d+\.?\d*)', coordinates)
         x1, y1, x2, y2 = matches
 
-        color_values = get_color_name(str(comment['color']))
+        color_values = get_color_name(str(comment['color']),qaree_key)
         if qaree_key != 'T':
             color_type = get_color_type(color_values)
         else:
@@ -152,7 +153,7 @@ def insert_comments_sqlite(comments,qaree_key):
             WHERE qaree = ? AND circle = ?
         """, ("K", "A", "4"))
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
-    if qaree_key in ["C", "D", "G"]:
+    if qaree_key in ["C", "D", "G","L"]:
         c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
     #twice for safety
     c.execute("UPDATE shmrly SET circle='' where circle is null")
@@ -194,17 +195,29 @@ def apply_fixed_mappings(rgb_values_original):
         (0, 123, 255): (30, 144, 255),   # Mapping for (0, 123, 255) to Dodger Blue
         (204, 0, 51): (220, 20, 60),     # Custom mapping for (204, 0, 51) to Crimson
         (204, 204, 51): (218, 165, 32),  # Custom mapping for (204, 204, 51) to Goldenrod
+        (128, 0, 255): (128, 0, 128),    # Mapping for (128, 0, 255) to Purple
+        (0, 136, 0): (0, 128, 0),        # Mapping for (0, 136, 0) to Green
+        (0, 127, 255): (0, 0, 255),      # Mapping for (0, 127, 255) to Blue
+        (128, 128, 192): (128, 128, 128), # Mapping for (128, 128, 192) to Gray
+        (139, 69, 16): (139, 69, 19),     # Mapping for (139, 69, 16) to Saddle Brown
     }
     if rgb_values_original in fixed_mappings:
         return fixed_mappings[rgb_values_original]
     
     return rgb_values_original
 
-def get_nearest_web_color(rgb_values):
+def get_nearest_web_color(color):
+    try:
+        # Attempt to parse the input color (can be a name, RGB tuple, or hex code)
+        rgb_values = webcolors.name_to_rgb(color) if isinstance(color, str) else webcolors.hex_to_rgb(color)
+    except ValueError:
+        raise ValueError("Invalid color input. Provide a valid color name, RGB tuple, or hex code.")
+
     min_distance = float('inf')
     nearest_color_name = None
 
-    for color_name, color_rgb in webcolors.HTML4_NAMES_TO_HEX.items():
+    for color_name, color_hex in webcolors.CSS3_HEX_TO_NAMES.items():
+        color_rgb = webcolors.hex_to_rgb(color_hex)
         distance = sum((val1 - val2) ** 2 for val1, val2 in zip(rgb_values, color_rgb))
         if distance < min_distance:
             min_distance = distance
@@ -212,7 +225,7 @@ def get_nearest_web_color(rgb_values):
 
     return nearest_color_name
 
-def get_color_name(color_values):
+def get_color_name(color_values,qaree_key):
     try:
         fraction_values = eval(color_values)
         rgb_values_original = tuple(int(round(val * 255)) for val in fraction_values)
@@ -225,7 +238,7 @@ def get_color_name(color_values):
         except ValueError:
             color_name = get_nearest_web_color(rgb_values_mapped)
     except Exception:
-        failed_colors.add(rgb_values_mapped)  # Add the failed color to the set
+        failed_colors.add(qaree_key+ ' '+str(rgb_values_mapped))  # Add the failed color to the set
         color_name = 'silver'
     
     return color_name
@@ -271,10 +284,7 @@ def process_qaree_key(qaree_key):
         "C": 'e:/Qeraat/AbuAmro-Shamarly-Shalaby.pdf',
         "D": 'e:/Qeraat/Dori-AbuAmro-Shamarly-Shalaby.pdf',
         "G": 'e:/Qeraat/Sosi-AbuAmro-Shamarly-Shalaby.pdf',
-        
-
-        
-        
+        "L": 'e:/Qeraat/Tawasot-Shamarly-Shalaby.pdf',     
     }
 
     if qaree_key == "ALL":
