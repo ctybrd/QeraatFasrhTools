@@ -239,7 +239,7 @@ def get_color_name(color_values,qaree_key):
             color_name = get_nearest_web_color(rgb_values_mapped)
     except Exception:
         failed_colors.add(qaree_key+ ' '+str(rgb_values_mapped))  # Add the failed color to the set
-        color_name = 'silver'
+        color_name = 'red'
     
     return color_name
 
