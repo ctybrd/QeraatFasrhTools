@@ -50,7 +50,7 @@ custom_serial = 1
 # Iterate through HTML files while maintaining order
 html_files = sorted(os.listdir(html_dir))
 # for i, filename in enumerate(html_files[:10], start=1):
-for i, filename in enumerate(html_files[:10], start=1):
+for i, filename in enumerate(html_files, start=1):
     if filename.endswith('.html'):
         # Extract Sora and Aya numbers from the file name
         sora, aya = extract_sora_aya(filename)
