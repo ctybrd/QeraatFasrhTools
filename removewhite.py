@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-folder_path = r'E:/Qeraat/NewSides/SideK'
+folder_path = r'E:/Qeraat/NewSides/SideA'
 tolerance = 30  # Adjust this value based on your needs
 
 # Create a new folder to save the modified images
@@ -11,7 +11,7 @@ os.makedirs(output_folder_path, exist_ok=True)
 
 # Iterate over all files in the folder
 for filename in os.listdir(folder_path):
-    if filename.endswith('.png'):
+    if filename.endswith('13.png'):
         file_path = os.path.join(folder_path, filename)
 
         # Read the image using OpenCV

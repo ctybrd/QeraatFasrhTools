@@ -49,6 +49,9 @@ for letter in letters:
             output_file_path = os.path.join(output_folder_path, filename)
 
             # Save the modified image in PNG format
-            cv2.imwrite(output_file_path, result)
+            # cv2.imwrite(output_file_path, result)
+            cv2.imwrite(output_file_path, result, [cv2.IMWRITE_PNG_COMPRESSION, 4])
+
+
 
 print('White color removal with transparency completed.')
