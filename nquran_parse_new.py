@@ -41,6 +41,40 @@ cursor.execute('''
 
 # Directory containing HTML files
 html_dir = r'E:/Qeraat/QeraatFasrhTools_Data/nQuran'
+all_rowa = [
+    "نافع",
+    "قالون_عن_نافع",
+    "ورش_عن_نافع",
+    "ابن كثير",
+    "قنبل_عن_ابن كثير",
+    "البزي_عن_ابن كثير",
+    "أبو عمرو",
+    "أبي عمرو",
+    "السوسي_عن_أبي عمرو",
+    "الدوري_عن_أبي عمرو",
+    "ابن عامر",
+    "هشام_عن_ابن عامر",
+    "ابن ذكوان_عن_ابن عامر",
+    "عاصم",
+    "شعبة_عن_عاصم",
+    "حفص_عن_عاصم",
+    "حمزة",
+    "خلف_عن_حمزة",
+    "خلاد_عن_حمزة",
+    "الكسائي",
+    "أبو الحارث_عن_الكسائي",
+    "الدوري_عن_الكسائي",
+    "أبو جعفر",
+    "أبي جعفر",
+    "ابن وردان_عن_أبي جعفر",
+    "ابن جماز_عن_أبي جعفر",
+    "يعقوب",
+    "رويس_عن_يعقوب",
+    "روح_عن_يعقوب",
+    "خلف العاشر",
+    "كل الرواة",
+    "باقي الرواة",   
+]
 
 # Initialize variables to track the current Sora and Aya
 current_sora = None
@@ -94,22 +128,24 @@ for i, filename in enumerate(html_files, start=1):
                         content = f'{content[0]}\r\n{content[1]}'
                     else:
                         content = content[0]
-
-                    # Extract the first item as qarees
-                    content = content.replace(', عن,', ' عن')
-                    qarees = None
-                    if content:
-                        content_split = content.split('\r\n', 1)  # Split into lines
-                        if len(content_split) > 1:
-                            qarees = content_split[0]  # Get the first line
-
-                    # Extract the last item as reading
-                    reading = None
-                    if content:
-                        content_split = content.split('\r\n')  # Split into lines
-                        if len(content_split) > 1:
-                            reading = content_split[-1]  # Get the last line
-
+                    content = content.replace(', عن,', '_عن_')
+                    last_match_index = None
+                    for i, content_line in enumerate(content_lines):
+                        for k, rawy in enumerate(all_rowa):
+                            if content_line.endswith(rawy):
+                                last_match_index = i
+                    
+                    # Extract qarees and reading based on the last match
+                    if last_match_index is not None:
+                        qarees_lines = content_lines[:last_match_index + 1]
+                        reading_lines = content_lines[last_match_index + 1:]
+                        qarees = ', '.join(qarees_lines)
+                        reading = ', '.join(reading_lines) if reading_lines else None
+                    else:
+                        qarees = None
+                        reading = content  # If no match, consider the entire content as reading
+                    if qarees:
+                        qarees = qarees.replace(', عن,', '_عن_')
                     # Insert data into SQLite database with compound primary key
                     for sub_subject in sub_subjects:
                         cursor.execute('INSERT OR IGNORE INTO quran_data (id, sora, aya, subject, sub_subject, content, qarees, reading) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
