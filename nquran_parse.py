@@ -2,6 +2,7 @@ import os
 import sqlite3
 import re
 from bs4 import BeautifulSoup
+import pyarabic.araby as araby
 
 # Function to extract Sora and Aya numbers from the file name
 def extract_sora_aya(filename):
@@ -26,7 +27,8 @@ def extract_sub_subject(selectquran_tag):
 conn = sqlite3.connect('E:/Qeraat/QeraatFasrhTools_Data/nquran_data.db')
 cursor = conn.cursor()
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS quran_data (
+
+    CREATE TABLE IF NOT EXISTS quran_dataTayba (
         id INTEGER,
         sora INTEGER,
         aya INTEGER,
@@ -35,12 +37,14 @@ cursor.execute('''
         content TEXT,
         qarees TEXT,
         reading TEXT,
+      	page_number1	INTEGER,
+    	page_number2	INTEGER,
         UNIQUE(sora, aya, id)
     )
 ''')
 
 # Directory containing HTML files
-html_dir = r'E:/Qeraat/QeraatFasrhTools_Data/nQuran'
+html_dir = r'E:/Qeraat/QeraatFasrhTools_Data/nQuran_Tayba'
 
 # Initialize variables to track the current Sora and Aya
 current_sora = None
@@ -49,7 +53,7 @@ custom_serial = 1
 
 # Iterate through HTML files while maintaining order
 html_files = sorted(os.listdir(html_dir))
-for i, filename in enumerate(html_files[:10], start=1):
+for i, filename in enumerate(html_files, start=1):
     if filename.endswith('.html'):
         # Extract Sora and Aya numbers from the file name
         sora, aya = extract_sora_aya(filename)
@@ -96,6 +100,7 @@ for i, filename in enumerate(html_files[:10], start=1):
                 sub_subjects = extract_sub_subject(selectquran_tags[j - 1]) if j <= len(selectquran_tags) else []
                 
                 # Extract the first item as qarees
+                content = araby.strip_diacritics(content)  #remove tashkeel
                 content = content.replace(', عن,', ' عن')
                 qarees = None
                 if content:
@@ -112,7 +117,7 @@ for i, filename in enumerate(html_files[:10], start=1):
                     
                 # Insert data into SQLite database with compound primary key
                 for sub_subject in sub_subjects:                   
-                    cursor.execute('INSERT OR IGNORE INTO quran_data (id, sora, aya, subject, sub_subject, content, qarees, reading) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    cursor.execute('INSERT OR IGNORE INTO quran_dataTayba (id, sora, aya, subject, sub_subject, content, qarees, reading) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                                    (custom_serial, sora, aya, subject, sub_subject, content, qarees, reading))
                     print(f'Inserted Sora {sora}, Aya {aya}, Subject: {subject}, Sub-Subject: {sub_subject}, Page {j}, Custom Serial: {custom_serial}')
 

@@ -3,11 +3,12 @@ from bs4 import BeautifulSoup
 
 # Define the Sora data as a list of tuples (Sora number, number of Ayas)
 sora_data = [
-    (1, 7), (2, 286), (3, 200), (4, 176), (5, 120), (6, 165), (7, 206),
-    (8, 75), (9, 129), (10, 109), (11, 123), (12, 111), (13, 43), (14, 52),
-    (15, 99), (16, 128), (17, 111), (18, 110), (19, 98), (20, 135), (21, 112),
-    (22, 78), (23, 118), (24, 64), (25, 77), (26, 227), (27, 93), (28, 88),
-    (29, 69), (30, 60), (31, 34), (32, 30), (33, 73), (34, 54), (35, 45),
+    # (1, 7), (2, 286), (3, 200), (4, 176), (5, 120), (6, 165), (7, 206),
+    # (8, 75), (9, 129), (10, 109), (11, 123), (12, 111), (13, 43), (14, 52),
+    # (15, 99), (16, 128), (17, 111), (18, 110), (19, 98), (20, 135), (21, 112),
+    # (22, 78), (23, 118), (24, 64), (25, 77), (26, 227), (27, 93), (28, 88),
+    # (29, 69), (30, 60), (31, 34), (32, 30), (33, 73),
+    (34, 54), (35, 45),
     (36, 83), (37, 182), (38, 88), (39, 75), (40, 85), (41, 54), (42, 53),
     (43, 89), (44, 59), (45, 37), (46, 35), (47, 38), (48, 29), (49, 18),
     (50, 45), (51, 60), (52, 49), (53, 62), (54, 55), (55, 78), (56, 96),
@@ -23,7 +24,7 @@ sora_data = [
 ]
 
 # Define the base URL
-base_url = "https://www.nquran.com/ar/index.php?group=tb1&tpath=2"
+base_url = "https://www.nquran.com/ar/index.php?group=tb1&tpath=1"
 
 # Iterate through the Sora data
 for sora_number, num_ayas in sora_data:
@@ -41,7 +42,7 @@ for sora_number, num_ayas in sora_data:
             soup = BeautifulSoup(response.content, 'lxml')
 
             # Specify the full path for saving the HTML file
-            filename = f"E:/Qeraat/QeraatFasrhTools_Data/nQuran/Sora{sora_number}_Aya{aya_number}.html"
+            filename = f"E:/Qeraat/QeraatFasrhTools_Data/nQuran_Tayba/Sora{sora_number}_Aya{aya_number}.html"
 
             # Save the HTML content with the correct encoding (utf-8)
             with open(filename, 'w', encoding='utf-8') as file:

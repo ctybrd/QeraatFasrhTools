@@ -193,3 +193,15 @@ for i, filename in enumerate(html_files, start=1):
 # Commit and close the database connection
 conn.commit()
 conn.close()
+# remove extra رقم الآية text
+# UPDATE quran_data
+# SET subject = SUBSTR(subject, 1, INSTR(subject, '- رقم الآية:') - 1)
+# WHERE INSTR(subject, '- رقم الآية:') > 0;
+#remove curly braces
+# UPDATE quran_data
+# SET subject = REPLACE(REPLACE(subject, '{', ''), '}', ''),
+#    sub_subject = REPLACE(REPLACE(sub_subject, '{', ''), '}', '');
+
+# update quran_data set page_number1=(SELECT mosshf_madina.page_number  from mosshf_madina where aya_number= quran_data.aya and sora_number=quran_data.sora)
+# update quran_data set page_number2=(SELECT mosshf_shmrly.page_number  
+# from mosshf_shmrly where aya_number= quran_data.aya and sora_number=quran_data.sora)
