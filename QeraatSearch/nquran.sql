@@ -1,3 +1,11 @@
+CREATE VIEW all_qeraat
+AS
+SELECT quran_data.*, quran_sora.sora_name, book_quran.text, book_quran.text_full
+FROM quran_data
+LEFT JOIN quran_sora ON quran_data.sora = quran_sora.sora
+LEFT JOIN book_quran ON (quran_data.sora = book_quran.sora AND quran_data.aya = book_quran.aya);
+
+
 # remove extra رقم الآية text
 # UPDATE quran_data
 # SET subject = SUBSTR(subject, 1, INSTR(subject, '- رقم الآية:') - 1)
@@ -60,5 +68,106 @@ ALTER TABLE quran_data ADD COLUMN R9_2 TEXT;
 ALTER TABLE quran_data ADD COLUMN Q10 TEXT;
 ALTER TABLE quran_data ADD COLUMN R10_1 TEXT;
 ALTER TABLE quran_data ADD COLUMN R10_2 TEXT;
+
+
+update quran_data set Q1=1 where 
+(qarees like '%نافع%') and 
+NOT ((qarees like '%قالون%')  or (qarees like '%ورش%'))
+
+update quran_data set R1_1=1 where 
+(qarees like '%قالون%') or (Q1=1)  
+update quran_data set R1_2=1 where 
+(qarees like '%ورش%') or (Q1=1) 
+
+
+--select * from quran_data where R1_1=1 and (reading not like '%صلة ميم الجمع %')
+
+update quran_data set Q2=1 where 
+(qarees like '%كثير%') and 
+NOT ((qarees like '%البزي%')  or (qarees like '%قنبل%'))
+
+update quran_data set R2_1=1 where (qarees like '%البزي%') or (Q2=1) 
+update quran_data set R2_2=1 where (qarees like '%قنبل%') or (Q2=1) 
+
+
+update quran_data set Q3=1 where 
+(qarees like '%عمرو%') and 
+NOT ((qarees like '%الدوري_عن_ أبي عمرو%')  or (qarees like '%السوسي_عن_ أبي عمرو%'))
+
+update quran_data set R3_1=1 where (qarees like '%الدوري_عن_ أبي عمرو%') or (Q3=1) 
+update quran_data set R3_2=1 where (qarees like '%السوسي_عن_ أبي عمرو%') or (Q3=1) 
+
+
+update quran_data set Q4=1 where 
+(qarees like '%عامر%') and 
+NOT ((qarees like '%هشام%')  or (qarees like '%ذكوان%'))
+
+update quran_data set R4_1=1 where (qarees like '%هشام%') or (Q4=1) 
+update quran_data set R4_2=1 where (qarees like '%ذكوان%') or (Q4=1)
+
+update quran_data set Q5=1 where 
+(qarees like '%عاصم%') and 
+NOT ((qarees like '%شعبة%')  or (qarees like '%حفص%'))
+
+update quran_data set R5_1=1 where (qarees like '%شعبة%') or (Q5=1) 
+update quran_data set R5_2=1 where (qarees like '%حفص%') or (Q5=1)  
+
+update quran_data set Q6=1 where 
+(qarees like '%حمزة%') and 
+NOT ((qarees like '%خلف_عن_ حمزة%')  or (qarees like '%خلاد_عن_ حمزة%'))
+
+update quran_data set R6_1=1 where (qarees like '%خلف_عن_ حمزة%') or (Q6=1) 
+update quran_data set R6_2=1 where (qarees like '%خلاد_عن_ حمزة%') or (Q6=1)  
+
+
+update quran_data set Q7=1 where 
+(qarees like '%الكسائي%') and 
+NOT ((qarees like '%الدوري_عن_ الكسائي%')  or (qarees like '%الحارث%'))
+
+update quran_data set R7_1=1 where (qarees like '%الحارث%') or (Q7=1) 
+update quran_data set R7_2=1 where (qarees like '%الدوري_عن_ الكسائي%') or (Q7=1)  
+
+update quran_data set Q8=1 where 
+(qarees like '%جعفر%') and 
+NOT ((qarees like '%وردان%')  or (qarees like '%جماز%'))
+
+update quran_data set R8_1=1 where (qarees like '%وردان%') or (Q8=1) 
+update quran_data set R8_2=1 where (qarees like '%جماز%') or (Q8=1) 
+
+update quran_data set Q9=1 where 
+(qarees like '%يعقوب%') and 
+NOT ((qarees like '%روح%')  or (qarees like '%رويس%'))
+
+update quran_data set R9_1=1 where (qarees like '%رويس%') or (Q9=1) 
+update quran_data set R9_2=1 where (qarees like '%روح%') or (Q9=1) 
+
+update quran_data set Q10=1,R10_1=1,R10_2=1 where 
+(qarees like '%العاشر%') 
+
+--update quran_data set R10_1=1 where (qarees like '%دريس%') or (Q10=1) 
+--update quran_data set R10_2=1 where (qarees like '%إسحق%') or (Q10=1) 
+
+update quran_data set R5_2=0 where R5_2 is null
+update quran_data set Q5=0 where Q5 is null
+
+update quran_data set 
+Q1=1,R1_1=1,R1_2=1,
+Q2=1,R2_1=1,R2_2=1,
+Q3=1,R3_1=1,R3_2=1,
+Q4=1,R4_1=1,R4_2=1,
+Q5=1,R5_1=1,R5_2=1,
+Q6=1,R6_1=1,R6_2=1,
+Q7=1,R7_1=1,R7_2=1,
+Q8=1,R8_1=1,R8_2=1,
+Q9=1,R9_1=1,R9_2=1,
+Q10=1,R10_1=1,R10_2=1 where qarees like '%كل الرواة%'
+
+
+
+
+select * from quran_data where R1_1=1 and Q5=0 and R5_2
+
+
+
 
 
