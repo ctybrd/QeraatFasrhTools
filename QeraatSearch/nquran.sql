@@ -150,6 +150,9 @@ update quran_data set Q10=1,R10_1=1,R10_2=1 where
 update quran_data set R5_2=0 where R5_2 is null
 update quran_data set Q5=0 where Q5 is null
 
+update quran_data set R5_2=Null where R5_2=0
+update quran_data set Q5=Null where Q5=0
+
 update quran_data set 
 Q1=1,R1_1=1,R1_2=1,
 Q2=1,R2_1=1,R2_2=1,
@@ -162,10 +165,19 @@ Q8=1,R8_1=1,R8_2=1,
 Q9=1,R9_1=1,R9_2=1,
 Q10=1,R10_1=1,R10_2=1 where qarees like '%كل الرواة%'
 
+update quran_data set Q1=null  where R1_1  is null or R1_2 is null
+update quran_data set Q2=null  where R2_1  is null or R2_2 is null
+update quran_data set Q3=null  where R3_1  is null or R3_2 is null
+update quran_data set Q4=null  where R4_1  is null or R4_2 is null
+update quran_data set Q5=null  where R5_1  is null or R5_2 is null
+update quran_data set Q6=null  where R6_1  is null or R6_2 is null
+update quran_data set Q7=null  where R7_1  is null or R7_2 is null
+update quran_data set Q8=null  where R8_1  is null or R8_2 is null
+update quran_data set Q9=null  where R9_1  is null or R9_2 is null
+update quran_data set Q10=null where R10_1 is null or R10_2 is null
 
 
-
-select * from quran_data where R1_1=1 and Q5=0 and R5_2
+select * from quran_data where R1_1=1 and Q5=0 and R5_2=0
 
 
 

@@ -5,7 +5,7 @@ conn = sqlite3.connect('E:/Qeraat/QeraatFasrhTools_Data/nquran_data.db')
 cursor = conn.cursor()
 
 # Query the rows ordered by aya_index
-cursor.execute("SELECT * FROM quran_data where sora =1 ORDER BY aya_index,id")
+cursor.execute("SELECT * FROM quran_data where qarees <>'كل الرواة' ORDER BY aya_index,id")
 rows = cursor.fetchall()
 
 # Define the column names based on your specific naming convention
@@ -19,6 +19,7 @@ filled_columns = set()  # To keep track of columns that were filled
 for row in rows:
     aya_index = row[0]
     qarees = row[5]
+    print(f"{aya_index}")
     if  aya_index != last_aya_index:
             filled_columns = set()  # Reset the filled columns for the new group
 
@@ -28,7 +29,7 @@ for row in rows:
         if complement_columns:
             update_query = f"UPDATE quran_data SET {complement_columns} WHERE id = {row[1]} AND aya_index = {aya_index}"
             cursor.execute(update_query)
-            print(f"Filled {aya_index}:{complement_columns} for aya_index = {aya_index}")
+            # print(f"Filled {aya_index}:{complement_columns} for aya_index = {aya_index}")
         filled_columns = set()  # Reset the filled columns for the new group
 
     if qarees != 'باقي الرواة' :
@@ -36,12 +37,20 @@ for row in rows:
         for col_name in q_and_r_column_names:
             if  row[q_and_r_column_names.index(col_name) + 9]=='1':
                 filled_columns.add(col_name)
-                print(f"Marked {aya_index}: {col_name} as filled for aya_index = {aya_index}")
+                # print(f"Marked {aya_index}: {col_name} as filled for aya_index = {aya_index}")
 
     last_aya_index = aya_index
 
 # Commit the changes to the database
 conn.commit()
+cursor.execute("update quran_data set R5_2=Null where R5_2=0")
+conn.commit()
+cursor.execute("update quran_data set Q5=Null where Q5=0")
+conn.commit()
+for col_num in range(1, 11):
+    cursor.execute(f"UPDATE quran_data SET Q{col_num} = NULL WHERE R{col_num}_1 IS NULL OR R{col_num}_2 IS NULL")
 
+# Commit the changes for the additional updates
+conn.commit()
 # Close the database connection
 conn.close()
