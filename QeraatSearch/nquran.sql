@@ -182,3 +182,8 @@ and reading not like '%صلة%ميم%جمع%'
 and reading not like '%ميم%جمع%وصل%'
 and (q8=1 or r8_1=1 or r8_2=1)
  order by aya_index,id
+ 
+select reading,count(*) from quran_data
+group by reading
+order by count(*) desc
+
