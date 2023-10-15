@@ -177,9 +177,8 @@ update quran_data set Q9=null  where R9_1  is null or R9_2 is null
 update quran_data set Q10=null where R10_1 is null or R10_2 is null
 
 
-select * from quran_data where R1_1=1 and Q5=0 and R5_2=0
-
-
-
-
-
+select * from quran_data where R1_1=1 and R5_2 is null
+and reading not like '%صلة%ميم%جمع%'
+and reading not like '%ميم%جمع%وصل%'
+and (q8=1 or r8_1=1 or r8_2=1)
+ order by aya_index,id
