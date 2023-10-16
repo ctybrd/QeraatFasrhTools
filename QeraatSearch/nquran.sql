@@ -189,83 +189,116 @@ order by count(*) desc
 
 [ 'تغيير الهمزة المتوسطة للإمام حمزة وقفا', 'الإشمام بأنواعه', 'كسر هاء ضمير الجمع والمثنى', 'تسهيل الهمزة المتوسطة بزائد لحمزة وقفا (وإذا، ولأتم)', 'ترك إشمام الصاد في الصراط وصراط،....', 'إشمام الصاد صوت الزاي في (الصراط وصراط،.....) لخلف', 'ضم هاء ضمير الجمع والمثنى', 'الإدغام بنوعَيْه', 'صلة ميم الجمع وصلا', 'السكت على الساكن قبل الهمزة', 'إشمام الصاد صوت الزاي في (الصراط ) لخلاد', 'المواضع', 'الإدغام الكبير', 'ترك الإدغام الكبير', 'أوجه الفصل بين السورتين']
  
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('meemsela','صلة ميم الجمع وصلا','حمزة',null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('sakt2', 'السكت على الساكن قبل الهمزة',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('waqfh1','تغيير الهمزة المتوسطة لحمزة وقفا','حمزة',null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('waqfh2', 'تسهيل الهمزة المتوسطة بزائد لحمزة وقفا (وإذا، ولأتم)','حمزة',null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('ishmam','الإشمام بأنواعه',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('ishmams','إشمام الصاد صوت الزاي في (الصراط وصراط،)','حمزة',null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('haadam', 'ضم هاء ضمير الجمع والمثنى',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('haaakasr', 'كسر هاء ضمير الجمع والمثنى',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('idgham','الإدغام بنوعَيْه',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('idghak','الإدغام الكبير',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('raatarkek','ترقيق الراء',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('lamtaghlez','تغليظ اللام',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('haasokon','إسكان الهاء',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('taklel','التقليل',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('imala','الإمالة',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('taklelw','التقليل وقفا',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('imalaw','الإمالة وقفا',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('imalah','إمالة هاء التأنيث',null,null);
 
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('haasakt','هاء السكت',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('nakl','النقل',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('ibdal','إبدال الهمز',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('badal','ثلاثة مدل البدل',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('ikhfaa','إخفاء عند الخاء والغين',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('yaafath','فتح ياء الإضافة',null,null);
 
-insert into adaa(tag,description,qarees,category)
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('hamzatan','الهمزتين',null,null);
 
+UPDATE quran_data set tags=IFNULL(tags,',') ||'meemsela,'
+where reading like '%صلة%ميم%جمع%' 
+and 
+ifnull(tags,',') not like '%meemsela,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'meemsela,'
+where reading like '%ميم%جمع%وصلا%' 
+and 
+ifnull(tags,',') not like '%meemsela,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'ikhfaa,'
+where reading like '%خفاء عند الغين والخاء%'
+and 
+ifnull(tags,',') not like '%ikhfaa,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'taklelw,'
+where reading like '%تقليل%وقفا%'
+and 
+ifnull(tags,',') not like '%taklelw,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'taklel,'
+where reading like '%تقليل%'
+and 
+ifnull(tags,',') not like '%taklel,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'imalah,'
+where reading like '%إمالة هاء التأنيث%'
+and 
+ifnull(tags,',') not like '%imalah,%'
 
 
 
-ud
+
+
