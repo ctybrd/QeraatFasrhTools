@@ -187,13 +187,15 @@ select reading,count(*) from quran_data
 group by reading
 order by count(*) desc
 
-[ 'تغيير الهمزة المتوسطة للإمام حمزة وقفا', 'الإشمام بأنواعه', 'كسر هاء ضمير الجمع والمثنى', 'تسهيل الهمزة المتوسطة بزائد لحمزة وقفا (وإذا، ولأتم)', 'ترك إشمام الصاد في الصراط وصراط،....', 'إشمام الصاد صوت الزاي في (الصراط وصراط،.....) لخلف', 'ضم هاء ضمير الجمع والمثنى', 'الإدغام بنوعَيْه', 'صلة ميم الجمع وصلا', 'السكت على الساكن قبل الهمزة', 'إشمام الصاد صوت الزاي في (الصراط ) لخلاد', 'المواضع', 'الإدغام الكبير', 'ترك الإدغام الكبير', 'أوجه الفصل بين السورتين']
- 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('meemsela','صلة ميم الجمع وصلا','حمزة',null);
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('sakt2', 'السكت على الساكن قبل الهمزة',null,null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('waqfhamer','وقف هشام','حمزة',null);
+
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('waqfh1','تغيير الهمزة المتوسطة لحمزة وقفا','حمزة',null);
@@ -215,6 +217,10 @@ VALUES('haaakasr', 'كسر هاء ضمير الجمع والمثنى',null,null)
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('idgham','الإدغام بنوعَيْه',null,null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('idghamn','الإدغام بغير غنة',null,null);
+
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('idghak','الإدغام الكبير',null,null);
@@ -298,7 +304,60 @@ where reading like '%إمالة هاء التأنيث%'
 and 
 ifnull(tags,',') not like '%imalah,%'
 
+UPDATE quran_data set tags=IFNULL(tags,',') ||'idghak,'
+where reading like '%%غام%كبير%%'
+and 
+ifnull(tags,',') not like '%idghak,%'
 
 
+UPDATE quran_data set tags=IFNULL(tags,',') ||'ishmams,'
+where reading like '%شمام%صاد%' and 
+sub_subject like '%صراط%'
+and 
+ifnull(tags,',') not like '%ishmams,%'
 
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'ishmam,'
+where reading like '%شمام%'  
+and sub_subject not like '%صراط%'
+AND reading not like '%ترك%شمام%'
+AND
+ifnull(tags,',') not like '%ishmam,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'idghamn,'
+where reading like '%دغام%ترك الغنة%'  
+and qarees like '%خلف_عن_ حمزة%'
+and ifnull(tags,',') not like '%idghamn,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'raatarkek,'
+where reading like '%رقيق%الراء%'
+and 
+ifnull(tags,',') not like '%raatarkek,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'badal,'
+where (reading like '%تثليث البدل%' or reading like '%ثلاثة البدل%')
+and 
+ifnull(tags,',') not like '%badal,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'lamtaghlez,'
+where (reading like '%تغليظ اللام%' or reading like '%تفخيم اللام%')
+and 
+ifnull(tags,',') not like '%lamtaghlez,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'waqfh1,'
+where (reading like '%وقف%همز%' or reading like '%همز%وقف%')
+and 
+qarees like '%حمزة%'
+and
+ifnull(tags,',') not like '%waqfh1,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'waqfh1,'
+where (reading like '%وقف%همز%' or reading like '%همز%وقف%')
+and 
+qarees like '%هشام%'
+and
+ifnull(tags,',') not like '%waqfhamer,%'
 
