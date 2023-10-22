@@ -1,3 +1,45 @@
+-- Create the qareemaster table
+CREATE TABLE qareemaster (
+    id INTEGER PRIMARY KEY,
+    qkey TEXT,
+    name TEXT,
+    groups TEXT
+);
+
+-- Insert data into the qareemaster table
+INSERT INTO qareemaster (qkey, name) VALUES
+    ('Q1', 'نافع'),
+    ('R1_1', 'قالون عن نافع'),
+    ('R1_2', 'ورش عن نافع'),
+    ('Q2', 'ابن كثير'),
+    ('R2_1', 'البزي عن ابن كثير'),
+    ('R2_2', 'قنبل عن ابن كثير'),
+    ('Q3', 'أبو عمرو'),
+    ('R3_1', 'الدوري عن أبي عمرو'),
+    ('R3_2', 'السوسي عن أبي عمرو'),
+    ('Q4', 'ابن عامر'),
+    ('R4_1', 'هشام عن ابن عامر'),
+    ('R4_2', 'ابن ذكوان عن ابن عامر'),
+    ('Q5', 'عاصم'),
+    ('R5_1', 'شعبة عن عاصم'),
+    ('R5_2', 'حفص عن عاصم'),
+    ('Q6', 'حمزة'),
+    ('R6_1', 'خلف عن حمزة'),
+    ('R6_2', 'خلاد عن حمزة'),
+    ('Q7', 'الكسائي'),
+    ('R7_1', 'أبو الحارث عن الكسائي'),
+    ('R7_2', 'الدوري عن الكسائي'),
+    ('Q8', 'أبو جعفر'),
+    ('R8_1', 'ابن وردان عن أبي جعفر'),
+    ('R8_2', 'ابن جماز عن أبي جعفر'),
+    ('Q9', 'يعقوب'),
+    ('R9_1', 'رويس عن يعقوب'),
+    ('R9_2', 'روح عن يعقوب'),
+    ('Q10', 'خلف العاشر'),
+    ('R10_1', 'إسحق عن خلف'),
+    ('R10_2', 'إدريس عن خلف');
+
+
 CREATE VIEW all_qeraat
 AS
 SELECT quran_data.*, quran_sora.sora_name, book_quran.text, book_quran.text_full
@@ -176,13 +218,18 @@ update quran_data set Q8=null  where R8_1  is null or R8_2 is null
 update quran_data set Q9=null  where R9_1  is null or R9_2 is null
 update quran_data set Q10=null where R10_1 is null or R10_2 is null
 
-
+-- مثال
 select * from quran_data where R1_1=1 and R5_2 is null
 and reading not like '%صلة%ميم%جمع%'
 and reading not like '%ميم%جمع%وصل%'
 and (q8=1 or r8_1=1 or r8_2=1)
  order by aya_index,id
- 
+-- مثال
+select * from quran_data where (q2=1 or r2_1=1 or r2_2=1) and page_number2=26 and ifnull(tags,'') not like '%,meemsela,%' 
+and R5_2 is null
+
+order by aya_index,id
+
 select reading,count(*) from quran_data
 group by reading
 order by count(*) desc
