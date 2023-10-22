@@ -408,3 +408,69 @@ qarees like '%هشام%'
 and
 ifnull(tags,',') not like '%waqfhamer,%'
 
+SELECT 
+	CASE WHEN Q1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q1') || ','  else '' end ||
+	CASE WHEN R1_1 IS NOT NULL AND Q1 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_1') || ', '  else '' end || 
+	CASE WHEN R1_2 IS NOT NULL AND Q1 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_2') || ', '  else '' end ||
+	CASE WHEN Q2 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q2') || ', '  else '' end ||
+	CASE WHEN R2_1 IS NOT NULL AND Q2 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R2_1') || ', '  else '' end ||
+	CASE WHEN R2_2 IS NOT NULL AND Q2 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R2_2') || ', '  else '' end ||
+	CASE WHEN Q3 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q3') || ', '  else '' end ||
+	CASE WHEN R3_1 IS NOT NULL AND Q3 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R3_1') || ', '  else '' end ||
+	CASE WHEN R3_2 IS NOT NULL AND Q3 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R3_2') || ', '  else '' end ||
+	CASE WHEN Q4 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q4') || ', '  else '' end ||
+	CASE WHEN R4_1 IS NOT NULL AND Q4 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R4_1') || ', '  else '' end ||
+	CASE WHEN R4_2 IS NOT NULL AND Q4 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R4_2') || ', '  else '' end ||
+	CASE WHEN Q5 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q5') || ', '  else '' end ||
+	CASE WHEN R5_1 IS NOT NULL AND Q5 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R5_1') || ', '  else '' end ||
+	CASE WHEN R5_2 IS NOT NULL AND Q5 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R5_2') || ', '  else '' end ||
+	CASE WHEN Q6 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q6') || ', '  else '' end ||
+	CASE WHEN R6_1 IS NOT NULL AND Q6 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R6_1') || ', '  else '' end ||
+	CASE WHEN R6_2 IS NOT NULL AND Q6 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R6_2') || ', '  else '' end ||
+	CASE WHEN Q7 IS NOT NULL   THEN (SELECT name FROM qareemaster WHERE qkey = 'Q7') || ', '  else '' end ||
+	CASE WHEN R7_1 IS NOT NULL AND Q7 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R7_1') || ', '  else '' end ||
+	CASE WHEN R7_2 IS NOT NULL AND Q7 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R7_2') || ', '  else '' end ||
+	CASE WHEN Q8 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q8') || ', '  else '' end ||
+	CASE WHEN R8_1 IS NOT NULL AND Q8 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R8_1') || ', '  else '' end ||
+	CASE WHEN R8_2 IS NOT NULL AND Q8 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R8_2') || ', '  else '' end ||
+	CASE WHEN Q9 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q9') || ', '  else '' end ||
+	CASE WHEN R9_1 IS NOT NULL AND Q9 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R9_1') || ', '  else '' end ||
+	CASE WHEN R9_2 IS NOT NULL AND Q9 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R9_2') || ', '  else '' end ||
+	CASE WHEN Q10 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q10') || ', '  else '' end ||
+	CASE WHEN R10_1 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_1') || ', '  else '' end ||
+	CASE WHEN R10_2 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_2') || ', '  else '' end 
+as all_qa,qarees,*
+
+FROM quran_data;
+
+
+update quran_data set qareesrest = 	CASE WHEN Q1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q1') || ','  else '' end ||
+	CASE WHEN R1_1 IS NOT NULL AND Q1 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_1') || ', '  else '' end || 
+	CASE WHEN R1_2 IS NOT NULL AND Q1 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_2') || ', '  else '' end ||
+	CASE WHEN Q2 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q2') || ', '  else '' end ||
+	CASE WHEN R2_1 IS NOT NULL AND Q2 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R2_1') || ', '  else '' end ||
+	CASE WHEN R2_2 IS NOT NULL AND Q2 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R2_2') || ', '  else '' end ||
+	CASE WHEN Q3 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q3') || ', '  else '' end ||
+	CASE WHEN R3_1 IS NOT NULL AND Q3 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R3_1') || ', '  else '' end ||
+	CASE WHEN R3_2 IS NOT NULL AND Q3 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R3_2') || ', '  else '' end ||
+	CASE WHEN Q4 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q4') || ', '  else '' end ||
+	CASE WHEN R4_1 IS NOT NULL AND Q4 IS NULL  THEN (SELECT name FROM qareemaster WHERE qkey = 'R4_1') || ', '  else '' end ||
+	CASE WHEN R4_2 IS NOT NULL AND Q4 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R4_2') || ', '  else '' end ||
+	CASE WHEN Q5 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q5') || ', '  else '' end ||
+	CASE WHEN R5_1 IS NOT NULL AND Q5 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R5_1') || ', '  else '' end ||
+	CASE WHEN R5_2 IS NOT NULL AND Q5 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R5_2') || ', '  else '' end ||
+	CASE WHEN Q6 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q6') || ', '  else '' end ||
+	CASE WHEN R6_1 IS NOT NULL AND Q6 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R6_1') || ', '  else '' end ||
+	CASE WHEN R6_2 IS NOT NULL AND Q6 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R6_2') || ', '  else '' end ||
+	CASE WHEN Q7 IS NOT NULL   THEN (SELECT name FROM qareemaster WHERE qkey = 'Q7') || ', '  else '' end ||
+	CASE WHEN R7_1 IS NOT NULL AND Q7 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R7_1') || ', '  else '' end ||
+	CASE WHEN R7_2 IS NOT NULL AND Q7 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R7_2') || ', '  else '' end ||
+	CASE WHEN Q8 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q8') || ', '  else '' end ||
+	CASE WHEN R8_1 IS NOT NULL AND Q8 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R8_1') || ', '  else '' end ||
+	CASE WHEN R8_2 IS NOT NULL AND Q8 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R8_2') || ', '  else '' end ||
+	CASE WHEN Q9 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q9') || ', '  else '' end ||
+	CASE WHEN R9_1 IS NOT NULL AND Q9 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R9_1') || ', '  else '' end ||
+	CASE WHEN R9_2 IS NOT NULL AND Q9 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R9_2') || ', '  else '' end ||
+	CASE WHEN Q10 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q10') || ', '  else '' end ||
+	CASE WHEN R10_1 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_1') || ', '  else '' end ||
+	CASE WHEN R10_2 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_2') || ', '  else '' end
