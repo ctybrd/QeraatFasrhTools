@@ -243,6 +243,9 @@ VALUES('sakt2', 'السكت على الساكن قبل الهمزة',null,null);
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('waqfhamer','وقف هشام','حمزة',null);
 
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('haasela','صلة هاء الضمير ','ابن كثير',null);
+
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('waqfh1','تغيير الهمزة المتوسطة لحمزة وقفا','حمزة',null);
@@ -310,6 +313,10 @@ insert into tagsmaster(tag,description,qarees,category)
 VALUES('badal','ثلاثة مدل البدل',null,null);
 
 insert into tagsmaster(tag,description,qarees,category)
+VALUES('leenhamz','لين مهموز',null,null);
+
+
+insert into tagsmaster(tag,description,qarees,category)
 VALUES('ikhfaa','إخفاء عند الخاء والغين',null,null);
 
 insert into tagsmaster(tag,description,qarees,category)
@@ -351,6 +358,12 @@ where reading like '%إمالة هاء التأنيث%'
 and 
 ifnull(tags,',') not like '%imalah,%'
 
+UPDATE quran_data set tags=IFNULL(tags,',') ||'imalah,'
+where reading like '%مالة%'
+and 
+ifnull(tags,',') not like '%imalah,%'
+
+
 UPDATE quran_data set tags=IFNULL(tags,',') ||'idghak,'
 where reading like '%%غام%كبير%%'
 and 
@@ -383,7 +396,7 @@ and
 ifnull(tags,',') not like '%raatarkek,%'
 
 UPDATE quran_data set tags=IFNULL(tags,',') ||'badal,'
-where (reading like '%تثليث البدل%' or reading like '%ثلاثة البدل%')
+where (reading like '%تثليث البدل%' or reading like '%ثلاثة البدل%'  or reading like '%تثليث%بدل%'  )
 and 
 ifnull(tags,',') not like '%badal,%'
 
@@ -407,6 +420,57 @@ and
 qarees like '%هشام%'
 and
 ifnull(tags,',') not like '%waqfhamer,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'haasela,'
+where (reading like '%صلة%هاء%')
+and 
+qarees like '%كثير%'
+and
+ifnull(tags,',') not like '%haasela,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'nakl,'
+where (reading like '%نقل%')
+and 
+qarees like '%ورش%'
+and
+ifnull(tags,',') not like '%nakl,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'leenhamz,'
+where (reading like '%شباع%اللين%')
+and 
+qarees like '%ورش%'
+and
+ifnull(tags,',') not like '%leenhamz,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'ibdal,'
+where (reading like '%إبدال%همز%')
+and 
+qarees not like '%حمز%' and qarees not like '%هشام%'
+and
+ifnull(tags,',') not like '%ibdal,%'
+
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'sakt2,'
+where reading like '%سكت%' 
+and 
+qarees like '%حمزة%'
+and
+ifnull(tags,',') not like '%sakt2,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'haasakt,'
+where reading like '%هاء%سكت%' 
+and 
+qarees like '%يعقوب%'
+and
+ifnull(tags,',') not like '%haasakt,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'haadam,'
+where reading like '%ضم%هاء%ضمي%' 
+and
+ifnull(tags,',') not like '%haadam,%'
+
 
 SELECT 
 	CASE WHEN Q1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q1') || ','  else '' end ||
