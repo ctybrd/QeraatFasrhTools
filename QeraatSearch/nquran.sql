@@ -231,11 +231,30 @@ and R5_2 is null
 order by aya_index,id
 
 select reading,count(*) from quran_data
+where tags is null and ifnull(r5_2,0)=0
 group by reading
 order by count(*) desc
 
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('basmala','الفصل بين السورتين',null,null);
+
+
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('meemsela','صلة ميم الجمع وصلا','حمزة',null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('heemee','كسر الهاء والميم',null,null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('hoomoo','ضم الهاء والميم وصلا',null,null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('haaend','إثبات الياء الزائدة',null,null);
+
+insert into tagsmaster(tag,description,qarees,category)
+VALUES('yaa','فتح ياء الإضافة',null,null);
+
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('sakt2', 'السكت على الساكن قبل الهمزة',null,null);
@@ -470,6 +489,62 @@ UPDATE quran_data set tags=IFNULL(tags,',') ||'haadam,'
 where reading like '%ضم%هاء%ضمي%' 
 and
 ifnull(tags,',') not like '%haadam,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'haasokon,'
+where reading like '%قرأ بإسكان الهاء، مع ترك الوقف بهاء السكت.%' 
+and
+ifnull(tags,',') not like '%haasokon,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'heemee,'
+where reading like '%قرأ بكسر الهاء والميم وصلاً، وبكسر الهاء وإسكان الميم وقفا.%' 
+and
+ifnull(tags,',') not like '%heemee,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'hoomoo,'
+where reading like '%قرأ بضم الهاء والميم وصلاً، %' 
+and
+ifnull(tags,',') not like '%hoomoo,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'haaend,'
+where reading like '%ثبات%الياء الزائدة%' 
+and
+ifnull(tags,',') not like '%haaend,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'yaafath,'
+where reading like '%قرأ بفتح ياء الإضافة.%' 
+and
+ifnull(tags,',') not like '%yaafath,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'meemsela,'
+where reading like '%قرأ بضم ميم الجمع، ووصلها بواو لفظية.%' 
+and
+ifnull(tags,',') not like '%meemsela,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'meemsela,'
+where reading like '%قرأ بضم ميم الجمع، ووصلها بواو لفظية بخلف عنه.%' 
+and
+ifnull(tags,',') not like '%meemsela,%'
+
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'basmala,'
+where reading like '%سورتين%' 
+and
+ifnull(tags,',') not like '%basmala,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'idgham,'
+where reading like '%دغام%' 
+and
+ifnull(tags,',') not like '%idgham,%'
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'idgham,'
+where reading like '%دغم%' 
+and
+ifnull(tags,',') not like '%idgham,%
+
+
+
 
 
 SELECT 
