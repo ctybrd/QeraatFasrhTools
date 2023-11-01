@@ -33,7 +33,7 @@ cursor = connection.cursor()
 query = """
 SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora
 FROM all_qeraat
-WHERE (Q6=1 OR R6_1=1 OR R6_2=1) AND R5_2 IS NULL
+WHERE (Q6=1 OR R6_1=1 OR R6_2=1) AND R5_2 IS NULL and tags is null
 ORDER BY sora, aya, id
 """
 cursor.execute(query)
@@ -46,19 +46,15 @@ current_aya = None
 table = None  # Initialize the table to None
 color_index = 0  # Index to cycle through colors
 
+doc = Document()
 for row in cursor.fetchall():
     sora_name, aya, text_full, sub_subject, qareesrest, reading, sora = row
 
     # Convert Sora name to a three-digit number
     sora_number = str(sora-1).zfill(3)
 
-    if sora_name != current_sura:
-        # Create a new document for the new sura
-        if doc:
-            doc.save(f"./output/{sora_number}-{current_sura}.docx")
-        doc = Document()
-        current_sura = sora_name
-        current_sura_no = sora_number
+    current_sura = sora_name
+    current_sura_no = sora_number
 
     if aya != current_aya:
         # Create a new group header when the aya changes
@@ -104,8 +100,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    sora_number = str(sora-1).zfill(3)
-    doc.save(f"./output/{current_sura_no}-{current_sura}.docx")
-
+    doc.save(f"./output/Farsh.docx")
 # Close the database connection
 connection.close()
