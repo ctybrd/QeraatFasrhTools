@@ -1,6 +1,9 @@
 import sqlite3
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import RGBColor
+from docx.oxml import OxmlElement
+
 def transliterate_number(number):
     mapping = {
         '0': '٠',
@@ -16,6 +19,10 @@ def transliterate_number(number):
     }
     return ''.join(mapping.get(char, char) for char in str(number))
 
+# Define colors as RGBColor objects
+RED = RGBColor(255, 0, 0)
+GREEN = RGBColor(0, 128, 0)
+BLUE = RGBColor(0, 0, 255)
 
 # Open the SQLite database
 db_path = "E:\Qeraat\QeraatFasrhTools\QeraatSearch\qeraat_data.db"
@@ -37,24 +44,28 @@ current_sura = None
 current_sura_no = None
 current_aya = None
 table = None  # Initialize the table to None
+color_index = 0  # Index to cycle through colors
 
 for row in cursor.fetchall():
     sora_name, aya, text_full, sub_subject, qareesrest, reading, sora = row
 
+    # Convert Sora name to a three-digit number
+    sora_number = str(sora-1).zfill(3)
+
     if sora_name != current_sura:
         # Create a new document for the new sura
         if doc:
-            doc.save(f"./output/{current_sura_no}{current_sura}.docx")
+            doc.save(f"./output/{sora_number}-{current_sura}.docx")
         doc = Document()
         current_sura = sora_name
-        current_sura_no = sora
+        current_sura_no = sora_number
 
     if aya != current_aya:
         # Create a new group header when the aya changes
         if current_aya:
             doc.add_paragraph()  # Add an empty line
         current_aya = aya
-        aya_text = transliterate_number(aya)+f" ـ {text_full}"
+        aya_text = transliterate_number(aya) + f" ـ {text_full}"
         para = doc.add_paragraph(aya_text)
         para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         run = para.runs[0]
@@ -62,20 +73,8 @@ for row in cursor.fetchall():
 
         table = doc.add_table(rows=1, cols=3)
         table.autofit = False
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-                    for run in paragraph.runs:
-                        run.bold = True
 
         # Set borders for the table cells
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    for run in paragraph.runs:
-                        run.bold = True
-
         for row in table.rows:
             for cell in row.cells:
                 for element in cell._element.iter():
@@ -91,19 +90,21 @@ for row in cursor.fetchall():
                                 border.attrib['w:val'] = 'single'
                             border.attrib['w:sz'] = '8'
                             border.attrib['w:space'] = '0'
-                            border.attrib['w:color'] = 'auto'
+                            border.attrib['w:color'] = 'black'
 
     # Add the data to the current table
     row = table.add_row().cells
-    for i, content in enumerate([reading, qareesrest, sub_subject]):
+    content_list = [reading, qareesrest, sub_subject]
+    for i, content in enumerate(content_list):
         p = row[i].paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         run = p.add_run(content)
         run.bold = True
+        run.font.color.rgb = (RED, GREEN, BLUE)[i]
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/{current_sura_no}{current_sura}.docx")
+    doc.save(f"./output/{current_sura_no}-{current_sura}.docx")
 
 # Close the database connection
 connection.close()
