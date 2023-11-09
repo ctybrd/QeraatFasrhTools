@@ -613,3 +613,67 @@ update quran_data set qareesrest = 	CASE WHEN Q1 IS NOT NULL THEN (SELECT name F
 	CASE WHEN Q10 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q10') || ', '  else '' end ||
 	CASE WHEN R10_1 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_1') || ', '  else '' end ||
 	CASE WHEN R10_2 IS NOT NULL AND Q10 IS NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R10_2') || ', '  else '' end
+
+
+-- إمالة حمزة
+select page_number2,sora,aya,sub_subject,reading from quran_data where (q6=1 or R6_1=1 or R6_2=1) and (reading  like '%مالة%' or
+reading like '%أمال%'
+or
+reading like '%تقليل%'
+or reading like '%قلل%'
+)
+and reading not like '%ترك الإمالة%'
+order by aya_index,id
+
+
+
+-- وقف حمزة
+-- Create Waqf_Types table if it doesn't exist
+CREATE TABLE IF NOT EXISTS Waqf_Types (
+    id INTEGER PRIMARY KEY,
+    waqf TEXT
+);
+
+-- Insert data into Waqf_Types table from the query
+INSERT INTO Waqf_Types (waqf)
+SELECT DISTINCT SUBSTR(reading, INSTR(reading, 'وقف ب')) AS group_part
+FROM all_qeraat
+WHERE QAREES LIKE '%حمزة%' AND reading LIKE '%وقف ب%'
+GROUP BY group_part;
+
+
+
+SELECT
+    qd.page_number2,
+    wt.waqf AS waqf,
+    GROUP_CONCAT('(' || qd.aya || ',' || qd.sub_subject || ')') AS aya_and_sub_subject
+FROM
+    quran_data qd
+ JOIN
+    Waqf_Types wt ON 
+	SUBSTR(qd.reading,INSTR(qd.reading, 
+	'وقف ب'
+	)) = wt.waqf
+WHERE qd.qarees like '%حمزة%'
+GROUP BY
+    qd.page_number2,wt.waqf ;
+
+
+SELECT
+    qd.page_number2,qd.sora,
+	qd.aya,qd.qarees,
+    wt.waqf AS waqf,
+    GROUP_CONCAT('(' || qd.aya || ',' || qd.sub_subject || ')') AS aya_and_sub_subject
+FROM
+    quran_data qd
+ JOIN
+    Waqf_Types wt ON 
+	SUBSTR(qd.reading,INSTR(qd.reading, 
+	'وقف ب'
+	)) = wt.waqf
+WHERE qd.qarees like '%حمزة%'
+GROUP BY
+    qd.page_number2,qd.sora,qd.aya,wt.waqf 
+order by qd.page_number2,qd.sora,
+	qd.aya,qd.qarees desc,
+    wt.waqf;
