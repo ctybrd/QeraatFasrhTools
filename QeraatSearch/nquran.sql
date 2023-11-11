@@ -737,3 +737,50 @@ GROUP BY
   aya_index
 ORDER BY
   aya_index;
+
+
+
+CREATE VIEW shmrly_all as select *, (select text from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text, (select text_full from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text_full, (select text from book_qortoby where aya_index = mosshf_shmrly.aya_index) qortoby, (select text from book_e3rab where aya_index = mosshf_shmrly.aya_index) e3rab, (select text from book_katheer where aya_index = mosshf_shmrly.aya_index) katheer, (select text from book_moyassar where aya_index = mosshf_shmrly.aya_index) moyassar, (select text from book_sa3dy where aya_index = mosshf_shmrly.aya_index) sa3dy, (select text from book_tabary where aya_index = mosshf_shmrly.aya_index) tabary, (select text from book_baghawy where aya_index = mosshf_shmrly.aya_index) baghawy, (select text from book_m3any where aya_index = mosshf_shmrly.aya_index) m3any, (select text from book_tanweer where aya_index = mosshf_shmrly.aya_index) tanweer, (select text from book_english where aya_index = mosshf_shmrly.aya_index) english , (select text from book_nozol where aya_index = mosshf_shmrly.aya_index) nozol , (select text from book_waseet where aya_index = mosshf_shmrly.aya_index) waseet , (select text from book_mokhtsr where aya_index = mosshf_shmrly.aya_index) mokhtsr, (select text from book_jlalin where aya_index = mosshf_shmrly.aya_index) jlalin,
+(select text from book_tayseer10 where aya_index = mosshf_shmrly.aya_index) tayseer10
+,(select text from book_qwarsh where aya_index = mosshf_shmrly.aya_index) qwarsh
+,(select text from book_qhamza where aya_index = mosshf_shmrly.aya_index) qhamza
+ from mosshf_shmrly
+
+
+ CREATE VIEW madina_all as select *, (select text from book_quran where aya_index = mosshf_madina.aya_index) aya_text, (select text_full from book_quran where aya_index = mosshf_madina.aya_index) aya_text_full, (select text from book_qortoby where aya_index = mosshf_madina.aya_index) qortoby, (select text from book_e3rab where aya_index = mosshf_madina.aya_index) e3rab, (select text from book_katheer where aya_index = mosshf_madina.aya_index) katheer, (select text from book_moyassar where aya_index = mosshf_madina.aya_index) moyassar, (select text from book_sa3dy where aya_index = mosshf_madina.aya_index) sa3dy, (select text from book_tabary where aya_index = mosshf_madina.aya_index) tabary, (select text from book_baghawy where aya_index = mosshf_madina.aya_index) baghawy, (select text from book_m3any where aya_index = mosshf_madina.aya_index) m3any, (select text from book_tanweer where aya_index = mosshf_madina.aya_index) tanweer, (select text from book_english where aya_index = mosshf_madina.aya_index) english , (select text from book_nozol where aya_index = mosshf_madina.aya_index) nozol,
+(select text from book_waseet where aya_index = mosshf_madina.aya_index) waseet, (select text from book_mokhtsr where aya_index = mosshf_madina.aya_index) mokhtsr, (select text from book_jlalin where aya_index = mosshf_madina.aya_index) jlalin ,(select text from book_tayseer10 where aya_index = mosshf_madina.aya_index) tayseer10
+,(select text from book_qwarsh where aya_index = mosshf_madina.aya_index) qwarsh
+,(select text from book_qhamza where aya_index = mosshf_madina.aya_index) qhamza from mosshf_madina
+
+
+
+-- تقطيع الكلمات النتيجة بناء على وجود التشكيل
+UPDATE quran_data
+SET readingresult = TRIM(
+    SUBSTR(
+        reading,
+        INSTR(reading, '(') + 1,
+        INSTR(reading, ')') - INSTR(reading, '(') - 1
+    )
+)
+WHERE reading LIKE '%(%َ%)%' OR
+      reading LIKE '%(%ُ%)%' OR
+      reading LIKE '%(%ِ%)%' OR
+      reading LIKE '%(%ْ%)%' OR
+      reading LIKE '%(%ّ%)%';
+
+
+UPDATE quran_data
+SET readingresult = TRIM(
+    SUBSTR(
+        reading,
+        INSTR(reading, '(') + 1,
+        INSTR(reading, ')') - INSTR(reading, '(') - 1
+    )
+)
+WHERE (reading LIKE 'قرؤوا (%' 
+OR reading LIKE 'قرأ (%');
+
+
+select reading ,readingresult from quran_data 
+where readingresult is not null
