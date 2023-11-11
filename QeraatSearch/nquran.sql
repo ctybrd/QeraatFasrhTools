@@ -677,3 +677,33 @@ GROUP BY
 order by qd.page_number2,qd.sora,
 	qd.aya,qd.qarees desc,
     wt.waqf;
+
+-- فرش حمزة للمراجعة
+select page_number2,sora,aya,sub_subject,reading,Q6,r6_1,r6_2 from all_qeraat where qareesrest like '%حمزة%' 
+AND
+R5_2 is NULL
+and reading not like '%ترك%غنة%'
+and ifnull(tags,'') not like '%basmala%'
+and ifnull(tags,'') not like '%sakt%'
+and ifnull(tags,'') not like '%imalah%'
+and ifnull(tags,'') not like '%haadam%'
+and ifnull(tags,'') not like '%waqf%'
+and ifnull(tags,'') not like '%hoomo%'
+
+and sub_subject not like '%صراط%'
+order by aya_index,id
+
+
+
+-- create book for quran holder
+
+select aya_index,group_concat('<b>' || sub_subject ||'</b> : ' ||
+case when q6 is not NULL then ' ' else case when r6_1 is not null then 'خلف '
+else 'خلاد ' 
+end end ||
+ reading ) as text from ALL_qeraat
+where qareesrest like '%حمزة%' 
+and 
+ifnull(r5_2,0)=0
+group by aya_index
+order by aya_index
