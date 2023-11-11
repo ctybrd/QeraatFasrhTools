@@ -784,3 +784,33 @@ OR reading LIKE 'قرأ (%');
 
 select reading ,readingresult from quran_data 
 where readingresult is not null
+
+
+-- استخراج وقف حمزة نهايات الآيات
+-- استخراج وقف حمزة نهايات الآيات
+SELECT rawword,surah as sora,ayah as aya from words 
+where wordindex in(select max(wordindex) from words group by surah,ayah)
+
+and( rawword like '%أ%'
+or
+rawword like '%إ%'
+or
+rawword like '%ؤ%'
+or 
+rawword like '%ء%'
+or
+rawword like '%ئ%'
+or
+rawword like '%آ%'
+)
+
+select sora,aya,page_number2,sub_subject,reading from quran_data
+ 
+where qareesrest like '%حمزة%' 
+AND
+ exists (select 1 from hamzaend where hamzaend.sora=quran_data.sora and 
+hamzaend.aya=quran_data.aya and quran_data.sub_subject like '%' || hamzaend.rawword ||'%' ) 
+
+order by 
+aya_index,id
+
