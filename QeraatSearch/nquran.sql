@@ -697,13 +697,43 @@ order by aya_index,id
 
 -- create book for quran holder
 
-select aya_index,group_concat('<b>' || sub_subject ||'</b> : ' ||
-case when q6 is not NULL then ' ' else case when r6_1 is not null then 'خلف '
-else 'خلاد ' 
-end end ||
- reading ) as text from ALL_qeraat
-where qareesrest like '%حمزة%' 
-and 
-ifnull(r5_2,0)=0
-group by aya_index
-order by aya_index
+SELECT
+  aya_index,
+  GROUP_CONCAT('<b>' || sub_subject || '</b> : ' ||
+    CASE
+      WHEN q6 IS NOT NULL THEN ' '
+      ELSE
+        CASE
+          WHEN r6_1 IS NOT NULL THEN 'خلف '
+          ELSE 'خلاد '
+        END
+    END || REPLACE(REPLACE(REPLACE(REPLACE(reading, 'قرأ ', ''), 'قرؤوا ', ''), 'بلا خلاف عنه', ''), 'حرفا مديا من جنس حركة ما قبلها', '')) AS text
+FROM
+  ALL_qeraat
+WHERE
+  qareesrest LIKE '%حمزة%'
+  AND IFNULL(r5_2, 0) = 0
+    AND IFNULL(tags, '') NOT LIKE '%basmala%'
+GROUP BY
+  aya_index
+ORDER BY
+  aya_index;
+
+
+
+
+SELECT
+  aya_index,
+  GROUP_CONCAT('<b>' || sub_subject || '</b> : ' ||
+   REPLACE(REPLACE(REPLACE(REPLACE(reading, 'قرأ ', ''), 'قرؤوا ', ''), 'بلا خلاف عنه', ''), 
+   'حرفا مديا من جنس حركة ما قبلها', '')) AS text
+FROM
+  ALL_qeraat
+WHERE
+  R1_2 IS NOT NULL
+  AND IFNULL(r5_2, 0) = 0
+  AND IFNULL(tags, '') NOT LIKE '%basmala%'
+GROUP BY
+  aya_index
+ORDER BY
+  aya_index;
