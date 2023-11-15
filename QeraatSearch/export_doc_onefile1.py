@@ -31,9 +31,15 @@ cursor = connection.cursor()
 
 # Execute the SQLite query
 query = """
-SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora FROM all_qeraat WHERE qareesrest LIKE '%سوسي%'  
-AND reading like '%غام%كبير%'
-order by aya_index,id
+SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora 
+FROM all_qeraat 
+WHERE  
+    (
+        (reading LIKE '%همز%الأولى%' OR reading LIKE '%همز%الثانية%' OR reading LIKE '%همزت%')
+        AND sub_subject LIKE '% %'
+    )
+    order by aya_index,id;
+
 """
 cursor.execute(query)
 
@@ -51,10 +57,15 @@ for row in cursor.fetchall():
 
     # Convert Sora name to a three-digit number
     sora_number = str(sora-1).zfill(3)
-
+    if current_sura_no != sora_number:
+        para = doc.add_paragraph(f"سورة {sora_name}")
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = para.runs[0]
+        run.font.color.rgb = (RED, GREEN, BLUE)[0]
+        run.bold = True
     current_sura = sora_name
     current_sura_no = sora_number
-
+    
     if aya != current_aya:
         # Create a new group header when the aya changes
         if current_aya:
@@ -99,6 +110,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/SosiIdgham.docx")
+    doc.save(f"./output/Hamza2Words.docx")
 # Close the database connection
 connection.close()

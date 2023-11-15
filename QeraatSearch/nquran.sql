@@ -814,3 +814,14 @@ hamzaend.aya=quran_data.aya and quran_data.sub_subject like '%' || hamzaend.raww
 order by 
 aya_index,id
 
+#الإدغام الكبير للسوسي
+SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora FROM all_qeraat WHERE qareesrest LIKE '%سوسي%'  
+AND reading like '%غام%كبير%'
+order by aya_index,id
+
+#الهمز من الهمزات
+SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora FROM all_qeraat 
+WHERE  ((reading like '%همز%الأولى%') or (reading like '%همز%الثانية') or (reading like '%همزت%')
+) and (reading like '% %')
+
+order by aya_index,id
