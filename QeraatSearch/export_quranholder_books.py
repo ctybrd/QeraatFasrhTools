@@ -40,13 +40,13 @@ def create_and_insert_table(conn, table_name, columns, data):
 
 # Connect to the databases
 conn_data_v16 = sqlite3.connect('./data_v16.db')
-db_path = "E:\Qeraat\QeraatFasrhTools\QeraatSearch\qeraat_data.db"
+db_path = "./qeraat_data.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 columns = 'aya_index INTEGER, text TEXT'
 
 # Read settings from the JSON file
-with open('./books_settings.json', 'r') as file:
+with open('./books_settings.json', 'r', encoding='utf-8') as file:
     settings = json.load(file)
 
 # Loop through settings
