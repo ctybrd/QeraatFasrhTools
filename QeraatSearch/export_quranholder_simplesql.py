@@ -117,6 +117,23 @@ settings=[
             " IFNULL(tags, '') NOT LIKE '%basmala%' ",       
         ]
     },
+    {
+        "table_name": "book_all10",
+        "sql": "SELECT aya_index, sub_subject, readingresult, qarees  || '  ' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "filtering_conditions": [
+        "reading <> 'قرؤوا بفتح هاء التأنيث.'",
+        "reading <> 'وقف بترك هاء السكت.'",
+        "reading <> 'قرؤوا بترك صلة ميم الجمع.'",
+        "Not ((reading like '%بتحقيق الهمز%') and (qarees='باقي الرواة'))",
+        "Not ((reading like '%بتحقيق الهمز%') and (qarees='قرؤوا بترك السكت مع تحقيق الهمزة وصلاً ووقفا.'))",
+        "Not ((reading like '%بتحقيق الهمز%') and (qarees='قرؤوا بترك السكت، وإسكان ميم الجمع وصلاً ووقفا.'))"
+        
+        
+        
+        
+          
+        ]
+    },
 
   
 ]
@@ -126,7 +143,9 @@ replacements = {
             ('قرأ', ''),
             ('قرؤوا', ''),
             ('بلا خلاف عنه', ''),
-            ('حرفا مديا من جنس حركة ما قبلها', '')
+            ('حرفا مديا من جنس حركة ما قبلها', ''),
+            ('بالنقل وصلاً ووقفا','بالنقل'),
+            ('خلافا لجمهور القراء','')
         ],
         'book_qqalon': [
 
@@ -135,10 +154,9 @@ replacements = {
   
         ],
         'book_qwarsh': [
-            ('بالنقل وصلاً ووقفا','بالنقل')
         ],
         'book_qibnkather': [
-            ('خلافا لجمهور القراء','')
+
         ]
       }
 
