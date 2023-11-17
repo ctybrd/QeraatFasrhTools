@@ -35,9 +35,12 @@ SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora
 FROM all_qeraat 
 WHERE  
     (
-        (reading LIKE '%همز%الأولى%' OR reading LIKE '%همز%الثانية%' OR reading LIKE '%همزت%')
-        AND sub_subject LIKE '% %'
-    )
+
+ R1_1 IS NOT NULL AND 
+ IFNULL(r5_2, 0) = 0 
+ AND iFNULL(tags, '') NOT LIKE '%basmala%' 
+ AND  reading NOT LIKE 'قرأ بصلة ميم الجمع وصل%' 
+   )
     order by aya_index,id;
 
 """
@@ -110,6 +113,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/Hamza2Words.docx")
+    doc.save(f"./output/QALOON.docx")
 # Close the database connection
 connection.close()
