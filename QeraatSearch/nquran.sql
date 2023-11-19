@@ -249,8 +249,8 @@ VALUES('heemee','كسر الهاء والميم',null,null);
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('hoomoo','ضم الهاء والميم وصلا',null,null);
 
-insert into tagsmaster(tag,description,qarees,category)
-VALUES('haaend','إثبات الياء الزائدة',null,null);
+	insert into tagsmaster(tag,description,qarees,category)
+	VALUES('yaaend','إثبات الياء الزائدة',null,null);
 
 insert into tagsmaster(tag,description,qarees,category)
 VALUES('yaa','فتح ياء الإضافة',null,null);
@@ -506,10 +506,10 @@ and
 ifnull(tags,',') not like '%hoomoo,%'
 
 
-UPDATE quran_data set tags=IFNULL(tags,',') ||'haaend,'
+UPDATE quran_data set tags=IFNULL(tags,',') ||'`,'
 where reading like '%ثبات%الياء الزائدة%' 
 and
-ifnull(tags,',') not like '%haaend,%'
+ifnull(tags,',') not like '%yaaend,%'
 
 UPDATE quran_data set tags=IFNULL(tags,',') ||'yaafath,'
 where reading like '%قرأ بفتح ياء الإضافة.%' 
