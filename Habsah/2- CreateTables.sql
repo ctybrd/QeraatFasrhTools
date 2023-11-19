@@ -1,0 +1,50 @@
+CREATE TABLE dbo.Recitators (
+	Id INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(50) NOT NULL,
+	ParentId INT NULL FOREIGN KEY REFERENCES Recitators(Id)
+)
+
+CREATE TABLE dbo.Chapters (
+	Id INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(50) NOT NULL
+)
+
+CREATE TABLE dbo.Positions (
+	Id INT NOT NULL PRIMARY KEY,
+	Word NVARCHAR(300) NOT NULL,
+	ChapterId INT NOT NULL FOREIGN KEY REFERENCES Chapters(Id),
+	Verse INT NOT NULL,
+	MadinaPage INT NOT NULL,
+	ShemerlyPage INT NOT NULL
+)
+
+CREATE TABLE dbo.Differences (
+	Id INT NOT NULL PRIMARY KEY,
+	Difference NVARCHAR(500) NULL,
+	Description NVARCHAR(1000) NULL,
+	IsRule BIT NULL
+)
+
+CREATE TABLE dbo.PositionDifferences (
+	Id INT NOT NULL PRIMARY KEY,
+	PositionId INT NOT NULL FOREIGN KEY REFERENCES Positions(Id),
+	DifferenceId INT NOT NULL FOREIGN KEY REFERENCES Differences(Id)
+)
+
+CREATE TABLE dbo.DifferenceRecitators (
+	Id INT NOT NULL PRIMARY KEY,
+	PositionDifferenceId INT NOT NULL FOREIGN KEY REFERENCES PositionDifferences(Id),
+	RecitatorId INT NOT NULL FOREIGN KEY REFERENCES Recitators(Id)
+)
+
+CREATE TABLE dbo.DifferenceCategories (
+	Id INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(50) NULL,
+	Description NVARCHAR(200) NOT NULL
+)
+
+CREATE TABLE dbo.DifferenceTags (
+	Id INT NOT NULL PRIMARY KEY,
+	DifferenceId INT NOT NULL FOREIGN KEY REFERENCES Differences(Id),
+	DifferenceCategoryId INT NOT NULL FOREIGN KEY REFERENCES DifferenceCategories(Id)
+)

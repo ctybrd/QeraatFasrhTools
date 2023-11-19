@@ -1,0 +1,2 @@
+CREATE DATABASE Recitations
+COLLATE Arabic_CI_AI_KS_WS;

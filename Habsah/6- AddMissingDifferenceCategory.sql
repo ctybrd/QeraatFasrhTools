@@ -1,0 +1,1 @@
+﻿INSERT INTO DifferenceCategories(Id, [Name], [Description]) VALUES((SELECT ISNULL(MAX(Id), 0) + 1 FROM dbo.DifferenceCategories), 'haaend', 'ياءات الزوائد')
