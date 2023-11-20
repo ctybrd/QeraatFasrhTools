@@ -94,7 +94,7 @@ WITH DuplicateRows AS (
         sub_subject,
         reading,
         qarees,
-        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index,aya_index, sub_subject, reading, qarees) AS RowNum,
+        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index, sub_subject, reading, qarees) AS RowNum,
         COUNT(*) as  DupCount
     FROM 
         quran_data
@@ -143,3 +143,11 @@ WHERE
         WHERE 
             RowNum > 1
     );
+
+select * from quran_data  as d
+WHERE exists(select 1 as a from quran_data q where  q.aya_index=d.aya_index and q.sub_subject=d.sub_subject 
+and q.reading = d.reading and q.qarees=d.qarees and d.id<>q.id)
+        and count_words is null
+
+
+
