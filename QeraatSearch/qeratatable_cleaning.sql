@@ -86,3 +86,50 @@ delete from quran_data where reading ='بترك السكت، وإسكان ميم
 
 
 
+--- to delete duplicates
+
+WITH DuplicateRows AS (
+    SELECT 
+        aya_index,
+        sub_subject,
+        reading,
+        qarees,
+        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index) AS RowNum,
+        COUNT(*) OVER (PARTITION BY aya_index, sub_subject, reading, qarees) AS DupCount
+    FROM 
+        quran_data
+    GROUP BY 
+        aya_index, sub_subject, reading, qarees
+    HAVING 
+        COUNT(*) > 1
+)
+UPDATE DuplicateRows
+SET 
+    sub_subject = CASE 
+                    WHEN DupCount = 2 THEN sub_subject || ' (معا)'
+                    WHEN DupCount > 2 THEN sub_subject || ' (جميعا)'
+                  END,
+    reading = CASE 
+                WHEN DupCount = 2 THEN reading || ' (معا)'
+                WHEN DupCount > 2 THEN reading || ' (جميعا)'
+              END,
+    qarees = CASE 
+                WHEN DupCount = 2 THEN qarees || ' (معا)'
+                WHEN DupCount > 2 THEN qarees || ' (جميعا)'
+             END
+WHERE 
+    RowNum = 1;
+
+DELETE FROM quran_data
+WHERE 
+    (aya_index, sub_subject, reading, qarees) IN (
+        SELECT 
+            aya_index,
+            sub_subject,
+            reading,
+            qarees
+        FROM 
+            DuplicateRows
+        WHERE 
+            RowNum > 1
+    );
