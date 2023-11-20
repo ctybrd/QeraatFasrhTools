@@ -86,16 +86,16 @@ delete from quran_data where reading ='بترك السكت، وإسكان ميم
 
 
 
---- to delete duplicates
-
+--- to delete duplicates case when count_words is null then '' when count_words =2 the معا else 'جميعا' end 
+-- 
 WITH DuplicateRows AS (
     SELECT 
         aya_index,
         sub_subject,
         reading,
         qarees,
-        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index) AS RowNum,
-        COUNT(*) OVER (PARTITION BY aya_index, sub_subject, reading, qarees) AS DupCount
+        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index,aya_index, sub_subject, reading, qarees) AS RowNum,
+        COUNT(*) as  DupCount
     FROM 
         quran_data
     GROUP BY 
@@ -103,15 +103,33 @@ WITH DuplicateRows AS (
     HAVING 
         COUNT(*) > 1
 )
-UPDATE DuplicateRows
+UPDATE quran_data
 SET 
-    count_read = CASE 
-                    WHEN DupCount = 2 THEN sub_subject || ' (معا)'
-                    WHEN DupCount > 2 THEN sub_subject || ' (جميعا)'
-                  END
+    count_words = DupCount
+FROM DuplicateRows
 WHERE 
-    RowNum = 1;
+    quran_data.aya_index = DuplicateRows.aya_index
+    AND quran_data.sub_subject = DuplicateRows.sub_subject
+    AND quran_data.reading = DuplicateRows.reading
+    AND quran_data.qarees = DuplicateRows.qarees
+    AND DuplicateRows.RowNum = 1;
 
+-- delete duplicates 
+WITH DuplicateRows AS (
+    SELECT 
+        aya_index,
+        sub_subject,
+        reading,
+        qarees,
+        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index,aya_index, sub_subject, reading, qarees) AS RowNum,
+        COUNT(*) as  DupCount
+    FROM 
+        quran_data
+    GROUP BY 
+        aya_index, sub_subject, reading, qarees
+    HAVING 
+        COUNT(*) > 1
+)
 DELETE FROM quran_data
 WHERE 
     (aya_index, sub_subject, reading, qarees) IN (
