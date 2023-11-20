@@ -105,18 +105,10 @@ WITH DuplicateRows AS (
 )
 UPDATE DuplicateRows
 SET 
-    sub_subject = CASE 
+    count_read = CASE 
                     WHEN DupCount = 2 THEN sub_subject || ' (معا)'
                     WHEN DupCount > 2 THEN sub_subject || ' (جميعا)'
-                  END,
-    reading = CASE 
-                WHEN DupCount = 2 THEN reading || ' (معا)'
-                WHEN DupCount > 2 THEN reading || ' (جميعا)'
-              END,
-    qarees = CASE 
-                WHEN DupCount = 2 THEN qarees || ' (معا)'
-                WHEN DupCount > 2 THEN qarees || ' (جميعا)'
-             END
+                  END
 WHERE 
     RowNum = 1;
 
