@@ -158,58 +158,35 @@ qarees='باقي الرواة'
 
 
 --- to delete duplicates case when count_words is null then '' when count_words =2 the معا else 'جميعا' end 
--- 
+-- count_words  = عدد مرات تكرار الكلمة في نفس الآية
+-- sub_sno  = ترتيب الكلمة ضمن مرات تكرارها
+-- وبالتالي لإخفاء التكرار يتم عرض السطور التي رقمها 1 فقط
+
 WITH DuplicateRows AS (
     SELECT 
         aya_index,
         sub_subject,
         reading,
         qarees,
+		id,
         ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index, sub_subject, reading, qarees) AS RowNum,
-        COUNT(*) as  DupCount
+		count(*) OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index, sub_subject, reading, qarees) AS dupcount
     FROM 
         quran_data
-    GROUP BY 
-        aya_index, sub_subject, reading, qarees
-    HAVING 
-        COUNT(*) > 1
 )
+
 UPDATE quran_data
-SET 
-    count_words = DupCount
+ SET   count_words = dupcount,sub_sno=RowNum
 FROM DuplicateRows
 WHERE 
     quran_data.aya_index = DuplicateRows.aya_index
-    AND quran_data.sub_subject = DuplicateRows.sub_subject
-    AND quran_data.reading = DuplicateRows.reading
-    AND quran_data.qarees = DuplicateRows.qarees
-    AND DuplicateRows.RowNum = 1;
+ and quran_data.id=DuplicateRows.id
+	;
 
--- delete duplicates 
--- WITH DuplicateRows AS (
---     SELECT 
---         aya_index,
---         sub_subject,
---         reading,
---         qareesrest,
---         ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qareesrest ORDER BY aya_index, sub_subject, reading, qareesrest) AS RowNum
---     FROM 
---         quran_data
--- )
--- DELETE FROM quran_data
--- WHERE 
---     (aya_index, sub_subject, reading, qareesrest) IN (
---         SELECT 
---             aya_index,
---             sub_subject,
---             reading,
---             qareesrest
---         FROM 
---             DuplicateRows
---         WHERE 
---             RowNum > 1
---     );
 
+select sub_subject,sub_sno,
+case when count_words =1 then '' when count_words =2 THEN 'معا' else 'جميعا' end as extra
+  from quran_data where sub_sno=1 order by aya_index,id
 
 
 
