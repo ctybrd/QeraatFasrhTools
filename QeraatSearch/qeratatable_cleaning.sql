@@ -1,4 +1,3 @@
-
 select reading,count(*)
 from quran_data group by reading order by count(*) desc
 
@@ -19,7 +18,7 @@ qareesrest='نافع,ابن كثير, أبو عمرو, ابن عامر, عاصم
 -- حذف عكس صلة ميم الجمع
 
 delete from quran_data where 
-qareesrest='باقي الرواة' 
+qarees='باقي الرواة' 
 and reading ='بترك صلة ميم الجمع.'
 
 -- حذف عكس إمالة هاء التأنيث
@@ -32,16 +31,64 @@ and reading ='بفتح هاء التأنيث.'
 -- نافع,ابن كثير, أبو عمرو, ابن عامر, عاصم, حمزة, أبو جعفر, يعقوب, خلف العاشر,
 -- أظهر اللام عند النون.
 
+-- اختصارات بسيطة
+UPDATE quran_data
+SET reading = replace(reading,'حرفا مديا من جنس حركة ما قبلها','');
+UPDATE quran_data
+SET reading = replace(reading,'بالنقل وصلاً ووقفا','بالنقل');
 
+UPDATE quran_data
+SET reading = replace(reading,'بالنقل مع ترك السكت','بالنقل');
+where qarees like '% ورش%'
+
+UPDATE quran_data
+SET reading = replace(reading,'بلا خلاف عنه', '');
+UPDATE quran_data
+SET reading = replace(reading,' بخلف عنه', ' بخلف');
+UPDATE quran_data
+SET qarees = replace(qarees,'_ ', ' ');
+
+UPDATE quran_data
+SET qarees = replace(qarees,'_',' ');
+
+UPDATE quran_data
+SET reading = replace(reading,'بتثليث مد البدل','ثلاثة البدل');
+UPDATE quran_data
+SET reading = replace(reading,'بتثليث البدل','ثلاثة البدل');
+UPDATE quran_data
+SET reading = replace(reading,'تثليث مد البدل','ثلاثة البدل');
+
+UPDATE quran_data
+SET reading = replace(reading,'  ',' ');
+
+UPDATE quran_data
+SET reading = replace(reading,'بإبدال الهمزة الساكنة .','بالإبدال')
+where reading ='بإبدال الهمزة الساكنة .'
 
 -- اختصار وقف حمزة وهشام
 -- UPDATE quran_data
 -- SET reading = replace(reading,' وصلاً، ووقف','وقف')
 -- where qarees like '%حمزة%' or qarees like '%هشام%'
 
+
+
 UPDATE quran_data
 SET reading = replace(reading,'بتحقيق الهمزتين وصلاً، ','')
 where qarees like '%حمزة%' or qarees like '%هشام%';
+
+UPDATE quran_data
+SET reading = replace(reading,'بتحقيق الهمزة وصلاً، ووقف','وقف')
+where qarees like '%حمزة%' or qarees like '%هشام%';
+
+UPDATE quran_data
+SET reading = replace(reading,'بتحقيق الهمزة المتطرفة وصلاً، ووقف','وقف')
+where qarees like '%حمزة%' or qarees like '%هشام%';
+
+UPDATE quran_data
+SET reading = replace(reading,'بتحقيق الهمزة وصلاً ، و','')
+where qarees like '%حمزة%' or qarees like '%هشام%';
+
+
 -- حذف عكس وقف حمزة
 delete from quran_data where reading ='بتحقيق الهمزة وصلاً ووقفا.'
 and (qareesrest ='نافع,ابن كثير, أبو عمرو, ابن عامر, عاصم, الكسائي, أبو جعفر, يعقوب, خلف العاشر,'
@@ -50,6 +97,22 @@ qarees ='باقي الرواة');
 -- حذف عكس الهمزتين
 delete from quran_data where reading ='بتحقيق الهمزتين وصلاً ووقفا.'
 and qareesrest ='ابن عامر, عاصم, حمزة, الكسائي, روح عن يعقوب, خلف العاشر,';
+
+delete from quran_data where reading ='بقصر مد البدل، مع فتح هاء التأنيث.'
+AND qarees ='باقي الرواة';
+
+delete from quran_data where reading ='بقصر مد البدل مع تحقيق الهمزة.'
+AND qarees ='باقي الرواة';
+delete from quran_data where readinG='بقصر مد البدل، مع تحقيق الهمزة، وفتح هاء التأنيث.'
+AND qarees ='باقي الرواة';
+delete from quran_data where readinG='بقصر مد البدل مع ترك هاء السكت.'
+AND qarees ='باقي الرواة';
+
+delete from quran_data where readinG='بترك الإمالة وصلا ووقفا.'
+AND qarees ='باقي الرواة';
+
+UPDATE quran_data
+SET reading = replace(reading,'ً','')
 
 -- حذف عكس ترقيق الراء لورش
 
@@ -73,15 +136,15 @@ SET reading = replace(reading,'خلافا لجمهور القراء','')
 where qarees like '%كثير%' ;
 
 -- حذف عكس السكت
-delete from quran_data where reading ='بترك السكت، وإسكان ميم الجمع وصلاً ووقفا.'
-delete from quran_data where reading ='بقصر مد البدل، وبترك السكت مع تحقيق الهمزة وصلاً ووقفا.'
-delete from quran_data where reading ='بقصر مد البدل، وترك السكت مع تحقيق الهمزة وصلاً ووقفا.'
-delete from quran_data where reading ='بتحقيق الهمزة، وترك السكت، مع قصر مد اللين.'
+delete from quran_data where reading ='بترك السكت، وإسكان ميم الجمع وصلاً ووقفا.';
+delete from quran_data where reading ='بقصر مد البدل، وبترك السكت مع تحقيق الهمزة وصلاً ووقفا.';
+delete from quran_data where reading ='بقصر مد البدل، وترك السكت مع تحقيق الهمزة وصلاً ووقفا.';
+delete from quran_data where reading ='بتحقيق الهمزة، وترك السكت، مع قصر مد اللين.';
 
-delete from quran_data where reading ='بترك السكت، مع تفخيم الراء، وقصر مد البدل، وفتح هاء التأنيث.'
+delete from quran_data where reading ='بترك السكت، مع تفخيم الراء، وقصر مد البدل، وفتح هاء التأنيث.';
 
-delete from quran_data where reading ='بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا.'
-delete from quran_data where reading ='بترك السكت، وإسكان ميم الجمع، مع قصر مد البدل.'
+delete from quran_data where reading ='بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا.';
+delete from quran_data where reading ='بترك السكت، وإسكان ميم الجمع، مع قصر مد البدل.';
 
 
 
@@ -115,39 +178,30 @@ WHERE
     AND DuplicateRows.RowNum = 1;
 
 -- delete duplicates 
-WITH DuplicateRows AS (
-    SELECT 
-        aya_index,
-        sub_subject,
-        reading,
-        qarees,
-        ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qarees ORDER BY aya_index,aya_index, sub_subject, reading, qarees) AS RowNum,
-        COUNT(*) as  DupCount
-    FROM 
-        quran_data
-    GROUP BY 
-        aya_index, sub_subject, reading, qarees
-    HAVING 
-        COUNT(*) > 1
-)
-DELETE FROM quran_data
-WHERE 
-    (aya_index, sub_subject, reading, qarees) IN (
-        SELECT 
-            aya_index,
-            sub_subject,
-            reading,
-            qarees
-        FROM 
-            DuplicateRows
-        WHERE 
-            RowNum > 1
-    );
+-- WITH DuplicateRows AS (
+--     SELECT 
+--         aya_index,
+--         sub_subject,
+--         reading,
+--         qareesrest,
+--         ROW_NUMBER() OVER (PARTITION BY aya_index, sub_subject, reading, qareesrest ORDER BY aya_index, sub_subject, reading, qareesrest) AS RowNum
+--     FROM 
+--         quran_data
+-- )
+-- DELETE FROM quran_data
+-- WHERE 
+--     (aya_index, sub_subject, reading, qareesrest) IN (
+--         SELECT 
+--             aya_index,
+--             sub_subject,
+--             reading,
+--             qareesrest
+--         FROM 
+--             DuplicateRows
+--         WHERE 
+--             RowNum > 1
+--     );
 
-select * from quran_data  as d
-WHERE exists(select 1 as a from quran_data q where  q.aya_index=d.aya_index and q.sub_subject=d.sub_subject 
-and q.reading = d.reading and q.qarees=d.qarees and d.id<>q.id)
-        and count_words is null
 
 
 

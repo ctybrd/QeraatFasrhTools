@@ -127,25 +127,21 @@ settings=[
         "Not ((reading like '%بتحقيق الهمز%') and (qarees='باقي الرواة'))",
         "Not ((reading like '%بتحقيق الهمز%') and (qarees='قرؤوا بترك السكت مع تحقيق الهمزة وصلاً ووقفا.'))",
         "Not ((reading like '%بتحقيق الهمز%') and (qarees='قرؤوا بترك السكت، وإسكان ميم الجمع وصلاً ووقفا.'))"
-        
-        
-        
-        
-          
         ]
     },
 
   
 ]
 # Define string replacements based on table_name
+            # ('قرأ', ''),
+            # ('قرؤوا', ''),
+            # ('بلا خلاف عنه', ''),
+            # ('حرفا مديا من جنس حركة ما قبلها', ''),
+            # ('بالنقل وصلاً ووقفا','بالنقل'),
+            # ('خلافا لجمهور القراء','')
 replacements = {
         'book_common': [
-            ('قرأ', ''),
-            ('قرؤوا', ''),
-            ('بلا خلاف عنه', ''),
-            ('حرفا مديا من جنس حركة ما قبلها', ''),
-            ('بالنقل وصلاً ووقفا','بالنقل'),
-            ('خلافا لجمهور القراء','')
+
         ],
         'book_qqalon': [
 
@@ -161,9 +157,9 @@ replacements = {
       }
 
 # Function to execute a query and return the result
-def execute_query(cursor, query):
-    cursor.execute(query)
-    return cursor.fetchall()
+# def execute_query(cursor, query):
+#     cursor.execute(query)
+#     return cursor.fetchall()
 
 # Function to export data to CSV
 def export_to_csv(data, filename):
@@ -173,19 +169,19 @@ def export_to_csv(data, filename):
 
 # Function to create a new table in the data_v16.db database and insert data into it
 def create_and_insert_table(conn, table_name, columns, data):
-    cursor = conn.cursor()
+    cursor1 = conn.cursor()
 
     # Drop table if exists
     drop_table_query = f"DROP TABLE IF EXISTS {table_name}"
-    cursor.execute(drop_table_query)
+    cursor1.execute(drop_table_query)
 
     # Create table
     create_table_query = f"CREATE TABLE {table_name} ({columns})"
-    cursor.execute(create_table_query)
+    cursor1.execute(create_table_query)
 
     # Insert data into the table
     insert_query = f"INSERT INTO {table_name} VALUES ({', '.join(['?' for _ in range(len(data[0]))])})"
-    cursor.executemany(insert_query, data)
+    cursor1.executemany(insert_query, data)
 
     # Commit changes
     conn.commit()
@@ -227,7 +223,7 @@ def process_result(result, table_name):
 
 # Connect to the databases
 conn_data_v16 = sqlite3.connect('./data_v16.db')
-db_path = "./qeraat_data.db"
+db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_brief.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 columns = 'aya_index INTEGER, text TEXT'
@@ -235,7 +231,6 @@ columns = 'aya_index INTEGER, text TEXT'
 for setting in settings:
     table_name = setting['table_name']
     sql = setting['sql']
-    
     # Dynamically build the WHERE clause for filtering conditions
     filtering_conditions = setting.get('filtering_conditions', [])
 
@@ -245,7 +240,9 @@ for setting in settings:
           sql = sql.replace('(1 = 1)', f'({where_clause})', 1)
             
     # Execute the SQL query
-    print(sql)
+    print(sql,table_name)
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
     processed_result = process_result(result,table_name)
