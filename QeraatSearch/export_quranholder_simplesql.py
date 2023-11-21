@@ -17,7 +17,7 @@ settings=[
 
     {
         "table_name": "book_qqalon",
-        "sql": "SELECT aya_index, sub_subject, readingresult, '' as subqaree, reading FROM quran_data WHERE  (1 = 1)  ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, '' as subqaree, reading FROM quran_data WHERE  (1 = 1)  ORDER BY aya_index, id;",
         "filtering_conditions": [
             " R1_1 IS NOT NULL ",
             " IFNULL(r5_2, 0) = 0 ",
@@ -27,7 +27,7 @@ settings=[
     },
     {
         "table_name": "book_qwarsh",
-        "sql": "SELECT aya_index, sub_subject, readingresult, '' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, '' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " R1_2 IS NOT NULL ",
             " IFNULL(r5_2, 0) = 0 ",
@@ -36,7 +36,7 @@ settings=[
     },
     {
         "table_name": "book_qibnkather",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q2 IS NOT NULL THEN '' ELSE CASE WHEN r2_1 IS NOT NULL THEN 'البزي ' ELSE 'قنبل ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q2 IS NOT NULL THEN '' ELSE CASE WHEN r2_1 IS NOT NULL THEN 'البزي ' ELSE 'قنبل ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R2_1 IS NOT NULL or R2_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -46,7 +46,7 @@ settings=[
     },
     {
         "table_name": "book_aboamro",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q3 IS NOT NULL THEN '' ELSE CASE WHEN r3_1 IS NOT NULL THEN 'ألدوري ' ELSE 'السوسي ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q3 IS NOT NULL THEN '' ELSE CASE WHEN r3_1 IS NOT NULL THEN 'ألدوري ' ELSE 'السوسي ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R3_1 IS NOT NULL or R3_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -55,7 +55,7 @@ settings=[
     },
     {
         "table_name": "book_ibnamer",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q4 IS NOT NULL THEN '' ELSE CASE WHEN r4_1 IS NOT NULL THEN 'هشام ' ELSE 'ابن ذكوان ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q4 IS NOT NULL THEN '' ELSE CASE WHEN r4_1 IS NOT NULL THEN 'هشام ' ELSE 'ابن ذكوان ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R4_1 IS NOT NULL or R4_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -64,7 +64,7 @@ settings=[
     },
     {
         "table_name": "book_sho3ba",
-        "sql": "SELECT aya_index, sub_subject, readingresult, '' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, '' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " R5_1 IS NOT NULL " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -73,7 +73,7 @@ settings=[
     },
     {
         "table_name": "book_qhamza",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q6 IS NOT NULL THEN '' ELSE CASE WHEN r6_1 IS NOT NULL THEN 'خلف ' ELSE 'خلاد ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q6 IS NOT NULL THEN '' ELSE CASE WHEN r6_1 IS NOT NULL THEN 'خلف ' ELSE 'خلاد ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " qareesrest LIKE '%حمزة%' ",
             " IFNULL(r5_2, 0) = 0 ",
@@ -82,7 +82,7 @@ settings=[
     },
     {
         "table_name": "book_kisai",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q7 IS NOT NULL THEN '' ELSE CASE WHEN r7_1 IS NOT NULL THEN 'أبوالحارث ' ELSE 'الدوري ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q7 IS NOT NULL THEN '' ELSE CASE WHEN r7_1 IS NOT NULL THEN 'أبوالحارث ' ELSE 'الدوري ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R7_1 IS NOT NULL or R7_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -91,7 +91,7 @@ settings=[
     },
     {
         "table_name": "book_abujafar",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q8 IS NOT NULL THEN '' ELSE CASE WHEN r8_1 IS NOT NULL THEN 'ابن وردان ' ELSE 'ابن جماز ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q8 IS NOT NULL THEN '' ELSE CASE WHEN r8_1 IS NOT NULL THEN 'ابن وردان ' ELSE 'ابن جماز ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R8_1 IS NOT NULL or R8_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -101,7 +101,7 @@ settings=[
     },
     {
         "table_name": "book_yaqob",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q9 IS NOT NULL THEN '' ELSE CASE WHEN r9_1 IS NOT NULL THEN 'رويس ' ELSE 'روح ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q9 IS NOT NULL THEN '' ELSE CASE WHEN r9_1 IS NOT NULL THEN 'رويس ' ELSE 'روح ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R9_1 IS NOT NULL or R9_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -110,7 +110,7 @@ settings=[
     },
     {
         "table_name": "book_khalaf",
-        "sql": "SELECT aya_index, sub_subject, readingresult, CASE WHEN q10 IS NOT NULL THEN '' ELSE CASE WHEN r10_1 IS NOT NULL THEN 'إسحق ' ELSE 'إدريس ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, CASE WHEN q10 IS NOT NULL THEN '' ELSE CASE WHEN r10_1 IS NOT NULL THEN 'إسحق ' ELSE 'إدريس ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R10_1 IS NOT NULL or R10_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
@@ -119,7 +119,7 @@ settings=[
     },
     {
         "table_name": "book_all10",
-        "sql": "SELECT aya_index, sub_subject, readingresult, qarees  || '  ' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, qarees  || '  ' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
         "reading <> 'قرؤوا بفتح هاء التأنيث.'",
         "reading <> 'وقف بترك هاء السكت.'",
@@ -192,7 +192,7 @@ def process_result(result, table_name):
     
 
     for row in result:
-        aya_index, sub_subject, readingresult, subqaree, reading = row
+        aya_index, sub_subject,  readingresult, subqaree, reading = row
 
         #Apply common replacements
         for replacement in replacements['book_common']:
@@ -233,6 +233,8 @@ for setting in settings:
     sql = setting['sql']
     # Dynamically build the WHERE clause for filtering conditions
     filtering_conditions = setting.get('filtering_conditions', [])
+    #لحذف الكلمات المكررة في نفس الآية
+    filtering_conditions += ['sub_sno =1',]
 
     if '(1 = 1)' in sql:
         where_clause = " AND ".join(filtering_conditions)
