@@ -188,5 +188,35 @@ select sub_subject,sub_sno,
 case when count_words =1 then '' when count_words =2 THEN 'معا' else 'جميعا' end as extra
   from quran_data where sub_sno=1 order by aya_index,id
 
+SELECT distinct sub_subject,reading from quran_data where 
+((reading like '%كسر%' 
+) or
+(reading like '% ضم%'
+) or
+(reading like '%فراد%'
+) or
+(reading like '%خطاب%'
+) or
+(reading like '%فتحة%'
+) or
+(reading like '%سكان%'
+) or
+(reading like '%بالياء%'
+) or
+(reading like '%بالتاء%'
+) or
+(reading like '%بتاء%'
+) or
+(reading like '%بياء%'
+)
+or
+(reading like '%بنون%'
+)
+or
+(reading like '%بالنون%'
+)
 
+)
 
+and r5_2 is null
+and readingresult is null
