@@ -65,6 +65,10 @@ UPDATE quran_data
 SET reading = replace(reading,'بإبدال الهمزة الساكنة .','بالإبدال')
 where reading ='بإبدال الهمزة الساكنة .'
 
+UPDATE quran_data
+SET reading = replace(reading,'بالإدغام مع ترك الغنة.','بإدغام بلا غنة');
+
+
 -- اختصار وقف حمزة وهشام
 -- UPDATE quran_data
 -- SET reading = replace(reading,' وصلاً، ووقف','وقف')
@@ -146,6 +150,10 @@ delete from quran_data where reading ='بترك السكت، مع تفخيم ا�
 delete from quran_data where reading ='بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا.';
 delete from quran_data where reading ='بترك السكت، وإسكان ميم الجمع، مع قصر مد البدل.';
 
+--- الغاء كلمة باقي الرواة
+update quran_data set qarees='الباقون'
+where 
+qarees='باقي الرواة' 
 
 
 
