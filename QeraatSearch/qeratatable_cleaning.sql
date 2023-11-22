@@ -51,6 +51,16 @@ SET qarees = replace(qarees,'_ ', ' ');
 UPDATE quran_data
 SET qarees = replace(qarees,'_',' ');
 
+
+UPDATE quran_data
+SET reading = replace(reading,'إبدالها حرفا مديا','الإبدال');
+
+UPDATE quran_data
+SET reading = replace(reading,'حرفا مديا من جنس حركة ما قبله','');
+
+UPDATE quran_data
+SET reading = replace(reading,'بين بين','');
+
 UPDATE quran_data
 SET reading = replace(reading,'بتثليث مد البدل','ثلاثة البدل');
 UPDATE quran_data
