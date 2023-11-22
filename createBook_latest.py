@@ -16,7 +16,7 @@ def connect_to_database(database_path):
 def retrieve_data(cursor):
     query = '''
     SELECT mj.text, ms.page_number, ms.aya_number
-    FROM book_jlalin AS mj
+    FROM book_qhamza AS mj
     JOIN mosshf_shmrly AS ms ON mj.aya_index = ms.aya_index
     '''
     cursor.execute(query)
@@ -54,7 +54,7 @@ def create_word_document(data):
 
             current_page = page_number
 
-            image_path = f'E:/Qeraat/pagesC/{current_page}.jpg'  # Replace with the actual path to the folder and image file extension
+            image_path = f'e:/pageshamza/{current_page}.png'  # Replace with the actual path to the folder and image file extension
 
             # Add frame to the image
             framed_image_path = add_frame_to_image(image_path)
@@ -98,8 +98,8 @@ def close_database_connection(connection):
     connection.close()
 
 # Main code
-database_path = 'e:/qeraat/data_v15.db'
-image_folder = 'E:/Qeraat/pagesC/'
+database_path = 'e:/qeraat/data_v16.db'
+image_folder = 'e:/pageshamza/'
 
 conn, cursor = connect_to_database(database_path)
 data = retrieve_data(cursor)
