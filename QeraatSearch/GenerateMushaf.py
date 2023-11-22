@@ -1,9 +1,9 @@
 import sqlite3
 import os
 from docx import Document
-from docx.shared import RGBColor
+from docx.shared import RGBColor, Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Inches
+from docx.shared import Cm
 
 def transliterate_number(number):
     mapping = {
@@ -58,6 +58,17 @@ conn.close()
 # Create a new Word document
 doc = Document()
 
+# Set document margins
+sections = doc.sections
+for section in sections:
+    section.top_margin = Cm(0.7)
+    section.bottom_margin = Cm(0.7)
+    section.left_margin = Cm(0.7)
+    section.right_margin = Cm(0.7)
+
+# Set font size for the entire document
+doc.styles['Normal'].font.size = Pt(13)
+
 # Iterate through all available image files
 for page_number2 in range(1, 523):  # Assuming you have 522 pages
     image_path = f'e:/pageshamza/{page_number2}.png'
@@ -67,7 +78,7 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
         # Add the image to the Word document
         paragraph = doc.add_paragraph()
         run = paragraph.add_run()
-        run.add_picture(image_path, width=Inches(4))
+        run.add_picture(image_path, width=Cm(13.97))  # A4 width is approximately 13.97 cm
         if page_number2 % 2 == 0:
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         else:
@@ -84,7 +95,7 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
                     run = paragraph.add_run()
                     formatted_aya = transliterate_number(row[1])
                     run.add_text(f"{formatted_aya} ـ ")
-                    run.font.color.rgb = RGBColor(0, 0, 0)  
+                    run.font.color.rgb = RGBColor(0, 0, 255)  
                     current_aya = row[1]
 
                 run = paragraph.add_run(f"{row[2]} : ")
@@ -92,7 +103,7 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
 
                 run = paragraph.add_run(f"{row[5]} ")
                 run.font.color.rgb = RGBColor(0, 128, 128)  
-                readingclean = row[6].replace(')',' ').replace('(',' ') +' '
+                readingclean = row[6].replace(')',' ').replace('(',' ').replace('.','')+' '
 
                 run = paragraph.add_run(f"{row[3]} {readingclean}")
                 run.font.color.rgb = RGBColor(0, 0, 0) 
