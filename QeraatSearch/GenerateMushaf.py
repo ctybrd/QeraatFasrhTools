@@ -28,13 +28,13 @@ cursor = conn.cursor()
 
 # Execute the SQL query
 query = """
-    SELECT page_number2,
-    aya, sub_subject || 
-    CASE 
+SELECT page_number2,
+    GROUP_CONCAT(aya || ' ـ ' || sub_subject || CASE 
         WHEN count_words = 1 THEN '' 
         WHEN count_words = 2 THEN ' )معا(' 
         ELSE ' )جميعا(' 
-    END as sub_subject, 
+    END, ', ') 
+		as csub_subject,
     CASE 
         WHEN q6 IS NOT NULL THEN '' 
         ELSE 
@@ -42,11 +42,13 @@ query = """
                 WHEN r6_1 IS NOT NULL THEN 'خلف ' 
                 ELSE 'خلاد ' 
             END 
-    END as subqaree,
-    sub_subject, ifnull(readingresult,'') readingresult , reading 
-    FROM quran_data 
-    WHERE qareesrest LIKE '%حمزة%' and IFNULL(r5_2, 0) = 0 
-    ORDER BY page_number2, aya, id;
+    END || reading as 
+	creading,ifnull(readingresult,''),GROUP_CONCAT(printf('%03d', sora ) ||printf('%03d', aya) || printf('%03d', id), ',') as ayas 
+FROM quran_data 
+WHERE qareesrest LIKE '%حمزة%' and IFNULL(r5_2, 0) = 0 
+    and sub_sno=1
+GROUP BY page_number2, creading,readingresult
+order by page_number2,ayas
 """
 
 cursor.execute(query)
@@ -70,7 +72,7 @@ for section in sections:
 doc.styles['Normal'].font.size = Pt(13)
 
 # Iterate through all available image files
-for page_number2 in range(1, 523):  # Assuming you have 522 pages
+for page_number2 in range(1, 5):  # Assuming you have 522 pages
     image_path = f'e:/pageshamza/{page_number2}.png'
     
     # Check if the image file exists
@@ -87,26 +89,17 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
         matching_rows = [row for row in rows if row[0] == page_number2]
         current_aya = 0
         if matching_rows:
-            paragraph = doc.add_paragraph()
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
             # Add the text to the Word document with different colors for each field
             for row in matching_rows:
-                if current_aya != row[1]:
-                    run = paragraph.add_run("   ")  # Add three space characters
-                    formatted_aya = transliterate_number(row[1])
-                    run.add_text(f"{formatted_aya} ـ ")
-                    run.font.color.rgb = RGBColor(0, 0, 255)  
-                    current_aya = row[1]
-
-                run = paragraph.add_run(f"{row[2]} : ")
+                paragraph = doc.add_paragraph()
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+                run = paragraph.add_run();
                 run.font.color.rgb = RGBColor(255, 0, 0)  
-
-                run = paragraph.add_run(f"{row[5]} ")
-                run.font.color.rgb = RGBColor(0, 128, 128)  
-                readingclean = row[6].replace(')',' ').replace('(',' ').replace('.','')+' '
-
-                run = paragraph.add_run(f"{row[3]} {readingclean}")
-                run.font.color.rgb = RGBColor(0, 0, 0) 
+                formatted_aya = transliterate_number(row[1]+ ' ')
+                run.add_text(formatted_aya)
+                run.font.color.rgb = RGBColor(0, 0, 0)  
+                readingclean = row[2].replace(')',' ').replace('(',' ').replace('.','')+' '
+                run.add_text(readingclean+ '   ')
 
         # Add a page break after each page_number2 change
         doc.add_page_break()
