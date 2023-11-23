@@ -78,21 +78,21 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
         # Add the image to the Word document
         paragraph = doc.add_paragraph()
         run = paragraph.add_run()
-        run.add_picture(image_path, width=Cm(13.97))  # A4 width is approximately 13.97 cm
+        run.add_picture(image_path, width=Cm(11.97))  # A4 width is approximately 13.97 cm
         if page_number2 % 2 == 0:
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         else:
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
         # Check if there is a corresponding row in the query
         matching_rows = [row for row in rows if row[0] == page_number2]
-        current_aya =0
+        current_aya = 0
         if matching_rows:
+            paragraph = doc.add_paragraph()
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
             # Add the text to the Word document with different colors for each field
             for row in matching_rows:
-                if current_aya !=row[1]:
-                    paragraph = doc.add_paragraph()
-                    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-                    run = paragraph.add_run()
+                if current_aya != row[1]:
+                    run = paragraph.add_run("   ")  # Add three space characters
                     formatted_aya = transliterate_number(row[1])
                     run.add_text(f"{formatted_aya} ـ ")
                     run.font.color.rgb = RGBColor(0, 0, 255)  
@@ -112,4 +112,4 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
         doc.add_page_break()
 
 # Save the Word document
-doc.save('e:/pageshamza/Combined_Document.docx')
+doc.save('e:/pageshamza/Hamzah-Shamrly-Shalaby_New.docx')
