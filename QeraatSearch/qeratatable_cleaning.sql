@@ -207,7 +207,49 @@ SELECT distinct sub_subject,reading from quran_data where
 ) or
 (reading like '% ضم%'
 ) or
+(reading like '%بضم%'
+) or
+(reading like '%مفتوحة%'
+) or
+(reading like '%مكسورة%'
+) or
+(reading like '%مشددة%'
+) or
+(reading like '%تشديد%'
+) or
+(reading like '%ساكنة%'
+) or
+(reading like '%مضمومة%'
+) or
 (reading like '%فراد%'
+) or
+(reading like '%تشديد%'
+) or
+(reading like '%تخفيف%'
+) or
+(reading like '%مخففة%'
+) or
+(reading like '%ممدودة%'
+) or
+(reading like '%زيادة%'
+) or
+(reading like '%إسكان%'
+) or
+(reading like '%بالرفع%'
+) or
+(reading like '%مبنيا%'
+) or
+(reading like '%فاعله%'
+) or
+(reading like '%نون %'
+) or
+(reading like '%نونين %'
+) or
+(reading like '%الجمع%'
+) or
+(reading like '%توحيد%'
+) or
+(reading like '%تقديم%'
 ) or
 (reading like '%خطاب%'
 ) or
@@ -229,8 +271,12 @@ or
 or
 (reading like '%بالنون%'
 )
-
+or
+(reading like '%فعل%'
 )
-
+)
+and (reading<>'بصلة ميم الجمع وصلا.') and 
+(reading <>'بصلة ميم الجمع وصلا بخلف.')
+and (reading <>'بصلة ميم الجمع وصلا مع الإشباع.')
 and r5_2 is null
 and readingresult is null
