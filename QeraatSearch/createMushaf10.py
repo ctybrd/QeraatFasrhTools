@@ -122,3 +122,4 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
 
 # Save the Word document
 doc.save('e:/pages10/Shmrly10.docx')
+
