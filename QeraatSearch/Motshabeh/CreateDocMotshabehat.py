@@ -2,6 +2,7 @@ import sqlite3
 from docx import Document
 from docx.shared import RGBColor
 from difflib import unified_diff
+from difflib import ndiff
 
 # Connect to the SQLite database
 db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/Motshabeh/motshabeh7.db"
@@ -23,16 +24,16 @@ doc = Document()
 
 # Function to compare and highlight differences
 def highlight_differences(text1, text2):
-    diff = unified_diff(text1.splitlines(), text2.splitlines())
-    result = '\n'.join(list(diff)[2:])  # Skip the diff header
+    diff = ndiff(text1.split(), text2.split())
+    result = ' '.join(list(diff))
 
-    for line in result.split('\n'):
-        if line.startswith('- '):
-            yield ('delete', line[2:])
-        elif line.startswith('+ '):
-            yield ('insert', line[2:])
+    for item in result.split():
+        if item.startswith('-'):
+            yield ('delete', item[1:])
+        elif item.startswith('+'):
+            yield ('insert', item[1:])
         else:
-            yield ('common', line)
+            yield ('common', item)
 
 # Function to add a paragraph with colored text
 def add_colored_paragraph(doc, items):
@@ -49,15 +50,11 @@ def add_colored_paragraph(doc, items):
 for row in results:
     sora_name1, aya1, text1, sora_name2, aya2, text2 = row
 
-    # Grouping information
-    doc.add_paragraph(f"Sora_name1: {sora_name1}, Aya1: {aya1}")
-    doc.add_paragraph(f"Sora_name2: {sora_name2}, Aya2: {aya2}")
-
     # Highlight differences between text1 and text2
     differences = list(highlight_differences(text1, text2))
     add_colored_paragraph(doc, differences)
 
-    # Add a separator line between groups
+    # Add a separator line between pairs
     doc.add_paragraph("\n" + "=" * 50 + "\n")
 
 # Save the document
