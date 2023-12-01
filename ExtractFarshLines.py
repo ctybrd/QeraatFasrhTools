@@ -85,7 +85,7 @@ def extract_line_comments(pdf_path):
 
 
 def create_table_sqlite():
-    conn = sqlite3.connect('E:/Qeraat/farsh_v6.db')
+    conn = sqlite3.connect('E:/Qeraat/farsh_v7.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS shmrly
                  (qaree TEXT, page_number INTEGER, color TEXT, type NUMERIC, x REAL, y REAL, width REAL)''')
@@ -106,7 +106,7 @@ Style Column Specification:
 
 
 def insert_comments_sqlite(comments,qaree_key):
-    conn = sqlite3.connect('E:/Qeraat/farsh_v6.db')
+    conn = sqlite3.connect('E:/Qeraat/farsh_v7.db')
     c = conn.cursor()
     # Delete rows with value "A" in the field "qaree"
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
@@ -154,7 +154,9 @@ def insert_comments_sqlite(comments,qaree_key):
         """, ("K", "A", "4"))
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     if (qaree_key == "M"):
+        c.execute("update shmrly set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
+        
     if qaree_key in ["C", "D", "G","P"]:
         c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
     #twice for safety
@@ -316,7 +318,7 @@ failed_colors = set()
 qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, M for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
 process_qaree_key(qaree_key)
 
-file_path = 'E:/Qeraat/farsh_v6.db'
+file_path = 'E:/Qeraat/farsh_v7.db'
 destination_folders = [
     'E:/Qeraat/Wursha_QuranHolder/other/data/',
     'E:/Qeraat/Wursha_QuranHolder/platforms/android/app/build/intermediates/assets/debug/mergeDebugAssets/www/',
@@ -326,7 +328,7 @@ destination_folders = [
 
 
 for folder in destination_folders:
-    destination_file = folder + 'farsh_v6.db'
+    destination_file = folder + 'farsh_v7.db'
     try:
         shutil.copy(file_path, destination_file)
         print(f"File copied to {destination_file} successfully.")
@@ -339,7 +341,7 @@ for folder in destination_folders:
 
 
 # #add to archive
-# zip_file_path = "E:/Qeraat/Wursha_QuranHolder/other/data/farsh_v6.db.zip"
+# zip_file_path = "E:/Qeraat/Wursha_QuranHolder/other/data/farsh_v7.db.zip"
 # with zipfile.ZipFile(zip_file_path, 'r+') as zip_file:
 #     zip_file.write(file_path, arcname='farsh_v4.db')
 print("Distinct Failed Colors:", failed_colors)
