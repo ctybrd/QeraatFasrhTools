@@ -3,9 +3,9 @@ import csv
 import shutil
 import json
 
-# Copy data_v16.db from the source folder to the current folder
-source_db_path = r'E:/Qeraat/Wursha_QuranHolder/other/data/data_v16.db'
-destination_db_path = './data_v16.db'
+# Copy data_v17.db from the source folder to the current folder
+source_db_path = r'E:/Qeraat/Wursha_QuranHolder/other/data/data_v17.db'
+destination_db_path = './data_v17.db'
 shutil.copyfile(source_db_path, destination_db_path)
 
 # Function to execute a query and return the result
@@ -19,7 +19,7 @@ def export_to_csv(data, filename):
         csv_writer = csv.writer(csvfile)
         csv_writer.writerows(data)
 
-# Function to create a new table in the data_v16.db database and insert data into it
+# Function to create a new table in the data_v17.db database and insert data into it
 def create_and_insert_table(conn, table_name, columns, data):
     cursor = conn.cursor()
 
@@ -39,7 +39,7 @@ def create_and_insert_table(conn, table_name, columns, data):
     conn.commit()
 
 # Connect to the databases
-conn_data_v16 = sqlite3.connect('./data_v16.db')
+conn_data_v17 = sqlite3.connect('./data_v17.db')
 db_path = "./qeraat_data.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
@@ -63,9 +63,9 @@ for setting in settings:
     export_to_csv(result, csv_filename)
 
     if result:
-      create_and_insert_table(conn_data_v16, table_name, columns, result)
+      create_and_insert_table(conn_data_v17, table_name, columns, result)
     else:
       print("failed "+table_name)
 # Close connections
-conn_data_v16.close()
+conn_data_v17.close()
 connection.close()

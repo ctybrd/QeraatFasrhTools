@@ -3,9 +3,9 @@ import csv
 import shutil
 import json
 
-# Copy data_v16.db from the source folder to the current folder
-source_db_path = r'E:/Qeraat/Wursha_QuranHolder/other/data/data_v16.db'
-destination_db_path = 'E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v16.db'
+# Copy data_v17.db from the source folder to the current folder
+source_db_path = r'E:/Qeraat/Wursha_QuranHolder/other/data/data_v17.db'
+destination_db_path = 'E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db'
 shutil.copyfile(source_db_path, destination_db_path)
 
 # changed to be here in py 
@@ -167,7 +167,7 @@ def export_to_csv(data, filename):
         csv_writer = csv.writer(csvfile)
         csv_writer.writerows(data)
 
-# Function to create a new table in the data_v16.db database and insert data into it
+# Function to create a new table in the data_v17.db database and insert data into it
 def create_and_insert_table(conn, table_name, columns, data):
     cursor1 = conn.cursor()
 
@@ -222,7 +222,7 @@ def process_result(result, table_name):
 
 
 # Connect to the databases
-conn_data_v16 = sqlite3.connect('E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v16.db')
+conn_data_v17 = sqlite3.connect('E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db')
 db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
@@ -255,7 +255,7 @@ for setting in settings:
 
     if processed_result:
         # Create and insert table using processed_result
-        create_and_insert_table(conn_data_v16, table_name, columns, processed_result)
+        create_and_insert_table(conn_data_v17, table_name, columns, processed_result)
     else:
         print("failed " + table_name)
 #prepare view
@@ -267,5 +267,5 @@ for table_setting in settings:
     # view_sql += subquery_sql
 print(view_sql)
 # Close connections
-conn_data_v16.close()
+conn_data_v17.close()
 connection.close()
