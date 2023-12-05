@@ -1,3 +1,13 @@
+# select page_number,text,group_concat(aya_number) ayas,
+# group_concat(ayakey) gkey,
+# case when min(aya_number)=max(aya_number) then min(aya_number) else min(aya_number)||' - ' || max(aya_number) end as ayas1
+#  from(Select printf('%03d', mosshf_shmrly.sora_number) || printf('%03d', mosshf_shmrly.aya_number)  as ayakey,book_moyassar.aya_index,book_moyassar.text,mosshf_shmrly.page_number,
+# mosshf_shmrly.aya_number,mosshf_shmrly.sora_number from book_moyassar
+# join mosshf_shmrly on book_moyassar.aya_index=mosshf_shmrly.aya_index
+# order by book_moyassar.aya_index)
+# group by page_number,text
+# order by page_number,gkey
+
 import sqlite3
 from docx import Document
 from docx.shared import Inches
