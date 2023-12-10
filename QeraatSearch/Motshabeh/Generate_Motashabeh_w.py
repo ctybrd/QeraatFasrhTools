@@ -33,7 +33,7 @@ verses = cursor.fetchall()
 total_verses = len(verses)
 
 # Set a similarity tolerance
-tolerance = 0.3
+tolerance = 0.5
 
 for i in range(total_verses - 1):  # Start from the first verse and go up to the second-to-last verse
     print(f"Processing verse {i + 1}/{total_verses}")
