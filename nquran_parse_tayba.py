@@ -39,7 +39,7 @@ cursor.execute('''
         UNIQUE(sora, aya, id)
     )
 ''')
-
+distinct_qarees_set = set()
 # Directory containing HTML files
 html_dir = r'E:/Qeraat/QeraatFasrhTools_Data/nQuran_tayba'
 all_rowa = [
@@ -185,11 +185,14 @@ for i, filename in enumerate(html_files, start=1):
                     if qarees:
                         qarees = qarees.replace(', عن,', '_عن_')
                         qarees = qarees.replace('ـ ', '_')                        
+                        qarees = qarees.replace('ـ', '_')
+                        qarees = qarees.replace('_ ', '_')
                         qarees = araby.strip_diacritics(qarees)
-                    if sub_subjects:
-                       sub_subjects = sub_subject.replace('{', '').replace('}', '')    
+                        distinct_qarees_set.update(qarees.split(','))
                     # Insert data into SQLite database with compound primary key
                     for sub_subject in sub_subjects:
+                        if sub_subject:
+                            sub_subject = sub_subject.replace('{', '').replace('}', '')    
                         cursor.execute('INSERT OR IGNORE INTO quran_data_tayba (id, sora, aya, sub_subject, qarees, reading) VALUES (?, ?, ?,?, ?, ?)',
                                        (custom_serial, sora, aya, sub_subject, qarees, reading))
                         print(f'Inserted Sora {sora}, Aya {aya}, Subject: {subject}, Sub-Subject: {sub_subject}, Page {j}, Custom Serial: {custom_serial}')
@@ -197,11 +200,21 @@ for i, filename in enumerate(html_files, start=1):
                         custom_serial += 1  # Increment custom serial within the same Sora or Aya
 
 # Commit and close the database connection
+conn.commit()
+distinct_qarees_values = list(distinct_qarees_set)
+print("------------------------")
+print("Distinct qarees values:", distinct_qarees_values)
+print("------------------------")
+for distinct_qarees_value in distinct_qarees_set:
+    cursor.execute('INSERT INTO qareemaster_tayba (name) VALUES (?)', (distinct_qarees_value,))
+
 sql ="""
 update quran_data_tayba set page_number1=(SELECT mosshf_madina.page_number from mosshf_madina where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora),
-page_number2=(SELECT mosshf_shmrly.page_number from mosshf_shmrly where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora)
+page_number2=(SELECT mosshf_shmrly.page_number from mosshf_shmrly where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora),
+aya_index=(SELECT mosshf_madina.aya_index from mosshf_madina where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora)
 """
 cursor.execute(sql)
 
+# Get distinct qarees values and print them
 conn.commit()
 conn.close()
