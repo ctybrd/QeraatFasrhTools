@@ -33,7 +33,10 @@ cursor = connection.cursor()
 query = """
 SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora
 FROM all_qeraat
-WHERE (Q6=1 OR R6_1=1 OR R6_2=1) AND R5_2 IS NULL and tags is null
+WHERE
+(q4 is not null or r4_1 is not null or r4_2 is not null) 
+AND (r5_1 is not null)
+and (r5_2 is null)
 ORDER BY sora, aya, id
 """
 cursor.execute(query)
@@ -100,6 +103,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/Farsh.docx")
+    doc.save(f"./output/IbnAmerShoba.docx")
 # Close the database connection
 connection.close()

@@ -15,7 +15,9 @@ def transliterate_number(number):
         '6': '٦',
         '7': '٧',
         '8': '٨',
-        '9': '٩'
+        '9': '٩',
+        ')': '(',
+        '(': ')'
     }
     return ''.join(mapping.get(char, char) for char in str(number))
 
@@ -36,10 +38,9 @@ FROM all_qeraat
 WHERE  
     (
 
- R1_1 IS NOT NULL AND 
- IFNULL(r5_2, 0) = 0 
- AND iFNULL(tags, '') NOT LIKE '%basmala%' 
- AND  reading NOT LIKE 'قرأ بصلة ميم الجمع وصل%' 
+(q4 is not null or r4_1 is not null or r4_2 is not null) 
+AND (r5_1 is not null)
+and (r5_2 is null)
    )
    GROUP BY reading
     order by reading;
@@ -62,7 +63,7 @@ for row in cursor.fetchall():
     table.autofit = False
     for row in table.rows:
         row = table.add_row().cells
-        content_list = [reading,transliterate_number(words)]
+        content_list = [transliterate_number(reading),transliterate_number(words)]
         for i, content in enumerate(content_list):
             p = row[i].paragraphs[0]
             p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -72,6 +73,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/QALOON_Brief.docx")
+    doc.save(f"./output/IbnAmerShoba_brief.docx")
 # Close the database connection
 connection.close()

@@ -184,6 +184,10 @@ for i, filename in enumerate(html_files, start=1):
                         reading = content  # If no match, consider the entire content as reading
                     if qarees:
                         qarees = qarees.replace(', عن,', '_عن_')
+                        qarees = qarees.replace('ـ ', '_')                        
+                        qarees = araby.strip_diacritics(qarees)
+                    if sub_subjects:
+                       sub_subjects = sub_subject.replace('{', '').replace('}', '')    
                     # Insert data into SQLite database with compound primary key
                     for sub_subject in sub_subjects:
                         cursor.execute('INSERT OR IGNORE INTO quran_data_tayba (id, sora, aya, sub_subject, qarees, reading) VALUES (?, ?, ?,?, ?, ?)',
@@ -193,17 +197,11 @@ for i, filename in enumerate(html_files, start=1):
                         custom_serial += 1  # Increment custom serial within the same Sora or Aya
 
 # Commit and close the database connection
+sql ="""
+update quran_data_tayba set page_number1=(SELECT mosshf_madina.page_number from mosshf_madina where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora),
+page_number2=(SELECT mosshf_shmrly.page_number from mosshf_shmrly where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora)
+"""
+cursor.execute(sql)
+
 conn.commit()
 conn.close()
-# remove extra رقم الآية text
-# UPDATE quran_data_tayba
-# SET subject = SUBSTR(subject, 1, INSTR(subject, '- رقم الآية:') - 1)
-# WHERE INSTR(subject, '- رقم الآية:') > 0;
-#remove curly braces
-# UPDATE quran_data_tayba
-# SET subject = REPLACE(REPLACE(subject, '{', ''), '}', ''),
-#    sub_subject = REPLACE(REPLACE(sub_subject, '{', ''), '}', '');
-
-# update quran_data_tayba set page_number1=(SELECT mosshf_madina.page_number  from mosshf_madina where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora)
-# update quran_data_tayba set page_number2=(SELECT mosshf_shmrly.page_number  
-# from mosshf_shmrly where aya_number= quran_data_tayba.aya and sora_number=quran_data_tayba.sora)
