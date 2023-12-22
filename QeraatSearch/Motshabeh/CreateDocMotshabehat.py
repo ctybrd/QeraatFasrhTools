@@ -1,61 +1,87 @@
 import sqlite3
 from docx import Document
-from docx.shared import RGBColor
-from difflib import unified_diff
-from difflib import ndiff
-
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import RGBColor, Pt, Cm
+from docx.shared import Cm
 # Connect to the SQLite database
-db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/Motshabeh/motshabeh7.db"
+def transliterate_number(number):
+    mapping = {
+        '0': '٠',
+        '1': '١',
+        '2': '٢',
+        '3': '٣',
+        '4': '٤',
+        '5': '٥',
+        '6': '٦',
+        '7': '٧',
+        '8': '٨',
+        '9': '٩',
+        '(': ')',
+        ')':'('
+    }
+    return ''.join(mapping.get(char, char) for char in str(number))
+
+
+db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/Motshabeh/motshabeh.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 
 # Execute the query
 query = """
     SELECT sora_name1, aya1, text1, sora_name2, aya2, text2
-    FROM MotshabehatU
-    GROUP BY index1
-    ORDER BY index1
+    FROM MotshabehatU_parts
+    WHERE sora_name1='البقرة' AND sora_name2='البقرة'
+    ORDER BY aya1, aya2
 """
 cursor.execute(query)
 results = cursor.fetchall()
 
 # Create a Word document
 doc = Document()
+sections = doc.sections
+for section in sections:
+    section.top_margin = Cm(0.7)
+    section.bottom_margin = Cm(0.7)
+    section.left_margin = Cm(0.7)
+    section.right_margin = Cm(0.7)
 
-# Function to compare and highlight differences
-def highlight_differences(text1, text2):
-    diff = ndiff(text1.split(), text2.split())
-    result = ' '.join(list(diff))
+# Set font size for the entire document
+doc.styles['Normal'].font.size = Pt(13)
 
-    for item in result.split():
-        if item.startswith('-'):
-            yield ('delete', item[1:])
-        elif item.startswith('+'):
-            yield ('insert', item[1:])
-        else:
-            yield ('common', item)
 
 # Function to add a paragraph with colored text
-def add_colored_paragraph(doc, items):
+def add_colored_paragraph(doc, text, color):
     paragraph = doc.add_paragraph()
-    for item_type, item_text in items:
-        run = paragraph.add_run(item_text)
-        if item_type == 'delete':
-            run.font.color.rgb = RGBColor(255, 0, 0)  # Red for deletions
-        elif item_type == 'insert':
-            run.font.color.rgb = RGBColor(0, 0, 255)  # Blue for insertions
-        # 'common' items will have the default color
+    run = paragraph.add_run(text)
+    run.font.color.rgb = color
 
 # Iterate through the results and add paragraphs to the document
+paragraph = doc.add_paragraph()
+run = paragraph.add_run("متشابهات سورة البقرة\n")
+run.font.color.rgb = RGBColor(0, 0, 0)
+
+current_aya1 = None
+
 for row in results:
     sora_name1, aya1, text1, sora_name2, aya2, text2 = row
 
-    # Highlight differences between text1 and text2
-    differences = list(highlight_differences(text1, text2))
-    add_colored_paragraph(doc, differences)
+    taya1 = transliterate_number(aya1)
+    taya2 = transliterate_number(aya2)
 
-    # Add a separator line between pairs
-    doc.add_paragraph("\n" + "=" * 50 + "\n")
+    if current_aya1 != aya1:
+        run = paragraph.add_run("=" * 50 + "\n")
+        current_aya1 = aya1
+        run = paragraph.add_run(f'{taya1} -  {text1}\n')
+        run.font.color.rgb = RGBColor(255, 0, 0)  # Red
+
+    run = paragraph.add_run(f'{taya2} -  {text2}\n')
+    run.font.color.rgb = RGBColor(0, 0, 255)  # Blue
+
+    
+
+for paragraph in doc.paragraphs:
+    paragraph.space_after = Pt(0)
+    paragraph.space_before = Pt(0)
 
 # Save the document
 doc.save('Motshabehat70.docx')

@@ -16,7 +16,9 @@ def transliterate_number(number):
         '6': '٦',
         '7': '٧',
         '8': '٨',
-        '9': '٩'
+        '9': '٩',
+        '(': ')',
+        ')':'('
     }
     return ''.join(mapping.get(char, char) for char in str(number))
 
@@ -33,7 +35,7 @@ cursor = connection.cursor()
 # Execute the SQLite query
 query = """
 SELECT sora_name, aya, text_full, sub_subject, qarees as qareesrest, reading, sora
-FROM all_qeraat_tayba
+FROM all_qeraat
 ORDER BY sora, aya, id
 
 """
@@ -110,14 +112,15 @@ for row in cursor.fetchall():
     for i, content in enumerate(content_list):
         p = row[i].paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        run = p.add_run(content)
+
+        run = p.add_run(transliterate_number(content))
         run.bold = True
         run.font.color.rgb = (RED, GREEN, BLUE)[i]
 
 # Save the last sura document
 if doc:
     output_directory = "./output/"
-    output_file = "Tayba.docx"
+    output_file = "Shatbya.docx"
     output_path = os.path.join(output_directory, output_file)
 
     # Check if the directory exists, create it if not

@@ -79,15 +79,15 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
     image_path = f'e:/pages10/{page_number2}.png'
     
     # Check if the image file exists
-    if os.path.exists(image_path):
-        # Add the image to the Word document
-        paragraph = doc.add_paragraph()
-        run = paragraph.add_run()
-        run.add_picture(image_path, width=Cm(11.97))  # A4 width is approximately 13.97 cm
-        if page_number2 % 2 == 0:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-        else:
-            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+    # if os.path.exists(image_path):
+    #     # Add the image to the Word document
+    #     paragraph = doc.add_paragraph()
+    #     run = paragraph.add_run()
+    #     run.add_picture(image_path, width=Cm(11.97))  # A4 width is approximately 13.97 cm
+    #     if page_number2 % 2 == 0:
+    #         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    #     else:
+    #         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
         # Check if there is a corresponding row in the query
     matching_rows = [row for row in rows if row[0] == page_number2]
@@ -118,8 +118,8 @@ for page_number2 in range(1, 523):  # Assuming you have 522 pages
             run.font.color.rgb = RGBColor(0, 0, 0)
 
         # Add a page break after each page_number2 change
-    doc.add_page_break()
+    # doc.add_page_break()
 
 # Save the Word document
-doc.save('e:/pages10/Shmrly10.docx')
+doc.save('e:/pageshamza/Shmrly10_ٍs.docx')
 
