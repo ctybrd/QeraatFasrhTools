@@ -195,6 +195,7 @@ def apply_fixed_mappings(rgb_values_original):
         (204, 204, 0): (255, 255, 0),
         (255, 104, 32): (255, 140, 0),
         (50, 255, 50): (50, 205, 50),
+        (0, 147, 0): (50, 205, 50),
         (158, 106, 25): (139, 69, 19),   # Mapping for (158, 106, 25) to Saddle Brown
         (0, 123, 255): (30, 144, 255),   # Mapping for (0, 123, 255) to Dodger Blue
         (204, 0, 51): (220, 20, 60),     # Custom mapping for (204, 0, 51) to Crimson
@@ -271,26 +272,26 @@ def get_color_type(color_values):
 
 def process_qaree_key(qaree_key):
     qaree_files = {
-        "W": 'e:/Qeraat/Warsh-Asbahani-Shamarly-Shalaby.pdf',
-        "I": 'e:/Qeraat/IbnAmer-Shamarly-Shalaby.pdf',
-        "T": 'e:/Qeraat/madina10th.pdf',
-        "J": 'e:/Qeraat/AbuJaafar-Shamarly-Shalaby.pdf',
-        "K": 'e:/Qeraat/Qaloon-Shamarly-Shalaby.pdf',
-        "U": 'e:/Qeraat/AshabSela-Shamrly-Shalaby.pdf',
-        "M": 'e:/Qeraat/Hamzah-Shamarly-Shalaby.pdf',
-        "B": 'e:/Qeraat/IbnKatheer-Shmarly-Shalaby.pdf',
-        "S": 'e:/Qeraat/Sho3ba-Shamarly-Shalaby.pdf',
-        "A": 'e:/Qeraat/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
-        "E": 'e:/Qeraat/Kisai-Shamarly-Shalaby.pdf',
-        "F": 'e:/Qeraat/Khalaf-Shamarly-Shalaby.pdf',
-        "X": 'e:/Qeraat/Kisai-Khalaf-Shamarly-Shalaby.pdf',
-        "Y": 'e:/Qeraat/Yaaqoub-Shamarly-Shalaby.pdf',
-        "C": 'e:/Qeraat/AbuAmro-Shamarly-Shalaby.pdf',
-        "D": 'e:/Qeraat/Dori-AbuAmro-Shamarly-Shalaby.pdf',
-        "G": 'e:/Qeraat/Sosi-AbuAmro-Shamarly-Shalaby.pdf',
-        "L": 'e:/Qeraat/Tawasot-Shamarly-Shalaby.pdf',
-        "O": 'e:/Qeraat/Asem_IbnAmer-Shamarly-Shalaby.pdf',
-        "P": 'e:/Qeraat/AbuAmro-Yaqoub-Shamarly-Shalaby.pdf',
+        "W": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Asbahani-Shamarly-Shalaby.pdf',
+        "I": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnAmer-Shamarly-Shalaby.pdf',
+        "T": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/shamarly10th.pdf',
+        "J": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuJaafar-Shamarly-Shalaby.pdf',
+        "K": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Qaloon-Shamarly-Shalaby.pdf',
+        "U": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/AshabSela-Shamrly-Shalaby.pdf',
+        "M": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Hamzah-Shamarly-Shalaby.pdf',
+        "B": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnKatheer-Shmarly-Shalaby.pdf',
+        "S": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Sho3ba-Shamarly-Shalaby.pdf',
+        "A": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
+        "E": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Shamarly-Shalaby.pdf',
+        "F": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Khalaf-Shamarly-Shalaby.pdf',
+        "X": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Khalaf-Shamarly-Shalaby.pdf',
+        "Y": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Yaaqoub-Shamarly-Shalaby.pdf',
+        "C": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuAmro-Shamarly-Shalaby.pdf',
+        "D": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Dori-AbuAmro-Shamarly-Shalaby.pdf',
+        "G": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Sosi-AbuAmro-Shamarly-Shalaby.pdf',
+        "L": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Tawasot-Shamarly-Shalaby.pdf',
+        "O": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/Asem_IbnAmer-Shamarly-Shalaby.pdf',
+        "P": 'E:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuAmro-Yaqoub-Shamarly-Shalaby.pdf',
          
     }
 
@@ -341,7 +342,7 @@ for folder in destination_folders:
 
 
 # #add to archive
-# zip_file_path = "E:/Qeraat/Wursha_QuranHolder/other/data/farsh_v7.db.zip"
+# zip_file_path = "E:/Qeraat/farsh_v7.db.zip"
 # with zipfile.ZipFile(zip_file_path, 'r+') as zip_file:
 #     zip_file.write(file_path, arcname='farsh_v4.db')
 print("Distinct Failed Colors:", failed_colors)
