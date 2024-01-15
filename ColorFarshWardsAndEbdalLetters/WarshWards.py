@@ -103,7 +103,7 @@ def change_black_to_blue_in_rectangular(image_path, output_path, coordinates_lis
 
 
 if __name__ == "__main__":
-    image_path = "499.png"
+    image_path = "499.png"  # should be in the same folder or update the path
     output_path = "WarshWards499.png"
 
     # Create an instance of ImageCoordinateSelector to get user-selected coordinates
@@ -135,5 +135,7 @@ if __name__ == "__main__":
             selector.close_image()
             break
 
+    # print coordinates list
+    print(coordinates_list)
     # Process the image using the selected coordinates
     change_black_to_blue_in_rectangular(image_path, output_path, coordinates_list)

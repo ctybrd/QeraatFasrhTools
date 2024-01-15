@@ -43,7 +43,8 @@ if __name__ == "__main__":
     image_path = "4.png"  # Assuming the image is in the same directory as your script
     output_path = "blue_rectangular_quran_page_4.png"
 
-    # Define the coordinates for the rectangular region
+    # Define the coordinates for the rectangular region => To do Should be list like
+    # [[(652, 641), (652, 653)], [(625, 642), (625, 659)], [(100, 929), (100, 936)]]
     coord1 = (423, 179)
     coord2 = (471, 241)
 

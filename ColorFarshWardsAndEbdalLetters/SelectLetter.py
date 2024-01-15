@@ -123,5 +123,7 @@ if __name__ == "__main__":
         if another_region.lower() != 'y':
             break
 
+    # print coordinates list
+    print(coordinates_list)
     # Process the image using the selected coordinates
     change_black_to_blue_in_rectangular(image_path, output_path, coordinates_list)

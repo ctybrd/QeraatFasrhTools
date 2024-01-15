@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 
+
 class ImageCoordinateSelector:
     def __init__(self, image_path):
         self.image_path = image_path
@@ -114,5 +115,7 @@ if __name__ == "__main__":
             selector.close_image()
             break
 
+    # print coordinates list
+    print(coordinates_list)
     # Process the image using the selected coordinates
     change_black_to_green_in_lines(image_path, output_path, coordinates_list)
