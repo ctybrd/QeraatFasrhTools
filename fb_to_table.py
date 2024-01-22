@@ -9,9 +9,9 @@ fix_mojibake_escapes = partial(
      lambda m: bytes.fromhex(m[1].decode()),
  )
 
-
+filename='E:/facebook/your_activity_across_facebook/posts/your_posts__check_ins__photos_and_videos_1.json'
 # Load the JSON data from the file
-with open('fb.json', 'rb') as binary_data:
+with open(filename, 'rb') as binary_data:
      repaired = fix_mojibake_escapes(binary_data.read())
 data = json.loads(repaired)
 
