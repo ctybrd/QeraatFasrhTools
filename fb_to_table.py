@@ -30,6 +30,9 @@ cursor.execute('''
     )
 ''')
 
+# Clear existing records from the table
+cursor.execute('DELETE FROM posts')
+
 # Parse and insert data into the SQLite table
 for entry in data:
     timestamp = entry.get('timestamp')
@@ -38,15 +41,16 @@ for entry in data:
     
     for post_entry in posts_data:
         post_text = post_entry.get('post', '')
-        # Extract hashtags from the post text
-        hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
-        hashtags_str = ' '.join(hashtags)
-        
-        # Insert data into the table
-        cursor.execute('''
-            INSERT INTO posts (timestamp, real_datetime, post_text, hashtags)
-            VALUES (?, ?, ?, ?)
-        ''', (timestamp, real_datetime, post_text, hashtags_str))
+        if post_text:
+            # Extract hashtags from the post text
+            hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
+            hashtags_str = ' '.join(hashtags)
+            
+            # Insert data into the table
+            cursor.execute('''
+                INSERT INTO posts (timestamp, real_datetime, post_text, hashtags)
+                VALUES (?, ?, ?, ?)
+            ''', (timestamp, real_datetime, post_text, hashtags_str))
 
 # Commit the changes and close the connection
 conn.commit()
