@@ -1,13 +1,19 @@
+from functools import partial
 import sqlite3
 import json
 import re
 from datetime import datetime
 
+fix_mojibake_escapes = partial(
+     re.compile(rb'\\u00([\da-f]{2})').sub,
+     lambda m: bytes.fromhex(m[1].decode()),
+ )
+
 
 # Load the JSON data from the file
-with open('fb.json', "r", encoding="raw-unicode-escape") as file:
-    data = json.load(file)
-
+with open('fb.json', 'rb') as binary_data:
+     repaired = fix_mojibake_escapes(binary_data.read())
+data = json.loads(repaired)
 
 # Connect to SQLite database (create if not exists)
 conn = sqlite3.connect('facebook_posts.db')
