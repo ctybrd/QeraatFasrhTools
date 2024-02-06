@@ -18,14 +18,15 @@ filled_columns = set()  # To keep track of columns that were filled
 for row in rows:
     aya_index = row[0]
     qarees = row[5]
-    print(f"{aya_index}")
+    # print(f"{aya_index}")
     if  aya_index != last_aya_index:
             filled_columns = ''  # #set() Reset the filled columns for the new group
 
     if qarees == 'الباقون':
         if 'الأصبهاني' not in filled_columns:
-            update_query = f"UPDATE quran_data SET qareesrest='الأصبهاني عن ورش عن نافع' WHERE id = {row[1]} AND aya_index = {aya_index}"
+            update_query = f"UPDATE quran_data_tayba SET qareesrest='الأصبهاني عن ورش عن نافع' WHERE id = {row[1]} AND aya_index = {aya_index}"
             cursor.execute(update_query)
+            # print(update_query)
         # print(f"Filled {aya_index}:{complement_columns} for aya_index = {aya_index}")
         filled_columns = ''  #set()  # Reset the filled columns for the new group
 
