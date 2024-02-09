@@ -368,3 +368,61 @@ and (reading <>'بصلة ميم الجمع وصلا مع الإشباع.')
 and r5_2 is null
 and sora=6
 and R6_1=1 and r5_2 is null
+
+
+
+
+SELECT * from quran_data_tayba WHERE
+((qareesrest like '%الأصبهاني%'
+)
+or
+(qareesrest like '%ورش%'
+and qareesrest not like '%أزرق%'
+)
+or
+(qareesrest like '%نافع%'
+
+and qareesrest not like '%قالون%'
+and qareesrest not like '%أزرق%'
+))
+
+and reading<>'بضم ميم الجمع، ووصلها بواو لفظية وصلا.'
+and reading <>'بالنقل، مع ترك الوقف بهاء السكت.'
+and reading <>'بالنقل، مع تحقيق الهمزة المتطرفة.'
+and reading <>'بالنقل، مع تفخيم الراء.'
+and reading <>'بنقل حركة الهمزة، مع قصر البدل.'
+and reading<>'بالنقل، مع قصر اللين.'
+and reading<>'بترك هاء السكت وقفا.'
+and reading<>'بترك السكت، مع تحقيق الهمزة وصلاً ووقفا.'
+and reading<>'بفتح هاء التأنيث وقفا.'
+and reading<>'بالفتح في الحالين.'
+and reading<>'بإسكان ميم الجمع، وترك الصلة.'
+and reading<>'بتحقيق الهمزة وصلاً ووقفا.'
+and reading<>'ببقاء غنة النون المدَغمة بخلف.'
+and reading<>'بالإظهار.'
+and reading<>'بإدغام النون مع الغنة.'
+and reading<>'بكسر هاء الضمير وصلاً ووقفا.'
+and reading<>'بترك السكت على حروف الهجاء في فواتح السور.'
+and reading<>'بالفتح وقفا.'
+and reading<>'بترك السكت، مع تحقيق الهمزة.'
+and reading<>'بقصر الصلة، مع ترك الإدغام.'
+and reading <>'بترقيق اللام.'
+and reading<>'بقصر المد في ( لا) النافية للجنس؛ لأن السبب فيها معنوي.'
+and reading <>'بتحقيق الهمزة مع ترك السكت على المد وصلاً ووقفا.'
+and reading <>'بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا, .'
+and reading <>'بتفخيم الراء.'
+and reading <>'بالفتح وصلاً ووقفا.'
+and reading <>'بقصر مد البدل.'
+and reading <> 'بالكسرة الخالصة.'
+and (sub_subject not like '%صراط%'
+)
+and reading <>'بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا.'
+and reading <>'بتحقيق الهمزة في الحالين.'
+and reading <>'بتحقيق الهمزة، مع ترك السكت على المد وصلاً ووقفا.'
+and reading <>'بتفخيم الراء، وترك هاء السكت.'
+and reading<>'قرؤوابالفتح مع تحقيق الهمزة مع ترك السكت على المد وصلاً ووقفا.'
+and reading <>'بالفتح، مع ترك هاء السكت.'
+and sub_subject<>'وهو'
+and sub_subject<>'فهو'
+
+order by aya_index,id
