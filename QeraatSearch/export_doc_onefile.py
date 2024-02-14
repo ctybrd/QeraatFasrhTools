@@ -32,12 +32,12 @@ cursor = connection.cursor()
 # Execute the SQLite query
 query = """
 SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora
-FROM all_qeraat
-WHERE
-(q4 is not null or r4_1 is not null or r4_2 is not null) 
-AND (r5_1 is not null)
-and (r5_2 is null)
-ORDER BY sora, aya, id
+ from all_qeraat where 
+qarees like '%ورش%'
+and reading like '%تقليل%'
+and reading not like '%تقليل بخلف%'
+and reading not like '%تقليل وقفا بخلف%'
+order by aya_index,id
 """
 cursor.execute(query)
 
@@ -61,8 +61,8 @@ for row in cursor.fetchall():
 
     if aya != current_aya:
         # Create a new group header when the aya changes
-        if current_aya:
-            doc.add_paragraph()  # Add an empty line
+        # if current_aya:
+        #     doc.add_paragraph()  # Add an empty line
         current_aya = aya
         aya_text = transliterate_number(aya) + f" ـ {text_full}"
         para = doc.add_paragraph(aya_text)
@@ -103,6 +103,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/IbnAmerShoba.docx")
+    doc.save(f"./output/WarshTakleel.docx")
 # Close the database connection
 connection.close()
