@@ -37,6 +37,7 @@ qarees like '%ورش%'
 and reading like '%تقليل%'
 and reading not like '%تقليل بخلف%'
 and reading not like '%تقليل وقفا بخلف%'
+and reading not like '%تقليل وقفاً بخلف%'
 order by aya_index,id
 """
 cursor.execute(query)
