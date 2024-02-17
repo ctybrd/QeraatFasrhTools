@@ -385,6 +385,7 @@ or
 and qareesrest not like '%قالون%'
 and qareesrest not like '%أزرق%'
 ))
+and qareesrest not like '%حفص عن عاصم%'
 
 and reading <>'بالنقل، مع ترك الوقف بهاء السكت.'
 and reading <>'بالنقل، مع تحقيق الهمزة المتطرفة.'
@@ -431,4 +432,7 @@ and reading<>'بالفتح، مع تحقيق الهمزة.'
 and readinG<>'بتحقيق الهمزة، مع ترك السكت، وقصر اللين.'
 and readinG<>'بضم الهاء وصلاً ووقفا.'
 and reading <>'بالفتح وقفاً، مع ترقيق اللام.'
+and reading <>'بتحقيق الهمزة، مع قصر البدل.'
+and reading <>'بتحقيق الهمزة، مع ترك السكت، وفتح هاء التأنيث.'
+and reading<>'بتحقيق الهمزتين مع ترك السكت في الحالين.'
 order by aya_index,id

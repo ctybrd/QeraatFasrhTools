@@ -3,6 +3,8 @@ import sqlite3
 # Connect to the SQLite database
 conn = sqlite3.connect('E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
 cursor = conn.cursor()
+update_query = f"UPDATE quran_data_tayba SET qareesrest=null"
+cursor.execute(update_query)
 
 # Query the rows ordered by aya_index
 cursor.execute("SELECT * FROM quran_data_tayba where qarees <>'كل الرواة' ORDER BY aya_index,id")
@@ -21,13 +23,19 @@ for row in rows:
     print(f"{aya_index}")
     if  aya_index != last_aya_index:
             filled_columns = ''  # #set() Reset the filled columns for the new group
-
+    str_rest = ''
     if qarees == 'الباقون':
         qfound = ('الأصبهاني' in filled_columns)
         qfound = qfound or ('نافع' in filled_columns and 'قالون عن' not in filled_columns and 'الأزرق' not in filled_columns)
         qfound = qfound or ('ورش' in filled_columns and 'عن ورش' not in filled_columns)
+        
         if not qfound:      
-            update_query = f"UPDATE quran_data_tayba SET qareesrest='الأصبهاني عن ورش عن نافع' WHERE id = {row[1]} AND aya_index = {aya_index}"
+            str_rest ='الأصبهاني عن ورش عن نافع'
+            asemfound = 'حفص عن عاصم' in filled_columns
+            asemfound = asemfound or ('عاصم' in filled_columns and 'شعبة عن' not in filled_columns)    
+            if not asemfound:
+                str_rest += ',حفص عن عاصم'
+            update_query = f"UPDATE quran_data_tayba SET qareesrest='{str_rest}' WHERE id = {row[1]} AND aya_index = {aya_index}"
             cursor.execute(update_query)
             # print(update_query)
         # print(f"Filled {aya_index}:{complement_columns} for aya_index = {aya_index}")
