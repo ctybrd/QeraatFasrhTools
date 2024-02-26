@@ -14,18 +14,78 @@ shutil.copyfile(source_db_path, destination_db_path)
 #     settings = json.load(file)
 
 settings=[
-
-  
     {
-        "table_name": "book_all10_t",
-        "sql": "SELECT aya_index, sub_subject , qarees || '  ' as subqaree, reading FROM quran_data_tayba WHERE (1 = 1) ORDER BY aya_index, id;",
+        "table_name": "book_asbhni",
+        "sql": """SELECT  aya_index, sub_subject ,  ''  subqaree, reading FROM quran_data_tayba WHERE 
+        ((qareesrest like '%الأصبهاني%'
+        )
+        or
+        (qareesrest like '%ورش%'
+        and qareesrest not like '%أزرق%'
+        )
+        or
+        (qareesrest like '%نافع%'
+
+        and qareesrest not like '%قالون%'
+        and qareesrest not like '%أزرق%'
+        ))
+        and qareesrest not like '%حفص عن عاصم%'
+
+        and (1 = 1) ORDER BY aya_index, id;""",
         "filtering_conditions": [
+            "reading<>'بترك هاء السكت وقفا.'",
+            "reading<>'بترك السكت، مع تحقيق الهمزة وصلاً ووقفا.'",
+            "reading<>'بفتح هاء التأنيث وقفا.'",
+            "reading<>'بالفتح في الحالين.'",
+            "reading<>'بإسكان ميم الجمع، وترك الصلة.'",
+            "reading<>'بتحقيق الهمزة وصلاً ووقفا.'",
+            "reading<>'ببقاء غنة النون المدَغمة بخلف.'",
+            "reading<>'بالإظهار.'",
+            "reading<>'بإدغام النون مع الغنة.'",
+            "reading<>'بكسر هاء الضمير وصلاً ووقفا.'",
+            "reading<>'بترك السكت على حروف الهجاء في فواتح السور.'",
+            "reading<>'بالفتح وقفا.'",
+            "reading<>'بترك السكت، مع تحقيق الهمزة.'",
+            "reading<>'بقصر الصلة، مع ترك الإدغام.'",
+            "reading <>'بترقيق اللام.'",
+            "reading<>'بقصر المد في ( لا) النافية للجنس؛ لأن السبب فيها معنوي.'",
+            "reading <>'بتحقيق الهمزة مع ترك السكت على المد وصلاً ووقفا.'",
+            "reading <>'بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا, .'",
+            "reading <>'بتفخيم الراء.'",
+            "reading <>'بالفتح وصلاً ووقفا.'",
+            "reading <>'بقصر مد البدل.'",
+            "reading <> 'بالكسرة الخالصة.'",
+            "(sub_subject not like '%صراط%')",
+            "reading <>'بتحقيق الهمزة، مع ترك السكت وصلاً ووقفا.'",
+            "reading <>'بتحقيق الهمزة في الحالين.'",
+            "reading <>'بتحقيق الهمزة، مع ترك السكت على المد وصلاً ووقفا.'",
+            "reading <>'بتفخيم الراء، وترك هاء السكت.'",
+            "reading<>'قرؤوابالفتح مع تحقيق الهمزة مع ترك السكت على المد وصلاً ووقفا.'",
+            "reading <>'بالفتح، مع ترك هاء السكت.'",
+            "sub_subject not in('وهو','فهو','لهو','وهو','فهي','لهي','فهي','وهي','ثم هو')",
+            "reading <>'بتحقيق الهمزة، مع قصر مد البدل، وبلا هاء السكت.'",
+            "reading <>'بترك الإمالة، مع قصر مد البدل.'",
+            "readinG<>'بالفتح، مع ترك هاء السكت وقفا.'",
+            "readinG<>'بترك الصلة مع قصر الهاء.'",
+            "reading<>'بالفتح، مع ترك السكت على المد.'",
+            "reading<>'بالفتح، مع تحقيق الهمزة.'",
+            "readinG<>'بتحقيق الهمزة، مع ترك السكت، وقصر اللين.'",
+            "readinG<>'بضم الهاء وصلاً ووقفا.'",
+            "reading <>'بالفتح وقفاً، مع ترقيق اللام.'",
+            "reading <>'بتحقيق الهمزة، مع قصر البدل.'",
+            "reading <>'بتحقيق الهمزة، مع ترك السكت، وفتح هاء التأنيث.'",
+            "reading<>'بتحقيق الهمزتين مع ترك السكت في الحالين.'"
         ]
     },
-
-  
 ]
-
+# settings=[
+#     {
+#         "table_name": "book_all10_t",
+#         "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, '' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+#         "filtering_conditions": [
+#         ]
+#     },
+# ]
 replacements = {
         'book_common': [
 

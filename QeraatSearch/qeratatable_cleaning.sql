@@ -387,11 +387,8 @@ and qareesrest not like '%أزرق%'
 ))
 and qareesrest not like '%حفص عن عاصم%'
 
-and reading <>'بالنقل، مع ترك الوقف بهاء السكت.'
-and reading <>'بالنقل، مع تحقيق الهمزة المتطرفة.'
-and reading <>'بالنقل، مع تفخيم الراء.'
-and reading <>'بنقل حركة الهمزة، مع قصر البدل.'
-and reading<>'بالنقل، مع قصر اللين.'
+
+
 and reading<>'بترك هاء السكت وقفا.'
 and reading<>'بترك السكت، مع تحقيق الهمزة وصلاً ووقفا.'
 and reading<>'بفتح هاء التأنيث وقفا.'
