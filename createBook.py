@@ -15,13 +15,13 @@ from bs4 import BeautifulSoup
 
 
 # Connect to the SQLite database
-conn = sqlite3.connect('e:/qeraat/data_v15.db')
+conn = sqlite3.connect('f:/qeraat/data_v17.db')
 cursor = conn.cursor()
 
 # Execute the query to retrieve data from both tables
 query = '''
 SELECT mj.text, ms.page_number
-FROM book_jlalin AS mj
+FROM book_mokhtsr AS mj
 JOIN mosshf_shmrly AS ms ON mj.aya_index = ms.aya_index
 '''
 cursor.execute(query)
@@ -44,8 +44,8 @@ for text, page_number in data:
             doc.add_paragraph(concatenated_text)
 
             # Add the image to the right of the text
-            # image_path = f'E:/Qeraat/pages/{current_page}.png'  # Replace with the actual path to the folder and image file extension
-            converted_image_path = f'E:/Qeraat/pages/{current_page}.jpg'  # Replace with the path and filename for the converted image
+            # image_path = f'f:/Qeraat/QeraatFasrhTools_Data/pages/{current_page}.png'  # Replace with the actual path to the folder and image file extension
+            converted_image_path = f'f:/Qeraat/QeraatFasrhTools_Data/pages/{current_page}.png'  # Replace with the path and filename for the converted image
             # convert_image(image_path, converted_image_path)
             doc.add_picture(converted_image_path, width=Inches(3))  # Adjust the width as needed
 
@@ -62,8 +62,8 @@ for text, page_number in data:
 
 # Add the last page's text and image to the document
 doc.add_paragraph(concatenated_text)
-# image_path = f'E:/Qeraat/pages/{current_page}.png'  # Replace with the actual path to the folder and image file extension
-converted_image_path = f'E:/Qeraat/pages/{current_page}.jpg'  # Replace with the path and filename for the converted image
+# image_path = f'f:/Qeraat/pages/{current_page}.png'  # Replace with the actual path to the folder and image file extension
+converted_image_path = f'f:/Qeraat/QeraatFasrhTools_Data/pages/{current_page}.png'  # Replace with the path and filename for the converted image
 # convert_image(image_path, converted_image_path)
 doc.add_picture(converted_image_path, width=Inches(3))
 
