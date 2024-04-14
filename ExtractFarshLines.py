@@ -272,6 +272,9 @@ def get_color_type(color_values):
 
 
 def process_qaree_key(qaree_key):
+    file_path = 'F:/Qeraat/farsh_v7.db'
+    tmp_file = 'F:/Qeraat/tmp.db'
+    shutil.copy2(file_path, tmp_file)
     qaree_files = {
         "W": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Asbahani-Shamarly-Shalaby.pdf',
         "I": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnAmer-Shamarly-Shalaby.pdf',
@@ -293,8 +296,10 @@ def process_qaree_key(qaree_key):
         "L": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Tawasot-Shamarly-Shalaby.pdf',
         "O": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Asem_IbnAmer-Shamarly-Shalaby.pdf',
         "P": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuAmro-Yaqoub-Shamarly-Shalaby.pdf',
-         
     }
+
+    def is_newer(file1, file2):
+        return os.path.getmtime(file1) > os.path.getmtime(file2)
 
     if qaree_key == "ALL":
         for key, pdf_path in qaree_files.items():
@@ -304,6 +309,13 @@ def process_qaree_key(qaree_key):
                 print("Line comments extracted and inserted from", pdf_path)
             else:
                 print("File not found:", pdf_path)
+    elif qaree_key == "NEW":
+        for key, pdf_path in qaree_files.items():
+            if os.path.exists(pdf_path):
+                if  is_newer(pdf_path, tmp_file):
+                    comments = extract_line_comments(pdf_path)
+                    insert_comments_sqlite(comments, key)
+                    print("Line comments extracted and inserted from", pdf_path)
     elif qaree_key in qaree_files:
         pdf_path = qaree_files[qaree_key]
         if os.path.exists(pdf_path):
@@ -314,6 +326,7 @@ def process_qaree_key(qaree_key):
             print("File not found:", pdf_path)
     else:
         print("Invalid qaree key entered!")
+
 
 # Extract line comments from the PDF
 failed_colors = set()
