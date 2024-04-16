@@ -203,7 +203,7 @@ def apply_fixed_mappings(rgb_values_original):
         (204, 204, 51): (218, 165, 32),  # Custom mapping for (204, 204, 51) to Goldenrod
         (128, 0, 255): (128, 0, 128),    # Mapping for (128, 0, 255) to Purple
         (0, 136, 0): (0, 128, 0),        # Mapping for (0, 136, 0) to Green
-        (0, 127, 255): (0, 0, 255),      # Mapping for (0, 127, 255) to Blue
+        # (0, 127, 255): (0, 0, 255),      # Mapping for (0, 127, 255) to Blue
         (128, 128, 192): (128, 128, 128), # Mapping for (128, 128, 192) to Gray
         (139, 69, 16): (139, 69, 19),     # Mapping for (139, 69, 16) to Saddle Brown
     }
@@ -237,13 +237,13 @@ def get_color_name(color_values,qaree_key):
         rgb_values_original = tuple(int(round(val * 255)) for val in fraction_values)
         
         # Apply fixed mappings first
-        rgb_values_mapped = apply_fixed_mappings(rgb_values_original)
+        #rgb_values_mapped = apply_fixed_mappings(rgb_values_original)
         try:
-            color_name = webcolors.rgb_to_name(rgb_values_mapped)
+            color_name = webcolors.rgb_to_name(rgb_values_original)
         except ValueError:
-            color_name = get_nearest_web_color(rgb_values_mapped)
+            color_name = '#{:02x}{:02x}{:02x}'.format(*rgb_values_original)
     except Exception:
-        failed_colors.add(qaree_key+ ' '+str(rgb_values_mapped)+str(rgb_values_original))  # Add the failed color to the set
+        failed_colors.add(qaree_key+ ' '+str(rgb_values_original))  # Add the failed color to the set
         color_name = 'red'
     
     return color_name
