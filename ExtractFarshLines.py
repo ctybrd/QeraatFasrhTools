@@ -285,7 +285,7 @@ def process_qaree_key(qaree_key):
         "M": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Hamzah-Shamarly-Shalaby.pdf',
         "B": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnKatheer-Shmarly-Shalaby.pdf',
         "S": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Sho3ba-Shamarly-Shalaby.pdf',
-        "A": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Azraq-Shamarly-Shalaby_V1_1.pdf',
+        "A": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Azraq-Shamarly-Shalaby.pdf',
         "E": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Shamarly-Shalaby.pdf',
         "F": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Khalaf-Shamarly-Shalaby.pdf',
         "X": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Khalaf-Shamarly-Shalaby.pdf',
