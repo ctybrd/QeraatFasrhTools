@@ -6,7 +6,7 @@ import numpy as np
 letters = ["K", "J", "B", "S", "W", "I", "M", "A", "E", "F", "X", "C", "U", "Y","L"]
 
 # Base folder path
-base_folder_path = r'E:/Qeraat/NewSides/'
+base_folder_path = r'F:/Qeraat/NewSides/'
 
 # Tolerance for white color removal
 tolerance = 30  # Adjust this value based on your needs

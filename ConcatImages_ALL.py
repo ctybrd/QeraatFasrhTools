@@ -4,31 +4,31 @@ import os
 # Define the sets of folder paths and destination folders along with their corresponding comments
 folder_sets = [
     ([
-        r'E:/Qeraat/NewSides/PNG/SideW',  # الأصبهاني
-        r'E:/Qeraat/NewSides/PNG/SideA',  # ورش
-        r'E:/Qeraat/NewSides/PNG/SideJ',  # أبو جعفر
-        r'E:/Qeraat/NewSides/PNG/SideB',  # ابن كثير
-        r'E:/Qeraat/NewSides/PNG/SideK',  # قالون
-    ], r'E:/Qeraat/NewSides/side', [
+        r'F:/Qeraat/NewSides/PNG/SideW',  # الأصبهاني
+        r'F:/Qeraat/NewSides/PNG/SideA',  # ورش
+        r'F:/Qeraat/NewSides/PNG/SideJ',  # أبو جعفر
+        r'F:/Qeraat/NewSides/PNG/SideB',  # ابن كثير
+        r'F:/Qeraat/NewSides/PNG/SideK',  # قالون
+    ], r'F:/Qeraat/NewSides/side', [
         'الأصبهاني', 'ورش', 'أبو جعفر', 'ابن كثير', 'قالون'
     ])
     ,
     ([
-        r'E:/Qeraat/NewSides/PNG/SideX',  # الكسائي وخلف
-        r'E:/Qeraat/NewSides/PNG/SideL',  # أصحاب التوسط
-        r'E:/Qeraat/NewSides/PNG/SideU',  # أصحاب الصلة
-        r'E:/Qeraat/NewSides/PNG/SideS',  # شعبة
-        r'E:/Qeraat/NewSides/PNG/SideI',   # ابن عامر
-    ], r'E:/Qeraat/NewSides/side1', [
+        r'F:/Qeraat/NewSides/PNG/SideX',  # الكسائي وخلف
+        r'F:/Qeraat/NewSides/PNG/SideL',  # أصحاب التوسط
+        r'F:/Qeraat/NewSides/PNG/SideU',  # أصحاب الصلة
+        r'F:/Qeraat/NewSides/PNG/SideS',  # شعبة
+        r'F:/Qeraat/NewSides/PNG/SideI',   # ابن عامر
+    ], r'F:/Qeraat/NewSides/side1', [
         'الكسائي وخلف', 'أصحاب التوسط', 'أصحاب الصلة', 'شعبة', 'ابن عامر'
     ]),
     ([
-        r'E:/Qeraat/NewSides/PNG/SideF',  # خلف العاشر
-        r'E:/Qeraat/NewSides/PNG/SideY',  # يعقوب
-        r'E:/Qeraat/NewSides/PNG/SideE',  # الكسائي
-        r'E:/Qeraat/NewSides/PNG/SideM',  # حمزة
-        r'E:/Qeraat/NewSides/PNG/SideC',  # أبو عمرو
-    ], r'E:/Qeraat/NewSides/side2', [
+        r'F:/Qeraat/NewSides/PNG/SideF',  # خلف العاشر
+        r'F:/Qeraat/NewSides/PNG/SideY',  # يعقوب
+        r'F:/Qeraat/NewSides/PNG/SideE',  # الكسائي
+        r'F:/Qeraat/NewSides/PNG/SideM',  # حمزة
+        r'F:/Qeraat/NewSides/PNG/SideC',  # أبو عمرو
+    ], r'F:/Qeraat/NewSides/side2', [
         'خلف العاشر', 'يعقوب', 'الكسائي', 'حمزة', 'أبو عمرو'
     ]),
 ]
@@ -78,4 +78,4 @@ for folder_paths, destination_folder, comments in folder_sets:
         print(f"Concatenation with vertical lines and comments for {destination_folder} completed.")
 
     except Exception as e:
-        print(f"Error processing folder set: {e}")
+        print(f"Error processing folder set: {e:}")

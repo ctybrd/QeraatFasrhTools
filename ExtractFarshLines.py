@@ -158,7 +158,7 @@ def insert_comments_sqlite(comments,qaree_key):
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     if (qaree_key == "B"):
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
-    if qaree_key in ["C", "D", "G","P"]:
+    if qaree_key in ["C", "D", "G","P","Y"]:
         c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
     #twice for safety
     c.execute("UPDATE shmrly SET circle='' where circle is null")
