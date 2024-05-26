@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import shutil
 
 # List of letters for folder names
 letters = ["K", "J", "B", "S", "W", "I", "M", "A", "E", "F", "X", "C", "U", "Y","L"]
@@ -11,6 +12,19 @@ base_folder_path = r'F:/Qeraat/NewSides/'
 # Tolerance for white color removal
 tolerance = 30  # Adjust this value based on your needs
 
+#Function to empty folder
+def empty_folder(folder_path):
+    if os.path.exists(folder_path):
+        for filename in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+
 # Iterate over the list of letters
 for letter in letters:
     folder_path = os.path.join(base_folder_path, 'Side' + letter)
@@ -18,7 +32,8 @@ for letter in letters:
     # Create a new folder to save the modified images
     output_folder_path = os.path.join(base_folder_path, 'PNG', 'Side' + letter)
     os.makedirs(output_folder_path, exist_ok=True)
-
+    empty_folder(output_folder_path)
+    
     # Iterate over all files in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.png'):

@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 import os
-
+import shutil
 # Define the sets of folder paths and destination folders along with their corresponding comments
 folder_sets = [
     ([
@@ -32,8 +32,20 @@ folder_sets = [
         'خلف العاشر', 'يعقوب', 'الكسائي', 'حمزة', 'أبو عمرو'
     ]),
 ]
-
+#Function to empty folder
 spacing_between_images = 10  # Adjust as needed
+def empty_folder(folder_path):
+    if os.path.exists(folder_path):
+        for filename in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+
 
 # Iterate through each set of folder paths, destination folders, and comments
 for folder_paths, destination_folder, comments in folder_sets:
@@ -41,7 +53,7 @@ for folder_paths, destination_folder, comments in folder_sets:
         # Ensure the destination folder exists
         if not os.path.exists(destination_folder):
             os.makedirs(destination_folder)
-
+        empty_folder(destination_folder)
         # Iterate through the range of images (1.png to 522.png)
         for i in range(1, 523):
             try:
