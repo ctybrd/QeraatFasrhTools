@@ -332,7 +332,9 @@ def process_qaree_key(qaree_key):
 
 # Extract line comments from the PDF
 failed_colors = set()
-qaree_key = input("Enter the qaree key (A for Warsh, W for Asbahani, I for IbnAmer, T for Tayseer, J for AbuJaafar, K for Qaloon, U for AshabSela, M for Hamzah, B for IbnKatheer, S for Sho3ba, or ALL for all files): ").upper()
+qaree_key = input("Enter the qaree key (New for Updated Only or ALL for all files): ").upper()
+if qaree_key == "":
+    qaree_key= "NEW"
 process_qaree_key(qaree_key)
 
 file_path = 'F:/Qeraat/farsh_v7.db'
@@ -361,5 +363,5 @@ for folder in destination_folders:
 # zip_file_path = "F:/Qeraat/farsh_v7.db.zip"
 # with zipfile.ZipFile(zip_file_path, 'r+') as zip_file:
 #     zip_file.write(file_path, arcname='farsh_v4.db')
-print("Distinct Failed Colors:", failed_colors)
+# print("Distinct Failed Colors:", failed_colors)
 print("File copied to the specified folders.")

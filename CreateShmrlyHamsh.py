@@ -39,7 +39,7 @@ def transliterate_number(number):
     return ''.join(mapping.get(char, char) for char in str(number))
 
 # Connect to the SQLite database
-conn = sqlite3.connect("E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+conn = sqlite3.connect("F:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
 cursor = conn.cursor()
 
 # Execute the SQL query
@@ -90,7 +90,7 @@ for aya, sub_subject, reading, page_number in cursor.fetchall():
     reading_run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Black
 
 # Save the document to the specified folder
-output_folder = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/output"
+output_folder = "F:/Qeraat/QeraatFasrhTools/QeraatSearch/output"
 doc.save(output_folder + "/quran_data.docx")
 
 # Close the database connection
