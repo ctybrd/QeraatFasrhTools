@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import fitz 
 import os
 import shutil
 
@@ -38,9 +38,11 @@ def empty_folder(folder_path):
                     shutil.rmtree(file_path)
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
-
-input_folder = 'F:/Qeraat/NewSides/PDF_Sides'
-output_folder = 'F:/Qeraat/NewSides/'
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive +'/'
+input_folder = os.path.join(drive, 'Qeraat','/NewSides/PDF_Sides_FLAT')
+output_folder = os.path.join(drive, 'Qeraat','/NewSides/')
 
 # Get the list of PDF files in the input folder
 pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]

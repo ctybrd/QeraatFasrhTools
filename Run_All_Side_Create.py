@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 def run_script(script_name):
     print(f"Starting {script_name}...")
@@ -10,14 +11,23 @@ def run_script(script_name):
     # else:
     #     print(f"Output of {script_name}: {result.stdout}")
 
-#export pdf to slices png files
-run_script('F:/Qeraat/QeraatFasrhTools/Export_pdf_png_ALL.py')
+# Get the absolute path of the script
+script_path = os.path.abspath(__file__)
 
-# remove white make transparent slices
-run_script('F:/Qeraat/QeraatFasrhTools/removewhite_ALL.py')
+# Extract the drive letter
+drive, _ = os.path.splitdrive(script_path)
+drive = drive +'/'
+# Define the base paths using the extracted drive letter
+scripts_folder = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools')
 
-# concat each 5 slices in one image 
-run_script('F:/Qeraat/QeraatFasrhTools/ConcatImages_ALL.py')
+# Export pdf to slices png files
+run_script(os.path.join(scripts_folder, 'Export_pdf_png_ALL.py'))
 
-#Mogrify ALL
-run_script('F:/Qeraat/QeraatFasrhTools/mogrify_ALL.py')
+# Remove white make transparent slices
+run_script(os.path.join(scripts_folder, 'removewhite_ALL.py'))
+
+# Concat each 5 slices in one image 
+run_script(os.path.join(scripts_folder, 'ConcatImages_ALL.py'))
+
+# Mogrify ALL
+run_script(os.path.join(scripts_folder, 'mogrify_ALL.py'))

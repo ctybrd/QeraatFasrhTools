@@ -1,13 +1,37 @@
 import os
 import shutil
-import zipfile
-import pyodbc
 import sqlite3
 import re
 from PyPDF2 import PdfReader
-
-import matplotlib.colors as mcolors
 import webcolors
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path) 
+drive = drive +'/'
+db_path = os.path.join(drive, 'Qeraat', 'farsh_v7.db')
+tmp_db_path = os.path.join(drive, 'Qeraat', 'tmp.db')
+qaree_files = {
+    "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Asbahani-Shamarly-Shalaby.pdf'),
+    "I": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'IbnAmer-Shamarly-Shalaby.pdf'),
+    "T": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'shamarly10th.pdf'),
+    "J": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuJaafar-Shamarly-Shalaby.pdf'),
+    "K": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Qaloon-Shamarly-Shalaby.pdf'),
+    "U": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AshabSela-Shamrly-Shalaby.pdf'),
+    "M": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Hamzah-Shamarly-Shalaby.pdf'),
+    "B": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'IbnKatheer-Shmarly-Shalaby.pdf'),
+    "S": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sho3ba-Shamarly-Shalaby.pdf'),
+    "A": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Azraq-Shamarly-Shalaby.pdf'),
+    "R": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Azraq-Shamarly-Shalaby_Light.pdf'),
+    "E": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Kisai-Shamarly-Shalaby.pdf'),
+    "F": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Khalaf-Shamarly-Shalaby.pdf'),
+    "X": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Kisai-Khalaf-Shamarly-Shalaby.pdf'),
+    "Y": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Yaaqoub-Shamarly-Shalaby.pdf'),
+    "C": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Shamarly-Shalaby.pdf'),
+    "D": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Dori-AbuAmro-Shamarly-Shalaby.pdf'),
+    "G": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sosi-AbuAmro-Shamarly-Shalaby.pdf'),
+    "L": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Tawasot-Shamarly-Shalaby.pdf'),
+    "O": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Asem_IbnAmer-Shamarly-Shalaby.pdf'),
+    "P": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Yaqoub-Shamarly-Shalaby.pdf'),
+}
 
 def extract_line_comments(pdf_path):
     #column style (S = solid D =dashed H hollow circle)
@@ -74,7 +98,6 @@ def extract_line_comments(pdf_path):
                         
                         comments.append(comment)
                     
-
                         
         except Exception as e:
             # print(f"Error processing annotations on page {pageno}: {e}")
@@ -85,7 +108,7 @@ def extract_line_comments(pdf_path):
 
 
 def create_table_sqlite():
-    conn = sqlite3.connect('F:/Qeraat/farsh_v7.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS shmrly
                  (qaree TEXT, page_number INTEGER, color TEXT, type NUMERIC, x REAL, y REAL, width REAL)''')
@@ -106,7 +129,7 @@ Style Column Specification:
 
 
 def insert_comments_sqlite(comments,qaree_key):
-    conn = sqlite3.connect('F:/Qeraat/farsh_v7.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     # Delete rows with value "A" in the field "qaree"
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
@@ -188,30 +211,6 @@ def insert_comments_sqlite(comments,qaree_key):
 
 import webcolors
 
-def apply_fixed_mappings(rgb_values_original):
-    fixed_mappings = {
-        (255, 173, 90): (255, 153, 51),
-        (190, 190, 0): (204, 204, 0),
-        (179, 179, 0): (204, 204, 51),
-        (229, 34, 55): (204, 0, 51),
-        (204, 204, 0): (255, 255, 0),
-        (255, 104, 32): (255, 140, 0),
-        (50, 255, 50): (50, 205, 50),
-        (0, 147, 0): (50, 205, 50),
-        (158, 106, 25): (139, 69, 19),   # Mapping for (158, 106, 25) to Saddle Brown
-        (0, 123, 255): (30, 144, 255),   # Mapping for (0, 123, 255) to Dodger Blue
-        (204, 0, 51): (220, 20, 60),     # Custom mapping for (204, 0, 51) to Crimson
-        (204, 204, 51): (218, 165, 32),  # Custom mapping for (204, 204, 51) to Goldenrod
-        (128, 0, 255): (128, 0, 128),    # Mapping for (128, 0, 255) to Purple
-        (0, 136, 0): (0, 128, 0),        # Mapping for (0, 136, 0) to Green
-        # (0, 127, 255): (0, 0, 255),      # Mapping for (0, 127, 255) to Blue
-        (128, 128, 192): (128, 128, 128), # Mapping for (128, 128, 192) to Gray
-        (139, 69, 16): (139, 69, 19),     # Mapping for (139, 69, 16) to Saddle Brown
-    }
-    if rgb_values_original in fixed_mappings:
-        return fixed_mappings[rgb_values_original]
-    
-    return rgb_values_original
 
 def get_nearest_web_color(color):
     try:
@@ -237,8 +236,7 @@ def get_color_name(color_values,qaree_key):
         fraction_values = eval(color_values)
         rgb_values_original = tuple(int(round(val * 255)) for val in fraction_values)
         
-        # Apply fixed mappings first
-        #rgb_values_mapped = apply_fixed_mappings(rgb_values_original)
+
         try:
             color_name = webcolors.rgb_to_name(rgb_values_original)
         except ValueError:
@@ -254,51 +252,12 @@ def get_color_name(color_values,qaree_key):
 
 def get_color_type(color_values):
     return ""
-    # if color_values == "red":
-    #     return "Farsh"
-    # elif (color_values == "green") or (color_values == "lime") :
-    #     return "Ebdal"
-    # elif color_values == "cyan":
-    #     return "Sound"
-    # elif color_values == "blue":
-    #     return "Naql"
-    # elif (color_values == "magenta") or (color_values == "purple"):
-    #     return "Badal+Leen"
-    # elif (color_values == "yellow") or (color_values == "olive"):
-    #     return "MeemSela"
-
-    
-    # else:
-    #     return "Farsh"
 
 
 def process_qaree_key(qaree_key):
-    file_path = 'F:/Qeraat/farsh_v7.db'
-    tmp_file = 'F:/Qeraat/tmp.db'
+    file_path = db_path
+    tmp_file = tmp_db_path
     shutil.copy2(file_path, tmp_file)
-    qaree_files = {
-        "W": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Asbahani-Shamarly-Shalaby.pdf',
-        "I": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnAmer-Shamarly-Shalaby.pdf',
-        "T": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/shamarly10th.pdf',
-        "J": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuJaafar-Shamarly-Shalaby.pdf',
-        "K": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Qaloon-Shamarly-Shalaby.pdf',
-        "U": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/AshabSela-Shamrly-Shalaby.pdf',
-        "M": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Hamzah-Shamarly-Shalaby.pdf',
-        "B": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/IbnKatheer-Shmarly-Shalaby.pdf',
-        "S": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Sho3ba-Shamarly-Shalaby.pdf',
-        "A": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Azraq-Shamarly-Shalaby.pdf',
-        "R": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Warsh-Azraq-Shamarly-Shalaby_Light.pdf',
-        "E": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Shamarly-Shalaby.pdf',
-        "F": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Khalaf-Shamarly-Shalaby.pdf',
-        "X": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Kisai-Khalaf-Shamarly-Shalaby.pdf',
-        "Y": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Yaaqoub-Shamarly-Shalaby.pdf',
-        "C": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuAmro-Shamarly-Shalaby.pdf',
-        "D": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Dori-AbuAmro-Shamarly-Shalaby.pdf',
-        "G": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Sosi-AbuAmro-Shamarly-Shalaby.pdf',
-        "L": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Tawasot-Shamarly-Shalaby.pdf',
-        "O": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/Asem_IbnAmer-Shamarly-Shalaby.pdf',
-        "P": 'F:/Qeraat/QeraatFasrhTools_Data/Musshaf/AbuAmro-Yaqoub-Shamarly-Shalaby.pdf',
-    }
 
     def is_newer(file1, file2):
         return os.path.getmtime(file1) > os.path.getmtime(file2)
@@ -337,17 +296,17 @@ if qaree_key == "":
     qaree_key= "NEW"
 process_qaree_key(qaree_key)
 
-file_path = 'F:/Qeraat/farsh_v7.db'
+file_path = db_path
 destination_folders = [
-    'F:/Qeraat/Wursha_QuranHolder/other/data/',
-    'F:/Qeraat/Wursha_QuranHolder/platforms/android/app/build/intermediates/assets/debug/mergeDebugAssets/www/',
-    'F:/Qeraat/Wursha_QuranHolder/platforms/android/app/src/main/assets/www/',
-    'F:/Qeraat/Wursha_QuranHolder/www/',
+    os.path.join(drive, 'Qeraat', 'Wursha_QuranHolder', 'other', 'data'),
+    os.path.join(drive, 'Qeraat', 'Wursha_QuranHolder', 'platforms', 'android', 'app', 'build', 'intermediates', 'assets', 'debug', 'mergeDebugAssets', 'www'),
+    os.path.join(drive, 'Qeraat', 'Wursha_QuranHolder', 'platforms', 'android', 'app', 'src', 'main', 'assets', 'www'),
+    os.path.join(drive, 'Qeraat', 'Wursha_QuranHolder', 'www'),
 ]
 
 
 for folder in destination_folders:
-    destination_file = folder + 'farsh_v7.db'
+    destination_file = folder + '/farsh_v7.db'
     try:
         shutil.copy(file_path, destination_file)
         print(f"File copied to {destination_file} successfully.")
@@ -359,9 +318,4 @@ for folder in destination_folders:
         print(f"An error occurred while copying to {destination_file}: {str(e)}")
 
 
-# #add to archive
-# zip_file_path = "F:/Qeraat/farsh_v7.db.zip"
-# with zipfile.ZipFile(zip_file_path, 'r+') as zip_file:
-#     zip_file.write(file_path, arcname='farsh_v4.db')
-# print("Distinct Failed Colors:", failed_colors)
 print("File copied to the specified folders.")

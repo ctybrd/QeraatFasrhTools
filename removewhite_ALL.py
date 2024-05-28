@@ -7,7 +7,13 @@ import shutil
 letters = ["K", "J", "B", "S", "W", "I", "M", "A", "E", "F", "X", "C", "U", "Y","L"]
 
 # Base folder path
-base_folder_path = r'F:/Qeraat/NewSides/'
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive +'/'
+
+# Define the base folder path
+base_folder_path = os.path.join(drive, r'/Qeraat/NewSides/')
+
 
 # Tolerance for white color removal
 tolerance = 30  # Adjust this value based on your needs

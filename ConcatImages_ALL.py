@@ -1,38 +1,44 @@
 from PIL import Image, ImageDraw
 import os
 import shutil
+
+# Define the base directory (relative to where the script is run or a defined base)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive +'/'
+
 # Define the sets of folder paths and destination folders along with their corresponding comments
 folder_sets = [
     ([
-        r'F:/Qeraat/NewSides/PNG/SideW',  # الأصبهاني
-        r'F:/Qeraat/NewSides/PNG/SideA',  # ورش
-        r'F:/Qeraat/NewSides/PNG/SideJ',  # أبو جعفر
-        r'F:/Qeraat/NewSides/PNG/SideB',  # ابن كثير
-        r'F:/Qeraat/NewSides/PNG/SideK',  # قالون
-    ], r'F:/Qeraat/NewSides/side', [
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideW'),  # الأصبهاني
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideA'),  # ورش
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideJ'),  # أبو جعفر
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideB'),  # ابن كثير
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideK'),  # قالون
+    ], os.path.join(drive, 'Qeraat/NewSides/side'), [
         'الأصبهاني', 'ورش', 'أبو جعفر', 'ابن كثير', 'قالون'
     ])
     ,
     ([
-        r'F:/Qeraat/NewSides/PNG/SideX',  # الكسائي وخلف
-        r'F:/Qeraat/NewSides/PNG/SideL',  # أصحاب التوسط
-        r'F:/Qeraat/NewSides/PNG/SideU',  # أصحاب الصلة
-        r'F:/Qeraat/NewSides/PNG/SideS',  # شعبة
-        r'F:/Qeraat/NewSides/PNG/SideI',   # ابن عامر
-    ], r'F:/Qeraat/NewSides/side1', [
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideX'),  # الكسائي وخلف
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideL'),  # أصحاب التوسط
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideU'),  # أصحاب الصلة
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideS'),  # شعبة
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideI'),   # ابن عامر
+    ], os.path.join(drive, 'Qeraat/NewSides/side1'), [
         'الكسائي وخلف', 'أصحاب التوسط', 'أصحاب الصلة', 'شعبة', 'ابن عامر'
     ]),
     ([
-        r'F:/Qeraat/NewSides/PNG/SideF',  # خلف العاشر
-        r'F:/Qeraat/NewSides/PNG/SideY',  # يعقوب
-        r'F:/Qeraat/NewSides/PNG/SideE',  # الكسائي
-        r'F:/Qeraat/NewSides/PNG/SideM',  # حمزة
-        r'F:/Qeraat/NewSides/PNG/SideC',  # أبو عمرو
-    ], r'F:/Qeraat/NewSides/side2', [
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideF'),  # خلف العاشر
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideY'),  # يعقوب
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideE'),  # الكسائي
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideM'),  # حمزة
+        os.path.join(drive, 'Qeraat/NewSides/PNG/SideC'),  # أبو عمرو
+    ], os.path.join(drive, 'Qeraat/NewSides/side2'), [
         'خلف العاشر', 'يعقوب', 'الكسائي', 'حمزة', 'أبو عمرو'
     ]),
 ]
-#Function to empty folder
+
+# Function to empty folder
 spacing_between_images = 10  # Adjust as needed
 def empty_folder(folder_path):
     if os.path.exists(folder_path):
@@ -45,7 +51,6 @@ def empty_folder(folder_path):
                     shutil.rmtree(file_path)
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
-
 
 # Iterate through each set of folder paths, destination folders, and comments
 for folder_paths, destination_folder, comments in folder_sets:
@@ -90,4 +95,4 @@ for folder_paths, destination_folder, comments in folder_sets:
         print(f"Concatenation with vertical lines and comments for {destination_folder} completed.")
 
     except Exception as e:
-        print(f"Error processing folder set: {e:}")
+        print(f"Error processing folder set: {e}")
