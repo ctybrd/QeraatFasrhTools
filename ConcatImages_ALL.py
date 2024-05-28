@@ -3,6 +3,7 @@ import os
 import shutil
 
 # Define the base directory (relative to where the script is run or a defined base)
+script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path)
 drive = drive +'/'
 
