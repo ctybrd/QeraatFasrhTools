@@ -90,5 +90,6 @@ and reading<>'قرأ بضم هاء الضمير ، مع الوقف بهاء ال
 and reading <>'قرأ بترك الإمالة، ووقف على نون النسوة بهاء السكت.'
 and reading <>'قرأ بكسر الهاء ووقف بهاء السكت باتفاق.'
 and r5_2 is null
-and resultnew is null
+and (resultnew is null
+or resultnew='')
 order by aya_index,id

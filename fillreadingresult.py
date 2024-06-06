@@ -19,10 +19,7 @@ class QuranApp:
             self.query = file.read()
 
         # Fetch initial data
-        self.cursor.execute(self.query)
-        self.records = self.cursor.fetchall()
-        self.current_index = 0
-        self.display_record()
+        self.load_records()
 
     def create_widgets(self):
         # Create form fields
@@ -40,18 +37,15 @@ class QuranApp:
         self.create_form_field("الكلمة", self.sub_subject)
         self.create_form_field("القراءة", self.reading)
         self.create_form_field("القراء", self.qareesrest)
-        self.create_form_field("النتيجة", self.resultnew, focus=True)
+        self.create_form_field("النتيجة", self.resultnew, focus=True, rtl=True)
 
         # Create buttons area
         button_frame = ttk.Frame(self.root)
         button_frame.pack(fill=tk.X, padx=10, pady=10)
 
         # Add action buttons to button frame
-        self.update_similar_button = ttk.Button(button_frame, text="Update Similar", command=self.update_similar)
+        self.update_similar_button = ttk.Button(button_frame, text="تحديث الجميع", command=self.update_similar)
         self.update_similar_button.pack(side=tk.LEFT, padx=5, pady=5)
-
-        self.copy_button = ttk.Button(button_frame, text="نسخ المصدر", command=self.copy_sub_subject)
-        self.copy_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         self.append_wosla_button = ttk.Button(button_frame, text=" 'وصلا'", command=lambda: self.append_to_resultnew(" وصلا"))
         self.append_wosla_button.pack(side=tk.LEFT, padx=5, pady=5)
@@ -62,21 +56,35 @@ class QuranApp:
         self.append_wosla_waqfa_button = ttk.Button(button_frame, text=" 'وصلا ووقفا'", command=lambda: self.append_to_resultnew(" وصلا ووقفا"))
         self.append_wosla_waqfa_button.pack(side=tk.LEFT, padx=5, pady=5)
 
+        self.save_button = ttk.Button(button_frame, text="حفظ", command=self.save_record)
+        self.save_button.pack(side=tk.LEFT, padx=5, pady=5)
+
         self.prev_button = ttk.Button(button_frame, text="سابق", command=self.prev_record)
         self.prev_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         self.next_button = ttk.Button(button_frame, text="تالي", command=self.next_record)
         self.next_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-    def create_form_field(self, label_text, variable, focus=False):
+        self.copy_button = ttk.Button(button_frame, text="نسخ المصدر", command=self.copy_sub_subject)
+        self.copy_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    def create_form_field(self, label_text, variable, focus=False, rtl=False):
         frame = ttk.Frame(self.root)
         frame.pack(fill=tk.X, padx=10, pady=5)
         label = ttk.Label(frame, text=label_text)
         label.pack(side=tk.RIGHT)
         entry = ttk.Entry(frame, textvariable=variable, width=50, justify='right')
         entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        if rtl:
+            entry.configure(justify='right')
         if focus:
             entry.focus_set()
+
+    def load_records(self):
+        self.cursor.execute(self.query)
+        self.records = self.cursor.fetchall()
+        self.current_index = 0
+        self.display_record()
 
     def display_record(self):
         if self.records:
@@ -87,14 +95,26 @@ class QuranApp:
             self.sub_subject.set(record[3])
             self.reading.set(record[4])
             self.qareesrest.set(record[5])
-            self.resultnew.set(record[6])
+            self.resultnew.set(record[6] if record[6] is not None else '')
+
+    def save_record(self):
+        current_record = self.records[self.current_index]
+        self.cursor.execute('''
+            UPDATE quran_data
+            SET resultnew = ?
+            WHERE aya_index = ? AND id = ?
+        ''', (self.resultnew.get(), current_record[1], current_record[2]))
+        self.conn.commit()
+        self.load_records()  # Reload records from the database
 
     def prev_record(self):
+        self.save_record()  # Save the current record before navigating
         if self.current_index > 0:
             self.current_index -= 1
             self.display_record()
 
     def next_record(self):
+        self.save_record()  # Save the current record before navigating
         if self.current_index < len(self.records) - 1:
             self.current_index += 1
             self.display_record()
@@ -111,10 +131,11 @@ class QuranApp:
                 UPDATE quran_data
                 SET resultnew = a.resultnew
                 FROM quran_data AS a
-                WHERE quran_data.resultnew IS NULL
-                AND a.resultnew IS NOT NULL
+                WHERE (quran_data.resultnew IS NULL or quran_data.resultnew='')
+                AND NOT(a.resultnew IS NULL or a.resultnew='')
                 AND a.sub_subject = quran_data.sub_subject
                 AND a.reading = quran_data.reading;
+
             '''
             self.cursor.execute(update_query)
             self.conn.commit()
