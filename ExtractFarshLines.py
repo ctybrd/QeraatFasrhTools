@@ -133,10 +133,6 @@ def insert_comments_sqlite(comments,qaree_key):
     c = conn.cursor()
     # Delete rows with value "A" in the field "qaree"
     c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
-    if qaree_key == "A":
-        c.execute("DELETE FROM shmrly WHERE (qaree = 'W') and ((color in ('blue','olive')) or (circle = '4'))")
-        # c.execute("DELETE FROM shmrly WHERE qaree = 'W' and Circle='4'") #AYA COUNT MARKS
-        c.execute("DELETE FROM shmrly WHERE qaree = 'K' and Circle='4'")
     if qaree_key == "I":
         c.execute("DELETE FROM shmrly WHERE qaree = 'H'") # Hesham is subset of ibnamer
         c.execute("DELETE FROM shmrly WHERE qaree = 'Z'") # Ibn thakwan is a subset of ibnamer
@@ -161,26 +157,11 @@ def insert_comments_sqlite(comments,qaree_key):
             color_type = 'Tayseer'
         c.execute("INSERT INTO shmrly(qaree, page_number, color, type, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                   (qaree_key, comment['pageno'], str(color_values), str(color_type), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
-
-    if (qaree_key == "A"): #if warsh add common things to asbahani and kalon todo abujafar after subject matter experts verify
-        c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
-            SELECT ?, page_number, color, type, x, y, width, style, circle
-            FROM shmrly
-            WHERE (qaree = ?) AND ((color IN (?, ?)) or (circle = ?))
-        """, ("W", "A", "olive", "blue", "4"))
-        c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
-            SELECT ?, page_number, color, type, x, y, width, style, circle
-            FROM shmrly
-            WHERE qaree = ? AND circle = ?
-        """, ("K", "A", "4"))
-        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     if (qaree_key == "M"):
         c.execute("update shmrly set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #shift circle object left
-    if (qaree_key in ["B","X"]):
+    if (qaree_key in ["B","X","A","W","K"]):
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     if qaree_key in ["C", "D", "G","P","Y"]:
         c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
