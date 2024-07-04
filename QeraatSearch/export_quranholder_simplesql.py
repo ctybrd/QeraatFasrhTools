@@ -2,10 +2,14 @@ import sqlite3
 import csv
 import shutil
 import json
-
+import os
 # Copy data_v17.db from the source folder to the current folder
-source_db_path = r'E:/Qeraat/Wursha_QuranHolder/other/data/data_v17.db'
-destination_db_path = 'E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db'
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path) 
+drive = drive +'/'
+
+source_db_path = drive + r'Qeraat/Wursha_QuranHolder/other/data/data_v17.db'
+destination_db_path = drive +  r'Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db'
 shutil.copyfile(source_db_path, destination_db_path)
 
 # changed to be here in py 
@@ -222,8 +226,8 @@ def process_result(result, table_name):
 
 
 # Connect to the databases
-conn_data_v17 = sqlite3.connect('E:/Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db')
-db_path = "E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db"
+conn_data_v17 = sqlite3.connect(drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db')
+db_path = drive +"Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 columns = 'aya_index INTEGER, text TEXT'
@@ -250,7 +254,7 @@ for setting in settings:
     processed_result = process_result(result,table_name)
     
     # Export to CSV using processed_result
-    csv_filename = f'E:/Qeraat/QeraatFasrhTools/QeraatSearch/books/{table_name}.csv'
+    csv_filename = drive+f'Qeraat/QeraatFasrhTools/QeraatSearch/books/{table_name}.csv'
     export_to_csv(processed_result, csv_filename)
 
     if processed_result:
