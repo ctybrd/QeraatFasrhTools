@@ -1,3 +1,4 @@
+DROP VIEW "main"."shmrly_all";
 CREATE VIEW shmrly_all as select *, 
 (select text from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text_full, 
@@ -43,11 +44,11 @@ CREATE VIEW shmrly_all as select *,
 (SELECT text FROM book_russian WHERE aya_index = mosshf_shmrly.aya_index) AS russian,
 (SELECT text FROM book_swedish WHERE aya_index = mosshf_shmrly.aya_index) AS swedish,
 (SELECT text FROM book_turkish WHERE aya_index = mosshf_shmrly.aya_index) AS turkish,
-(SELECT text FROM book_urdu WHERE aya_index = mosshf_shmrly.aya_index) AS urdu
+(SELECT text FROM book_urdu WHERE aya_index = mosshf_shmrly.aya_index) AS urdu,
+(SELECT text FROM book_juzay WHERE aya_index = mosshf_shmrly.aya_index) AS juzay
+ from mosshf_shmrly;
 
- from mosshf_shmrly
-
-
+DROP VIEW "main"."madina_all";
  CREATE VIEW madina_all as select *, 
 (select text from book_quran where aya_index = mosshf_madina.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_madina.aya_index) aya_text_full, 
@@ -93,12 +94,12 @@ CREATE VIEW shmrly_all as select *,
 (SELECT text FROM book_russian WHERE aya_index = mosshf_madina.aya_index) AS russian,
 (SELECT text FROM book_swedish WHERE aya_index = mosshf_madina.aya_index) AS swedish,
 (SELECT text FROM book_turkish WHERE aya_index = mosshf_madina.aya_index) AS turkish,
-(SELECT text FROM book_urdu WHERE aya_index = mosshf_madina.aya_index) AS urdu
+(SELECT text FROM book_urdu WHERE aya_index = mosshf_madina.aya_index) AS urdu,
+(SELECT text FROM book_juzay WHERE aya_index = mosshf_madina.aya_index) AS juzay
 
- from mosshf_madina
+ from mosshf_madina;
 
-
-
+DROP VIEW "main"."tjwid_all";
   CREATE VIEW tjwid_all as select *, 
 (select text from book_quran where aya_index = mosshf_tjwid.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_tjwid.aya_index) aya_text_full, 
@@ -144,6 +145,7 @@ CREATE VIEW shmrly_all as select *,
 (SELECT text FROM book_russian WHERE aya_index = mosshf_tjwid.aya_index) AS russian,
 (SELECT text FROM book_swedish WHERE aya_index = mosshf_tjwid.aya_index) AS swedish,
 (SELECT text FROM book_turkish WHERE aya_index = mosshf_tjwid.aya_index) AS turkish,
-(SELECT text FROM book_urdu WHERE aya_index = mosshf_tjwid.aya_index) AS urdu
+(SELECT text FROM book_urdu WHERE aya_index = mosshf_tjwid.aya_index) AS urdu,
+(SELECT text FROM book_juzay WHERE aya_index = mosshf_tjwid.aya_index) AS juzay
 
- from mosshf_tjwid
+ from mosshf_tjwid;

@@ -48,4 +48,6 @@ for record in records:
         print(f'No content found for sora {sora} aya {aya}')
 
 # Close the database connection
+conn.execute("update book_juzay set text=replace(replace(text,'﴿','<b>')'﴾','</b>')'")
+
 conn.close()
