@@ -26,8 +26,8 @@ qaree_files = {
     "X": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Kisai-Khalaf-Shamarly-Shalaby.pdf'),
     "Y": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Yaaqoub-Shamarly-Shalaby.pdf'),
     "C": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Shamarly-Shalaby.pdf'),
-    "D": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Dori-AbuAmro-Shamarly-Shalaby.pdf'),
-    "G": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sosi-AbuAmro-Shamarly-Shalaby.pdf'),
+    # "D": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Dori-AbuAmro-Shamarly-Shalaby.pdf'),
+    # "G": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sosi-AbuAmro-Shamarly-Shalaby.pdf'),
     "L": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Tawasot-Shamarly-Shalaby.pdf'),
     "O": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Asem_IbnAmer-Shamarly-Shalaby.pdf'),
     "P": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Yaqoub-Shamarly-Shalaby.pdf'),
@@ -136,6 +136,9 @@ def insert_comments_sqlite(comments,qaree_key):
     if qaree_key == "I":
         c.execute("DELETE FROM shmrly WHERE qaree = 'H'") # Hesham is subset of ibnamer
         c.execute("DELETE FROM shmrly WHERE qaree = 'Z'") # Ibn thakwan is a subset of ibnamer
+    if qaree_key == "C":
+        c.execute("DELETE FROM shmrly WHERE qaree = 'D'") # Dori is subset of AbuAmro
+        c.execute("DELETE FROM shmrly WHERE qaree = 'G'") # Sosi is a subset of AbuAmro
 
 
     if qaree_key == 'T':
@@ -182,6 +185,20 @@ def insert_comments_sqlite(comments,qaree_key):
             FROM shmrly
             WHERE (qaree = ?) AND  (circle in('','2','4'))
         """, ("Z", "I"))
+    #if AbuAmro add Dori and Sosi as separate qaree
+    if (qaree_key == "C"): #if  ibn amer then create hesahm and ibn thakwan hesham = circle =1 or '' and ibnthkwan circle =2 or ''
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE (qaree = ?) AND  (circle in('','1','4'))
+        """, ("D", "C"))
+        c.execute("""
+            INSERT INTO shmrly(qaree, page_number, color, type, x, y, width, style, circle)
+            SELECT ?, page_number, color, type, x, y, width, style, circle
+            FROM shmrly
+            WHERE (qaree = ?) AND  (circle in('','2','4'))
+        """, ("G", "C"))
     
     
     c.execute("UPDATE shmrly SET style='S' where style is null")
