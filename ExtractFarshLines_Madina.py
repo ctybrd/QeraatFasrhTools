@@ -10,27 +10,27 @@ drive = drive +'/'
 db_path = os.path.join(drive, 'Qeraat', 'farsh_v7.db')
 tmp_db_path = os.path.join(drive, 'Qeraat', 'tmp.db')
 qaree_files = {
-    "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Asbahani-Shamarly-Shalaby.pdf'),
-    "I": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'IbnAmer-Shamarly-Shalaby.pdf'),
-    "T": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'shamarly10th.pdf'),
-    "J": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuJaafar-Shamarly-Shalaby.pdf'),
-    "K": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Qaloon-Shamarly-Shalaby.pdf'),
-    "U": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AshabSela-Shamrly-Shalaby.pdf'),
-    "M": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Hamzah-Shamarly-Shalaby.pdf'),
-    "B": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'IbnKatheer-Shmarly-Shalaby.pdf'),
-    "S": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sho3ba-Shamarly-Shalaby.pdf'),
-    "A": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Azraq-Shamarly-Shalaby.pdf'),
-    "R": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Warsh-Azraq-Shamarly-Shalaby_Light.pdf'),
-    "E": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Kisai-Shamarly-Shalaby.pdf'),
-    "F": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Khalaf-Shamarly-Shalaby.pdf'),
-    "X": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Kisai-Khalaf-Shamarly-Shalaby.pdf'),
-    "Y": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Yaaqoub-Shamarly-Shalaby.pdf'),
-    "C": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Shamarly-Shalaby.pdf'),
-    # "D": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Dori-AbuAmro-Shamarly-Shalaby.pdf'),
-    # "G": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Sosi-AbuAmro-Shamarly-Shalaby.pdf'),
-    "L": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Tawasot-Shamarly-Shalaby.pdf'),
-    "O": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'Asem_IbnAmer-Shamarly-Shalaby.pdf'),
-    "P": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'AbuAmro-Yaqoub-Shamarly-Shalaby.pdf'),
+    "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Asbahani-Madina-Shalaby.pdf'),
+    "I": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'IbnAmer-Madina-Shalaby.pdf'),
+    "T": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Madina10th.pdf'),
+    "J": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AbuJaafar-Madina-Shalaby.pdf'),
+    "K": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Qaloon-Madina-Shalaby.pdf'),
+    "U": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AshabSela-Shamrly-Shalaby.pdf'),
+    "M": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Hamzah-Madina-Shalaby.pdf'),
+    "B": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'IbnKatheer-Shmarly-Shalaby.pdf'),
+    "S": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Sho3ba-Madina-Shalaby.pdf'),
+    "A": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Azraq-Madina-Shalaby.pdf'),
+    "R": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Azraq-Madina-Shalaby_Light.pdf'),
+    "E": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Kisai-Madina-Shalaby.pdf'),
+    "F": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Khalaf-Madina-Shalaby.pdf'),
+    "X": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Kisai-Khalaf-Madina-Shalaby.pdf'),
+    "Y": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Yaaqoub-Madina-Shalaby.pdf'),
+    "C": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AbuAmro-Madina-Shalaby.pdf'),
+    # "D": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Dori-AbuAmro-Madina-Shalaby.pdf'),
+    # "G": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Sosi-AbuAmro-Madina-Shalaby.pdf'),
+    "L": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Tawasot-Madina-Shalaby.pdf'),
+    "O": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Asem_IbnAmer-Madina-Shalaby.pdf'),
+    "P": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AbuAmro-Yaqoub-Madina-Shalaby.pdf'),
 }
 
 def extract_line_comments(pdf_path):
@@ -110,7 +110,7 @@ def extract_line_comments(pdf_path):
 def create_table_sqlite():
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS shmrly
+    c.execute('''CREATE TABLE IF NOT EXISTS madina
                  (qaree TEXT, page_number INTEGER, color TEXT, x REAL, y REAL, width REAL)''')
     conn.commit()
     conn.close()
@@ -132,23 +132,22 @@ def insert_comments_sqlite(comments,qaree_key):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     # Delete rows with value "A" in the field "qaree"
-    c.execute("DELETE FROM shmrly WHERE qaree = ?", (qaree_key,))
+    c.execute("DELETE FROM madina WHERE qaree = ?", (qaree_key,))
     if qaree_key == "I":
-        c.execute("DELETE FROM shmrly WHERE qaree = 'H'") # Hesham is subset of ibnamer
-        c.execute("DELETE FROM shmrly WHERE qaree = 'Z'") # Ibn thakwan is a subset of ibnamer
+        c.execute("DELETE FROM madina WHERE qaree = 'H'") # Hesham is subset of ibnamer
+        c.execute("DELETE FROM madina WHERE qaree = 'Z'") # Ibn thakwan is a subset of ibnamer
     if qaree_key == "C":
-        c.execute("DELETE FROM shmrly WHERE qaree = 'D'") # Dori is subset of AbuAmro
-        c.execute("DELETE FROM shmrly WHERE qaree = 'G'") # Sosi is a subset of AbuAmro
+        c.execute("DELETE FROM madina WHERE qaree = 'D'") # Dori is subset of AbuAmro
+        c.execute("DELETE FROM madina WHERE qaree = 'G'") # Sosi is a subset of AbuAmro
 
 
-    if qaree_key == 'T':
-        xshift = 70.0  
-    else:
-        xshift = 81.0
     
     for comment in comments:
         # print(comment['content'], comment['coordinates'], comment['color'])
-
+        if comment['pageno'] % 2 == 0:
+            xshift = 42
+        else:
+            xshift= 70
         coordinates = str(comment['coordinates'])
         matches = re.findall(r'(\d+\.?\d*)', coordinates)
         x1, y1, x2, y2 = matches
@@ -158,51 +157,49 @@ def insert_comments_sqlite(comments,qaree_key):
             color_type = get_color_type(color_values)
         else:
             color_type = 'Tayseer'
-        c.execute("INSERT INTO shmrly(qaree, page_number, color, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (qaree_key, comment['pageno'], str(color_values), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
+        c.execute("INSERT INTO madina(qaree, page_number, color, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                  (qaree_key, comment['pageno']-3, str(color_values), float((float(x1)-xshift)/255.0), 1-(float((float(y1)-70.0)/410.0)),max(0.05, float((float(x2) - float(x1)) / 255.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
     if (qaree_key == "M"):
-        c.execute("update shmrly set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
-        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
+        c.execute("update madina set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
+        c.execute("UPDATE madina SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #shift circle object left
     if (qaree_key in ["B","X","A","W","K"]):
-        c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
-    if qaree_key in ["C", "D", "G","P","Y"]:
-        c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
+        c.execute("UPDATE madina SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #twice for safety
-    c.execute("UPDATE shmrly SET circle='' where circle is null")
+    c.execute("UPDATE madina SET circle='' where circle is null")
 
     #if ibnamer add hesham and ibn thakwan as separate qaree
     if (qaree_key == "I"): #if  ibn amer then create hesahm and ibn thakwan hesham = circle =1 or '' and ibnthkwan circle =2 or ''
         c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, x, y, width, style, circle)
+            INSERT INTO madina(qaree, page_number, color, x, y, width, style, circle)
             SELECT ?, page_number, color, x, y, width, style, circle
-            FROM shmrly
+            FROM madina
             WHERE (qaree = ?) AND  (circle in('','1','4'))
         """, ("H", "I"))
         c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, x, y, width, style, circle)
+            INSERT INTO madina(qaree, page_number, color, x, y, width, style, circle)
             SELECT ?, page_number, color, x, y, width, style, circle
-            FROM shmrly
+            FROM madina
             WHERE (qaree = ?) AND  (circle in('','2','4'))
         """, ("Z", "I"))
     #if AbuAmro add Dori and Sosi as separate qaree
     if (qaree_key == "C"): #if  ibn amer then create hesahm and ibn thakwan hesham = circle =1 or '' and ibnthkwan circle =2 or ''
         c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, x, y, width, style, circle)
+            INSERT INTO madina(qaree, page_number, color, x, y, width, style, circle)
             SELECT ?, page_number, color, x, y, width, style, circle
-            FROM shmrly
+            FROM madina
             WHERE (qaree = ?) AND  (circle in('','1','4'))
         """, ("D", "C"))
         c.execute("""
-            INSERT INTO shmrly(qaree, page_number, color, x, y, width, style, circle)
+            INSERT INTO madina(qaree, page_number, color, x, y, width, style, circle)
             SELECT ?, page_number, color, x, y, width, style, circle
-            FROM shmrly
+            FROM madina
             WHERE (qaree = ?) AND  (circle in('','2','4'))
         """, ("G", "C"))
     
     
-    c.execute("UPDATE shmrly SET style='S' where style is null")
-    c.execute("UPDATE shmrly SET circle='' where circle is null")
+    c.execute("UPDATE madina SET style='S' where style is null")
+    c.execute("UPDATE madina SET circle='' where circle is null")
 
     conn.commit()
     conn.close()
