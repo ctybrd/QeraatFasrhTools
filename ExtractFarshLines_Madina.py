@@ -144,10 +144,18 @@ def insert_comments_sqlite(comments,qaree_key):
     
     for comment in comments:
         # print(comment['content'], comment['coordinates'], comment['color'])
-        if comment['pageno'] % 2 == 0:
-            xshift = 86
+        yshift = 65.0
+        if comment['pageno']<3:
+            yshift = 95.0
+            if comment['pageno'] % 2 == 0:
+                xshift = 110.0
+            else:
+                xshift= 10
+        elif comment['pageno'] % 2 == 0:
+            xshift = 86.0
         else:
-            xshift= 42
+            xshift= 42.0
+
         coordinates = str(comment['coordinates'])
         matches = re.findall(r'(\d+\.?\d*)', coordinates)
         x1, y1, x2, y2 = matches
@@ -158,7 +166,7 @@ def insert_comments_sqlite(comments,qaree_key):
         else:
             color_type = 'Tayseer'
         c.execute("INSERT INTO madina(qaree, page_number, color, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (qaree_key, comment['pageno'], str(color_values), float((float(x1)-xshift)/255.0), 1-(float((float(y1)-65.0)/410.0)),max(0.05, float((float(x2) - float(x1)) / 255.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
+                  (qaree_key, comment['pageno'], str(color_values), float((float(x1)-xshift)/255.0), 1-(float((float(y1)-yshift)/410.0)),max(0.05, float((float(x2) - float(x1)) / 255.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
     if (qaree_key == "M"):
         c.execute("update madina set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
         c.execute("UPDATE madina SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
