@@ -32,27 +32,35 @@ conn_data_v17 = sqlite3.connect(destination_db_path)
 cursor1 = conn_data_v17.cursor()
 for table in table_names:
     sql = "UPDATE " + table + " SET text = REPLACE(text, 'ـ', '')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
     sql = "UPDATE " + table + " SET text = REPLACE(text, '  ', ' ')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
     sql = "UPDATE " + table + " SET text = REPLACE(text, '  ', ' ')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
     sql = "UPDATE " + table + " SET text = REPLACE(text, '  ', ' ')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
     sql = "UPDATE " + table + " SET text = REPLACE(text, '.', '')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
     sql = "UPDATE " + table + " SET text = REPLACE(text, 'مع قصر مد البدل', '')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
-    sql = "UPDATE " + table + " SET text = REPLACE(text, 'بالفتح وقفا', 'بالفتح م وقفا')"
+    sql = "UPDATE " + table + " SET text = REPLACE(text,'بالفتح م وقفا'    ,'بالفتح وقفا')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
-    sql = "UPDATE " + table + " SET text = REPLACE(text, 'بالفتح وصلا', 'بالفتح م وصلا')"
+    sql = "UPDATE " + table + " SET text = REPLACE(text , 'بالفتح م وصلا','بالفتح وصلا')"
+    print(sql)
     cursor1.execute(sql)
     conn_data_v17.commit()
 
