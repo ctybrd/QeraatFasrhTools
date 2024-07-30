@@ -7,7 +7,7 @@ db_path = 'D:/Qeraat/QeraatFasrhTools/QuranWordMap/quran.db'
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
-# Define the SQL query
+# Define the SQL query to fetch the data
 query = """
 SELECT surahNo, group_concat(distinct ayahNo) as AyahNos
 FROM WordCoordinate
@@ -21,9 +21,6 @@ cursor.execute(query)
 
 # Fetch all results from the query
 query_results = cursor.fetchall()
-
-# Close the connection
-conn.close()
 
 # Initialize the counter and set of used numbers
 next_number = 1
@@ -43,3 +40,20 @@ for surahNo, ayahNos in query_results:
 
 # Output the mapping
 print(mapping)
+
+# Create the new table 'ayamap' in the database
+cursor.execute("DROP TABLE IF EXISTS ayamap")
+cursor.execute("""
+CREATE TABLE ayamap (
+    ayahNo INTEGER PRIMARY KEY,
+    mappedNumber INTEGER
+)
+""")
+
+# Insert the mapping into the 'ayamap' table
+for ayahNo, mappedNumber in mapping.items():
+    cursor.execute("INSERT INTO ayamap (ayahNo, mappedNumber) VALUES (?, ?)", (ayahNo, mappedNumber))
+
+# Commit the changes and close the connection
+conn.commit()
+conn.close()
