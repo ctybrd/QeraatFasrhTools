@@ -72,7 +72,7 @@ for folder_paths, destination_folder, comments in folder_sets:
                 # Calculate the total width for the concatenated image
                 total_width = sum(image.width for image in images) + (len(images) - 1) * spacing_between_images
                 # Create a new blank image with the specified mode, width, and height
-                concatenated_image = Image.new(first_image_format, (total_width, 842))
+                concatenated_image = Image.new(first_image_format, (total_width, 1684))
 
                 # Paste each image onto the concatenated image with vertical lines and comments
                 x_offset = 0
@@ -83,7 +83,7 @@ for folder_paths, destination_folder, comments in folder_sets:
                     x_offset += image.width + spacing_between_images
 
                     if x_offset < total_width:
-                        draw.line([(x_offset, 0), (x_offset, 842)], fill=(0, 0, 0), width=1)
+                        draw.line([(x_offset, 0), (x_offset, 1684)], fill=(0, 0, 0), width=1)
                         x_offset += 1  # Space for the line
 
                 # Save the concatenated image
