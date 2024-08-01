@@ -1,4 +1,4 @@
-import fitz 
+import fitz
 import os
 import shutil
 
@@ -26,7 +26,8 @@ qaree_files = {
     "O": 'Asem_IbnAmer-Shamarly-Shalaby.pdf',
     "P": 'AbuAmro-Yaqoub-Shamarly-Shalaby.pdf',
 }
-#Function to empty folder
+
+# Function to empty folder
 def empty_folder(folder_path):
     if os.path.exists(folder_path):
         for filename in os.listdir(folder_path):
@@ -38,14 +39,18 @@ def empty_folder(folder_path):
                     shutil.rmtree(file_path)
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
+
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path)
-drive = drive +'/'
-input_folder = os.path.join(drive,'Qeraat/NewSides/PDF_Sides_FLAT')
-output_folder = os.path.join(drive,'Qeraat/NewSides/')
+drive = drive + '/'
+input_folder = os.path.join(drive, 'Qeraat/NewSides/PDF_Sides_FLAT')
+output_folder = os.path.join(drive, 'Qeraat/NewSides/')
 
 # Get the list of PDF files in the input folder
 pdf_files = [f for f in os.listdir(input_folder) if f.endswith('.pdf')]
+
+# Zoom factor for increasing the resolution (e.g., 2 for 200% resolution)
+zoom_factor = 2.0
 
 for pdf_file in pdf_files:
     pdf_path = os.path.join(input_folder, pdf_file)
@@ -65,6 +70,7 @@ for pdf_file in pdf_files:
     output_dir = os.path.join(output_folder, f'Side{letter}')
     os.makedirs(output_dir, exist_ok=True)
     empty_folder(output_dir)
+    
     # Open the PDF file
     pdf_document = fitz.open(pdf_path)
     
@@ -72,7 +78,7 @@ for pdf_file in pdf_files:
     for page_num in range(len(pdf_document)):
         page = pdf_document.load_page(page_num)
         dlist = page.get_displaylist()
-        pix = dlist.get_pixmap()
+        pix = dlist.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
         output_image_path = os.path.join(output_dir, f'{page_num + 1}.png')
         pix.save(output_image_path)
         print(f'Saved: {output_image_path}')
