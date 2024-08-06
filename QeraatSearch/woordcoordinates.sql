@@ -127,3 +127,28 @@ SET nxtword = rawword || ' '|| (SELECT nxtword FROM NextWordCTE WHERE MadinaWord
 WHERE wordSNo <> 0;
 
 select * FROM MadinaWordsXY where wordsno<>0 order by sora,aya,wordsno;
+
+-- farsh
+delete from madina where qaree='B';
+insert into madina(qaree,page_number,color,x,y,width,style,circle)
+select 'B',realPageNo,case when wordno  % 2 = 1 then 'red' else 'blue' end,x,y,width,'S','' 
+from WordCoordinate where realaya=48;
+UPDATE WordCoordinate 
+SET realPageNo = mosshf_madina.page_number
+FROM mosshf_madina
+WHERE mosshf_madina.aya_number = WordCoordinate.realAya
+  AND mosshf_madina.sora_number = WordCoordinate.realsora
+  and WordCoordinate.realaya in(47,48);
+
+
+UPDATE quran_data
+SET wordsno = (
+    SELECT MIN(xy.wordsno)
+    FROM MadinaWordsXY xy
+    WHERE quran_data.sub_subject = CASE 
+                                   WHEN instr(quran_data.sub_subject, ' ') = 0 THEN xy.rawword 
+                                   ELSE xy.nxtword 
+                                   END
+    AND xy.aya = quran_data.aya 
+    AND xy.sora = quran_data.sora
+);
