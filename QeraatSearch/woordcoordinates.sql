@@ -152,3 +152,45 @@ SET wordsno = (
     AND xy.aya = quran_data.aya 
     AND xy.sora = quran_data.sora
 );
+UPDATE quran_data
+SET x = (
+    SELECT x
+    FROM MadinaWordsXY xy
+    WHERE xy.wordsno=quran_data.wordsno
+    AND xy.aya = quran_data.aya 
+    AND xy.sora = quran_data.sora
+);
+
+UPDATE quran_data
+SET y = (
+    SELECT y
+    FROM MadinaWordsXY xy
+    WHERE xy.wordsno=quran_data.wordsno
+    AND xy.aya = quran_data.aya 
+    AND xy.sora = quran_data.sora
+);
+
+-- أول تجربة ابن كثير
+delete from madina_temp where qaree='B';
+
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'B',page_number1,case when reading like '%بصلة هاء الضمير%' 
+then '#32cd32' else '#ff0000' end ,x,y,width,'S',CASE WHEN  R2_1=1 and R2_2 is null then '1' ELSE
+case WHEN  R2_2=1 and R2_1 is null then '2' else '' END END
+from quran_data where 
+            (R2_1 IS NOT NULL or R2_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+             (reading <> 'بصلة ميم الجمع وصلا.'
+			 )
+       and 
+       (reading <>'بضم ميم الجمع، ووصلها بواو لفظية.');
+
+
+-- in the farsh db
+delete from madina where qaree='B';
+insert into madina select * from madina_temp;
+update madina set circle= '' where circle is null;
+update madina set STYLE= 'S' where style  is null;
+update madina set width= width/2 where qaree='B' and color='#32cd32';
+update madina set width= width-.01 where qaree='B' and color<>'#32cd32';
+
