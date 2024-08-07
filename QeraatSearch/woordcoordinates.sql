@@ -153,6 +153,21 @@ SET wordsno = (
     AND xy.sora = quran_data.sora
 );
 UPDATE quran_data
+SET wordsno = (
+    SELECT MIN(xy.wordsno)
+    FROM MadinaWordsXY xy
+    WHERE 
+			(replace(quran_data.sub_subject,' ','')=replace(xy.rawword,' ',''))
+			or
+			(replace(quran_data.sub_subject,' ','')=replace(xy.nxtword,' ',''))
+			
+    AND xy.aya = quran_data.aya 
+    AND xy.sora = quran_data.sora
+)
+where wordsno is null
+;
+
+UPDATE quran_data
 SET x = (
     SELECT x
     FROM MadinaWordsXY xy
@@ -169,6 +184,17 @@ SET y = (
     AND xy.aya = quran_data.aya 
     AND xy.sora = quran_data.sora
 );
+
+UPDATE quran_data
+SET width = (
+    SELECT width
+    FROM MadinaWordsXY xy
+    WHERE xy.wordsno=quran_data.wordsno
+    AND xy.aya = quran_data.aya 
+    AND xy.sora = quran_data.sora
+);
+
+SELECT * from quran_data where x is null and sub_subject not like '% بسم%';
 
 -- أول تجربة ابن كثير
 delete from madina_temp where qaree='B';

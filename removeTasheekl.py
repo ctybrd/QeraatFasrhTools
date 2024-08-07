@@ -4,7 +4,7 @@ from unidecode import unidecode
 import pyarabic.araby as araby
 
 # Connect to the SQLite database
-conn = sqlite3.connect('E:\Qeraat\QeraatFasrhTools\QuranWordMap\quran.db')
+conn = sqlite3.connect('D:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
 cursor = conn.cursor()
 
 # Define the function to remove diacritics
@@ -14,12 +14,12 @@ def remove_diacritics(text):
     return unidecode(rawtext)
 
 # Update the "rawword" column for existing rows
-cursor.execute("SELECT wordindex, word FROM words")
+cursor.execute("SELECT wordindex, word FROM words1")
 rows = cursor.fetchall()
 for row in rows:
     wordindex, word = row
     rawword = araby.strip_diacritics(word)
-    cursor.execute("UPDATE words SET rawword = ? WHERE wordindex = ?", (rawword, wordindex))
+    cursor.execute("UPDATE words1 SET rawword = ? WHERE wordindex = ?", (rawword, wordindex))
 
 # Commit the changes and close the connection
 conn.commit()
