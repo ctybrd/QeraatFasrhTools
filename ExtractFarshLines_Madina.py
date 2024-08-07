@@ -240,17 +240,15 @@ def get_color_name(color_values,qaree_key):
         rgb_values_original = tuple(int(round(val * 255)) for val in fraction_values)
         
 
-        try:
-            color_name = webcolors.rgb_to_name(rgb_values_original)
-        except ValueError:
-            color_name = '#{:02x}{:02x}{:02x}'.format(*rgb_values_original)
+        # try:
+        #     color_name = webcolors.rgb_to_name(rgb_values_original)
+        # except ValueError:
+        color_name = '#{:02x}{:02x}{:02x}'.format(*rgb_values_original)
     except Exception:
         failed_colors.add(qaree_key+ ' '+str(rgb_values_original))  # Add the failed color to the set
         color_name = 'red'
     
     return color_name
-
-
 
 
 def get_color_type(color_values):

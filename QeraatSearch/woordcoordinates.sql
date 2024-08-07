@@ -220,12 +220,25 @@ from quran_data where
        and 
        (reading <>'بضم ميم الجمع، ووصلها بواو لفظية.');
 
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set width= width/2 where qaree='B' and color='#32cd32';
+update madina_temp set width= width-.01 where qaree='B' and color<>'#32cd32';
 
 -- in the farsh db
 delete from madina where qaree='B';
 insert into madina select * from madina_temp;
-update madina set circle= '' where circle is null;
-update madina set STYLE= 'S' where style  is null;
-update madina set width= width/2 where qaree='B' and color='#32cd32';
-update madina set width= width-.01 where qaree='B' and color<>'#32cd32';
 
+
+select sora,aya,sub_subject,reading,r2_1,r2_2,page_number1,count(*)
+from quran_data where 
+            (R2_1 IS NOT NULL or R2_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+             (reading <> 'بصلة ميم الجمع وصلا.'
+			 )
+       and 
+       (reading <>'بضم ميم الجمع، ووصلها بواو لفظية.')
+	   group by sora,aya,sub_subject,reading,r2_1,r2_2,page_number1
+	  having count(*)>1
+	  ORDER by sora,aya
+	 ;
