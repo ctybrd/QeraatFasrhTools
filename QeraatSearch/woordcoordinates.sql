@@ -200,8 +200,17 @@ SELECT * from quran_data where x is null and sub_subject not like '% بسم%';
 delete from madina_temp where qaree='B';
 
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
-select 'B',page_number1,case when reading like '%بصلة هاء الضمير%' 
-then '#32cd32' else '#ff0000' end ,x,y,width,'S',CASE WHEN  R2_1=1 and R2_2 is null then '1' ELSE
+select 'B',page_number1,
+case when reading like '%بصلة هاء الضمير%' 
+then '#32cd32' else 
+case when sub_subject like '%صراط%' then
+  '#00FFFF'
+else
+  case when reading like '%وقف بهاء السكت%' then '#FF6820'
+  else
+  '#ff0000'
+end end
+end ,x,y,width,'S',CASE WHEN  R2_1=1 and R2_2 is null then '1' ELSE
 case WHEN  R2_2=1 and R2_1 is null then '2' else '' END END
 from quran_data where 
             (R2_1 IS NOT NULL or R2_2 IS NOT NULL) AND

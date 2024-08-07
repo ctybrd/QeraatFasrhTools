@@ -17,7 +17,7 @@ qaree_files = {
     "K": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Qaloon-Madina-Shalaby.pdf'),
     "U": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AshabSela-Shamrly-Shalaby.pdf'),
     "M": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Hamzah-Madina-Shalaby.pdf'),
-    "B": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'IbnKatheer-Shmarly-Shalaby.pdf'),
+    "B": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'IbnKatheer-Madina-Shalaby.pdf'),
     "S": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Sho3ba-Madina-Shalaby.pdf'),
     "A": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Madina-Shalaby.pdf'),
     "R": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Madina-Shalaby_Light.pdf'),

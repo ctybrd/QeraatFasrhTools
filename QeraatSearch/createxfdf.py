@@ -6,7 +6,7 @@ import fitz  # PyMuPDF
 def create_xfdf(input_pdf, output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute("SELECT page_number, color, x, y, width FROM madina_temp")
+    cursor.execute("SELECT page_number, color, x, y, width, style, circle FROM madina_temp")
     data = cursor.fetchall()
     conn.close()
 
@@ -15,14 +15,14 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
     
     annots = []
     for row in data:
-        page_number = row[0] -1  # Adjust page index as PyMuPDF starts from 0
+        page_number = row[0] - 1  # Adjust page index as PyMuPDF starts from 0
         page = doc[page_number]
         page_width = page.mediabox.width
         page_height = page.mediabox.height
 
         page_width1 = 254
         page_height1 = 412
-        xmargin = 88 if (page_number+1) % 2 == 0 else 40
+        xmargin = 88 if (page_number + 1) % 2 == 0 else 40
         ymargin = 67
 
         if row[2] is None or row[3] is None or row[4] is None:
@@ -39,12 +39,20 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         y_end = y_start
 
         color = row[1]
+        circle = row[6]
 
         creation_date = datetime.datetime.now().strftime("D:%Y%m%d%H%M%S+03'00'")
         annot_name = str(uuid.uuid4())
 
+        # Determine the additional attribute based on the circle value
+        additional_attribute = ''
+        if circle == "1":
+            additional_attribute = ' tail="Circle"'
+        elif circle == "2":
+            additional_attribute = ' head="Circle"'
+
         annot = f'''
-        <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}"/>
+        <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute}/>
         '''
         annots.append(annot)
 
@@ -61,4 +69,4 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf("E:/Qeraat/Madina.pdf", "E:/Qeraat/Madina_annots.xfdf", "E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+create_xfdf("d:/Qeraat/Madina.pdf", "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
