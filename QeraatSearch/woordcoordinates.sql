@@ -152,6 +152,42 @@ SET wordsno = (
     AND xy.aya = quran_data.aya 
     AND xy.sora = quran_data.sora
 );
+-- revised version
+UPDATE quran_data
+SET wordsno = (
+    SELECT ranked_xy.wordsno
+    FROM (
+        SELECT xy.wordsno,
+               ROW_NUMBER() OVER (ORDER BY xy.wordsno) as rn
+        FROM MadinaWordsXY xy
+        WHERE quran_data.sub_subject = CASE 
+                                       WHEN instr(quran_data.sub_subject, ' ') = 0 THEN xy.rawword 
+                                       ELSE xy.nxtword 
+                                       END
+        AND xy.aya = quran_data.aya 
+        AND xy.sora = quran_data.sora
+    ) ranked_xy
+    WHERE ranked_xy.rn = quran_data.sub_sno
+);
+
+UPDATE quran_data
+SET wordsno = (
+    SELECT ranked_xy.wordsno
+    FROM (
+        SELECT xy.wordsno,
+               ROW_NUMBER() OVER (ORDER BY xy.wordsno) as rn
+        FROM MadinaWordsXY xy
+        WHERE 
+            (replace(quran_data.sub_subject, ' ', '') = replace(xy.rawword, ' ', ''))
+            OR
+            (replace(quran_data.sub_subject, ' ', '') = replace(xy.nxtword, ' ', ''))
+        AND xy.aya = quran_data.aya 
+        AND xy.sora = quran_data.sora
+    ) ranked_xy
+    WHERE ranked_xy.rn = quran_data.sub_sno
+)
+WHERE wordsno is null;
+
 UPDATE quran_data
 SET wordsno = (
     SELECT MIN(xy.wordsno)
@@ -242,3 +278,32 @@ from quran_data where
 	  having count(*)>1
 	  ORDER by sora,aya
 	 ;
+
+   -- ورش
+   -- اللين المهموز
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#FF00FF'
+end ,x+width/4,y,width/2,'S', ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%توسط%إشباع%'
+and reading like '%اللين%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+-- تغليظ اللام
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#800080'
+end ,x+width/4,y,width/2,case when reading like '%بخلف%' or reading like '%ترقيق%' then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%تغليظ%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
