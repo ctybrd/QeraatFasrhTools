@@ -63,7 +63,7 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
   <annots>
     {''.join(annots)}
   </annots>
-</xfdf>'''
+</xfdf>'''  
 
     with open(output_xfdf, 'w', encoding='utf-8') as f:
         f.write(xfdf_content)

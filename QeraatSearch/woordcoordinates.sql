@@ -284,7 +284,7 @@ from quran_data where
 delete from madina_temp ;
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
 select 'A',page_number1,'#FF00FF'
-end ,x+width/4,y,width/2,'S', ''
+ ,x+width/4,y,width/2,'S', ''
 from quran_data where 
             (R1_2 IS NOT NULL ) AND
              (IFNULL(r5_2, 0) = 0) and
@@ -298,11 +298,123 @@ update madina_temp set STYLE= 'S' where style  is null;
 delete from madina_temp ;
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
 select 'A',page_number1,'#800080'
-end ,x+width/4,y,width/2,case when reading like '%بخلف%' or reading like '%ترقيق%' then 'D' else 'S' end, ''
+ ,x+width/4,y,width/2,case when reading like '%بخلف%' or reading like '%ترقيق%' then 'D' else 'S' end, ''
 from quran_data where 
             (R1_2 IS NOT NULL ) AND
              (IFNULL(r5_2, 0) = 0) and
 (reading like '%تغليظ%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- ترقيق الراء
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#FF8C00'
+ ,x,y-0.002,width/3,case when reading like '%بخلف%'  then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like  '%ترقيق%الراء%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- صلة ميم الجمع
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#808000'
+ ,x,y-0.002,0.05,case when reading like '%بخلف%'  then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like  '%ميم الجمع%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- الإبدال
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#32CD32'
+ ,x,y,width,case when reading like '%بخلف%'  then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading ='بالإبدال' or reading like '%إبدال الهمزة%' or reading like '%مع إبدال%')
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- نقل
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#007FFF'
+ ,case when sub_subject like '% %' then x else x+width-0.06 end ,y,0.05,case when reading like '%بخلف%'  then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%نقل%'
+and reading not like '%نقلب%'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- البدل
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#FF78FF'
+ ,x+(width/2.0)-0.025,y-0.003,0.05,case when reading like '%بخلف%'  then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%ثلاثة%البدل%'
+or reading like '%تثليث%'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- التقليل بخلف 
+--40E0D0
+
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#40E0D0'
+ ,x,y,0.05,case when reading like 
+ '%بخلف%'  
+ then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%تقليل%بخلف%'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+-- تقليل
+--00FFFF
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'A',page_number1,'#00FFFF'
+ ,x,y,0.05,case when reading like 
+ '%بخلف%'  
+ then 'D' else 'S' end, ''
+from quran_data where 
+            (R1_2 IS NOT NULL ) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%تقليل%' 
+and reading not like '%تقليل بخلف%'
+)
 order by aya_index,id;
 
 update madina_temp set circle= '' where circle is null;
