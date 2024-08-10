@@ -161,7 +161,7 @@ def insert_comments_sqlite(comments,qaree_key):
         c.execute("INSERT INTO shmrly(qaree, page_number, color, x, y, width,style,circle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                   (qaree_key, comment['pageno'], str(color_values), float((float(x1)-xshift)/443.0), 1-(float((float(y1)-81.0)/691.0)),max(0.05, float((float(x2) - float(x1)) / 443.0)),str(comment['style']),str(comment['circle'])))  # Use converted values
     if (qaree_key == "M"):
-        c.execute("update shmrly set circle =4 where qaree='M' and color='cyan' and circle='2' and width<=0.05")
+        c.execute("update shmrly set circle =4 where qaree='M' and (color='cyan'or color ='#00FFFF' or color or color ='#00ffff') and circle='2' and width<=0.05")
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #shift circle object left
     if (qaree_key in ["B","X","A","W","K"]):
