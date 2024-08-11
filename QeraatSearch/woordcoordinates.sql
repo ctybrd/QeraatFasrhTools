@@ -419,3 +419,16 @@ order by aya_index,id;
 
 update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
+
+--- فرق الأصبهاني عن الشاطبية
+SELECT w.sora,w.aya,w.page_number1,w.sub_subject,w.reading
+FROM Asbahani W 
+LEFT JOIN quran_data A 
+ON A.sub_subject = W.sub_subject 
+AND A.aya_index = W.aya_index 
+AND A.r5_2 IS NULL 
+AND A.r1_2 IS NOT NULL
+WHERE A.sub_subject IS NULL
+order by w.aya_index
+
+تذكر التوراة
