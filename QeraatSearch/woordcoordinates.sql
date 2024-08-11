@@ -431,4 +431,28 @@ AND A.r1_2 IS NOT NULL
 WHERE A.sub_subject IS NULL
 order by w.aya_index
 
-تذكر التوراة
+--تذكر التوراة
+SELECT a.sora,a.aya,a.page_number1,a.sub_subject,a.reading
+FROM quran_data A
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM asbahanitable W
+    WHERE A.sub_subject = W.sub_subject 
+      AND A.aya_index = W.aya_index
+)
+AND A.r5_2 IS NULL 
+AND A.r1_2 IS NOT NULL
+AND NOT (
+    A.reading LIKE '%تقليل%' 
+    OR A.reading LIKE '%ثلاثة%البدل%' 
+    OR A.reading LIKE '%تثليث%' 
+    OR A.reading LIKE '%ترقيق%الراء%' 
+    OR A.reading LIKE '%تغليظ%' 
+    OR (
+        A.reading LIKE '%توسط%إشباع%' 
+        AND A.reading LIKE '%اللين%'
+    )
+	or A.reading like '%السورتين%'
+	or a.reading like '%ترقيقها%'
+);
+

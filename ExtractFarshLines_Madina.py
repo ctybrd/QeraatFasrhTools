@@ -10,7 +10,7 @@ drive = drive +'/'
 db_path = os.path.join(drive, 'Qeraat', 'farsh_v7.db')
 tmp_db_path = os.path.join(drive, 'Qeraat', 'tmp.db')
 qaree_files = {
-    "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Warsh-Asbahani-Madina-Shalaby.pdf'),
+    "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Asbahani-Madina-Shalaby.pdf'),
     "I": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'IbnAmer-Madina-Shalaby.pdf'),
     "T": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Madina10th.pdf'),
     "J": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'AbuJaafar-Madina-Shalaby.pdf'),
