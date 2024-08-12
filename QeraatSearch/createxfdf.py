@@ -76,4 +76,4 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf("e:/Qeraat/Madina.pdf", "e:/Qeraat/Madina_annots.xfdf", "e:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+create_xfdf("d:/Qeraat/Madina.pdf", "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")

@@ -541,3 +541,55 @@ update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 
 
+-- ادغام إدغام
+-- وضعت شرطا أن يكون قد وافق قارئاآخر لأستبعد ما يخص وقف حمزة وهشام والاقتصار على الادغام فقط
+
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#0000ff',case when sub_subject like '% %' then  x-width/2  else x end,y,width,'S',CASE WHEN  R6_1=1 and R6_2 is null then '1' ELSE
+case WHEN  R6_2=1 and R6_1 is null then '2' else '' END END as circle
+from quran_data where 
+            (R6_1 IS NOT NULL or R6_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+             (reading <> 'بإدغام بلا غنة')
+			 and
+             ((reading like '%دغام%')
+			 or
+			 (reading like '%دغم%')
+			 )
+	AND
+(
+    q1 IS NOT NULL OR q2 IS NOT NULL OR q3 IS NOT NULL OR q4 IS NOT NULL OR q5 IS NOT NULL OR 
+    q7 IS NOT NULL OR q8 IS NOT NULL OR q9 IS NOT NULL OR
+    r1_1 IS NOT NULL OR r1_2 IS NOT NULL OR
+    r2_1 IS NOT NULL OR r2_2 IS NOT NULL OR
+    r3_1 IS NOT NULL OR r3_2 IS NOT NULL OR
+    --r4_1 IS NOT NULL OR 
+	r4_2 IS NOT NULL OR
+    r5_1 IS NOT NULL OR r5_2 IS NOT NULL OR
+    --r6_1 IS NOT NULL OR r6_2 IS NOT NULL OR
+    r7_1 IS NOT NULL OR r7_2 IS NOT NULL OR
+    r8_1 IS NOT NULL OR r8_2 IS NOT NULL OR
+    r9_1 IS NOT NULL OR r9_2 IS NOT NULL OR
+    r10_1 IS NOT NULL OR r10_2 IS NOT NULL
+)
+			 ORDER by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+-- وقف حمزة
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#808000',x,y+0.005,width,'S','' circle
+from quran_data where 
+             (IFNULL(r5_2, 0) = 0) and
+R6_1 is not null
+AND
+ exists (select 1 from hamzaend where hamzaend.sora=quran_data.sora and 
+hamzaend.aya=quran_data.aya and quran_data.sub_subject =  hamzaend.rawword  );
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
