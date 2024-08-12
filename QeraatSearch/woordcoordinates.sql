@@ -456,3 +456,88 @@ AND NOT (
 	or a.reading like '%ترقيقها%'
 );
 
+--- قراءة حمزة
+
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#ff9900'
+ ,x,y,0.05,case when reading like 
+ '%بخلف%'  
+ then 'D' else 'S' end, ''
+from quran_data where 
+            ((R6_1 IS NOT NULL ) or (R6_2 IS NOT NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%تقليل%' 
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+
+
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#800080'
+ ,x,y,0.05, 'S', '4'
+from quran_data where 
+  ((R6_1 IS NOT NULL ) and (R6_2 IS NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%غنة%' 
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+-- الإمالة
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#00ffff'
+ , CASE WHEN substr(sub_subject, -1) = 'ى' or substr(sub_subject, -1) = 'ا'  THEN x  ELSE x + width/ 2   END AS x_value,y+0.005,0.05,'S', '4'
+from quran_data where 
+            ((R6_1 IS NOT NULL ) or (R6_2 IS NOT NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%إمال%' or reading like '%أمال%'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+-- ضم الهاء وصلا
+
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#0000ff',x+0.04,y-0.04,0.05,'H', '4'
+from quran_data where 
+            ((R6_1 IS NOT NULL ) or (R6_2 IS NOT NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading  ='بضم الهاء والميم وصلا، وبكسر الهاء وإسكان الميم وقفا.'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+
+-- عليهم
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#0000ff',x+0.04,y-0.04,0.05,'S', '4'
+from quran_data where 
+            ((R6_1 IS NOT NULL ) or (R6_2 IS NOT NULL )) AND
+             (IFNULL(r5_2, 0) = 0) AND 
+reading  !='بضم الهاء والميم وصلا، وبكسر الهاء وإسكان الميم وقفا.'
+AND
+sub_subject not like '% %' AND 
+(sub_subject like '%عليهم%'
+or sub_subject  like '%إليهم%'
+or sub_subject like '%لديهم%'
+
+)
+
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+
+

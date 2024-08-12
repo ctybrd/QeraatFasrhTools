@@ -40,7 +40,7 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
 
         color = row[1]
         circle = row[6]
-
+        style = row[5]
         creation_date = datetime.datetime.now().strftime("D:%Y%m%d%H%M%S+03'00'")
         annot_name = str(uuid.uuid4())
 
@@ -50,10 +50,17 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
             additional_attribute = ' tail="Circle"'
         elif circle == "2":
             additional_attribute = ' head="Circle"'
+        if circle != "4":
+            annot = f'''
+            <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute}/>
+            '''
+        else:
+            annot = f'''
+            <circle {'interior-color="' + color + '" ' if style != 'H' else ''}title="Title" creationdate="{creation_date}" subject="Subject" page="{page_number}" date="{creation_date}" opacity="0.7" flags="print" name="{annot_name}" rect="{x_start},{y_start},{x_start+6},{y_start+6}" color="{color}" width="1"/>
+            '''
 
-        annot = f'''
-        <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute}/>
-        '''
+
+
         annots.append(annot)
 
     xfdf_content = f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -69,4 +76,4 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf("d:/Qeraat/Madina.pdf", "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+create_xfdf("e:/Qeraat/Madina.pdf", "e:/Qeraat/Madina_annots.xfdf", "e:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
