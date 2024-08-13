@@ -593,3 +593,126 @@ update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
 
+-- فرش حمزة
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#ff0000',x,y,width,'S',
+CASE WHEN  R6_1=1 and R6_2 is null then '1' ELSE
+case WHEN  R6_2=1 and R6_1 is null then '2' else '' END END as circle
+from quran_data where
+
+qareesrest like '%حمزة%'
+ and r5_2 is null
+ AND
+ reading not like 'وقف%'
+ and reading not like 'وله حال الوقف%'
+ and reading not like 'بضم الهاء والميم وصلا، وبضم الهاء وإسكان الميم وقفا.'
+ and reading not like 'بضم الهاء والميم وصلا، وبكسر الهاء وإسكان الميم وقفا.'
+ and sub_subject not like '%صراط%'
+ and sub_subject<>'عليهم'
+ and sub_subject<>'إليهم'
+ and sub_subject<>'لديهم'
+ AND
+   sub_subject not like '%شيء%'
+   and
+   sub_subject not like '%شيئا%'
+   and
+((reading like '%كسر%' 
+) or
+(reading like '% ضم%'
+) or
+(reading like '%بضم%'
+) or
+(reading like '%مفتوحة%'
+) or
+(reading like '%بفتح%'
+) or
+
+
+(reading like '%سكون%'
+)
+or
+(reading like '%مكسورة%'
+) or
+(reading like '%بكسر%'
+) or
+
+(reading like '%مشددة%'
+) or
+(reading like '%تشديد%'
+) or
+(reading like '%ساكنة%'
+) or
+(reading like '%مضمومة%'
+) or
+(reading like '%فراد%'
+) or
+(reading like '%تشديد%'
+) or
+(reading like '%تخفيف%'
+) or
+(reading like '%مخففة%'
+) or
+(reading like '%ممدودة%'
+) or
+(reading like '%زيادة%'
+) or
+(reading like '%إسكان%'
+) or
+(reading like '%بالرفع%'
+) or
+(reading like '%بالخفض%'
+) or
+(reading like '%مبنيا%'
+) or
+(reading like '%فاعله%'
+) or
+(reading like '%نون %'
+) or
+(reading like '%نونين %'
+) or
+(reading like '%الجمع%'
+) or
+(reading like '%توحيد%'
+) or
+(reading like '%تقديم%'
+) or
+(reading like '%خطاب%'
+) or
+(reading like '%فتحة%'
+) or
+(reading like '%سكان%'
+) or
+(reading like '%بالياء%'
+) or
+(reading like '%بالتاء%'
+) or
+(reading like '%بتاء%'
+) or
+(reading like '%بياء%'
+)
+or
+(reading like '%بنون%'
+)
+or
+(reading like '%بالنون%'
+)
+or
+(reading like '%فعل%'
+)
+)
+and (reading<>'بصلة ميم الجمع وصلا.') and 
+(reading <>'بصلة ميم الجمع وصلا بخلف.')
+and (reading <>'بصلة ميم الجمع وصلا مع الإشباع.')
+and (reading <>'قرأ بصلة ميم الجمع وصلا.')
+and (reading<>'قرأ بصلة ميم الجمع وصلاً بخلف عنه.')
+and (reading <>'قرأ بصلة ميم الجمع وصلاً مع الإشباع.')
+and reading<>'قرأ بضم الهاء مع الوقف بهاء السكت باتفاق.'
+and reading<>'قرأ بضم هاء الضمير ، مع الوقف بهاء السكت.'
+and reading <>'قرأ بترك الإمالة، ووقف على نون النسوة بهاء السكت.'
+and reading <>'قرأ بكسر الهاء ووقف بهاء السكت باتفاق.'
+and r5_2 is null;
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
