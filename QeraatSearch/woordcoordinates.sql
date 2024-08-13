@@ -716,3 +716,42 @@ update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
 
+-- أبو عمرو
+-- فهو تم استيراده
+
+-- كسر الهاء وصلا
+
+delete from madina_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'C',page_number1,'#0000ff',x,y,0.05,'H', '4'
+from quran_data where 
+            ((R3_1 IS NOT NULL ) or (R3_2 IS NOT NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading = 'بكسر الهاء والميم وصلا، وبكسر الهاء وإسكان الميم وقفا.'
+)
+order by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+
+-- ادغام إدغام كبير
+
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'C',page_number1,'#007FFF',case when sub_subject like '% %' then  x-width/2  else x end,y,width,'S',CASE WHEN  R6_1=1 and R6_2 is null then '1' ELSE
+case WHEN  R3_2=1 and R3_1 is null then '2' else '' END END as circle
+from quran_data where 
+            (R3_1 IS NOT NULL or R3_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) 
+			 and
+             ((reading like '%دغام%كبير%')
+
+			 )
+
+			 ORDER by aya_index,id;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
