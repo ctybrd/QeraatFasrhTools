@@ -9,7 +9,10 @@ SELECT  text_full,aya_index,id,sub_subject,reading,qareesrest,resultnew from all
 ) or
 (reading like '%بفتح%'
 ) or
+or
 
+(reading like '%سكون%'
+)
 (reading like '%مكسورة%'
 ) or
 (reading like '%بكسر%'
