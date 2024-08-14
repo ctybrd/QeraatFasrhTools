@@ -50,6 +50,8 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
             additional_attribute = ' tail="Circle"'
         elif circle == "2":
             additional_attribute = ' head="Circle"'
+        if style == 'D':
+            additional_attribute +='style="dash" dashes="3,3"'
         if circle != "4":
             annot = f'''
             <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute}/>
@@ -76,4 +78,4 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf("d:/Qeraat/Madina.pdf", "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+create_xfdf("e:/Qeraat/Madina.pdf", "e:/Qeraat/Madina_annots.xfdf", "e:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
