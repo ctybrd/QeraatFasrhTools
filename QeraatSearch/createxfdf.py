@@ -1,24 +1,22 @@
 import sqlite3
 import uuid
 import datetime
-import fitz  # PyMuPDF
 
-def create_xfdf(input_pdf, output_xfdf, db_file):
+
+def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     cursor.execute("SELECT page_number, color, x, y, width, style, circle FROM madina_temp")
     data = cursor.fetchall()
     conn.close()
 
-    # Open the input PDF to get page dimensions
-    doc = fitz.open(input_pdf)
     
     annots = []
     for row in data:
-        page_number = row[0] - 1  # Adjust page index as PyMuPDF starts from 0
-        page = doc[page_number]
-        page_width = page.mediabox.width
-        page_height = page.mediabox.height
+        page_number = row[0] - 1
+        
+        page_width = 382
+        page_height = 547
 
         page_width1 = 254
         page_height1 = 412
@@ -67,7 +65,7 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
 
     xfdf_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">
-  <f href="{input_pdf}"/>
+  <f href="https://t.me/ctybrd247"/>
   <ids original="{uuid.uuid4().hex}" modified="{uuid.uuid4().hex}"/>
   <annots>
     {''.join(annots)}
@@ -78,4 +76,4 @@ def create_xfdf(input_pdf, output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf("e:/Qeraat/Madina.pdf", "e:/Qeraat/Madina_annots.xfdf", "e:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+create_xfdf( "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
