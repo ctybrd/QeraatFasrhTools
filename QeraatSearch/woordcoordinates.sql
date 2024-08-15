@@ -738,10 +738,11 @@ update madina_temp set x= 0.0 where x<0.0;
 
 -- ادغام إدغام كبير
 
+-- ادغام إدغام كبير
+
 delete from madina_temp;
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
-select 'C',page_number1,'#007FFF',case when sub_subject like '% %' then  x-width/2  else x end,y,width,'S',CASE WHEN  R6_1=1 and R6_2 is null then '1' ELSE
-case WHEN  R3_2=1 and R3_1 is null then '2' else '' END END as circle
+select 'C',page_number1,'#007FFF',case when sub_subject like '% %' then x else x end,y+0.005,width,'S','4' as circle
 from quran_data where 
             (R3_1 IS NOT NULL or R3_2 IS NOT NULL) AND
              (IFNULL(r5_2, 0) = 0) 
@@ -755,7 +756,6 @@ from quran_data where
 update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
-
 -- مرسوم الخط
 delete from madina_temp ;
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
@@ -767,6 +767,52 @@ from quran_data where
 )
 order by aya_index,id;
 
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+-- مصحف ابن عامر
+-- إدغام
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'I',page_number1,'#0000ff',case when sub_subject like '% %' then  x-width/2  else x end,y,width,
+case when reading like '%بخلف%' then 'D' else 'S' end,
+CASE WHEN  R4_1=1 and R4_2 is null then '1' ELSE
+case WHEN  R4_2=1 and R4_1 is null then '2' else '' END END as circle
+from quran_data where 
+   (R4_1 IS NOT NULL or R4_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+             (reading  Not Like '%غنة%')
+			 and
+            ((reading like '%دغام%')
+			 or
+			 (reading like '%دغم%')
+			 )
+			 and reading not like 'وقف%'
+			 and reading not like '%ووقف%'
+			 and reading not like '%حال الوقف%'
+			 ORDER by aya_index,id;
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+-- إشمام
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'I',page_number1,'#FF8040',case when sub_subject like '% %' then  x-width/2  else x end,y,width,
+case when reading like '%بخلف%' then 'D' else 'S' end,
+CASE WHEN  R4_1=1 and R4_2 is null then '1' ELSE
+case WHEN  R4_2=1 and R4_1 is null then '2' else '' END END as circle
+from quran_data where 
+   (R4_1 IS NOT NULL or R4_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+           (reading like '%شمام%')
+       and reading not like '%ترك%شمام%'
+	   and reading not like '%الروم%'
+			 and reading not like 'وقف%'
+			 and reading not like '%ووقف%'
+			 and reading not like '%حال الوقف%'
+			 ORDER by aya_index,id;
 update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
