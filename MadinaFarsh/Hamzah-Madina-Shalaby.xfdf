@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">
-	<f href="Hamzah-Madina-Shalaby.pdf"/>
+	<f href="../../مصاحفي المدينة/Hamzah-Madina-Shalaby.pdf"/>
 	<ids original="1BE878D0E1D62E71F5F1106F5023F399" modified="1BE878D0E1D62E71F5F1106F5023F399"/>
 	<annots>
 		<circle interior-color="#0000FF" title="بضم الهاء وصلا" creationdate="D:20240812180304+03'00'" opacity="0.7" subject="بضم الهاء وصلا" page="0" date="D:20240812232425+03'00'" flags="print" name="df4e400f-a4e9-4537-8d68-f46ab408f396" rect="180.252899,229.272369,186.252899,235.272369" color="#0000FF"/>
@@ -3892,7 +3892,7 @@
 		<circle interior-color="#00FFFF" title="إمالة" creationdate="D:20240812164044+03'00'" opacity="0.7" subject="إمالة" page="212" date="D:20240813223836+03'00'" flags="print" name="65b12a85-6e98-4de0-b9f7-95b2fe4c0d4f" rect="43.967987,313.798706,49.967987,319.798706" color="#00FFFF"/>
 		<circle interior-color="#00FFFF" title="إمالة" creationdate="D:20240812164044+03'00'" opacity="0.7" subject="إمالة" page="212" date="D:20240813223838+03'00'" flags="print" name="032d6657-ede0-4051-86cf-019e07323df4" rect="114.259567,262.051208,120.259567,268.051208" color="#00FFFF"/>
 		<line start="170.607315,417.825439" end="203.943283,417.825439" interior-color="#808000" endingScale="0.7,0.7" title="وقف حمزة" creationdate="D:20240813021011+03'00'" subject="وقف حمزة" page="212" date="D:20240813152344+03'00'" flags="print" name="c150aa25-c6c1-4b9f-831e-630f4753de0b" rect="170.607315,416.825439,203.943283,418.825439" color="#808000" width="2"/>
-		<line start="44.31184,424.186768" end="69.438278,424.186768" interior-color="#FF0000" endingScale="0.7,0.7" title="تجريبي" creationdate="D:20240813030809+03'00'" subject="فرش" page="212" date="D:20240813151953+03'00'" flags="print" name="c9797002-24e5-4f5f-8cbf-28833688c4cf" rect="44.31184,422.686768,69.438278,425.686768" color="#FF0000" width="3"/>
+		<line start="164.12384,369.678497" end="189.250275,369.678497" interior-color="#FF0000" endingScale="0.7,0.7" title="تجريبي" creationdate="D:20240813030809+03'00'" subject="فرش" page="212" date="D:20240817024339+03'00'" flags="print" name="c9797002-24e5-4f5f-8cbf-28833688c4cf" rect="164.12384,368.178497,189.250275,371.178497" color="#FF0000" width="3"/>
 		<line start="183.581604,287.916931" end="211.304169,287.916931" interior-color="#FF0000" endingScale="0.7,0.7" title="تجريبي" creationdate="D:20240813030809+03'00'" subject="فرش" page="212" date="D:20240813152004+03'00'" flags="print" name="0c98721a-b18d-4fb9-8f5c-5546e31643ea" rect="183.581604,286.416931,211.304169,289.416931" color="#FF0000" width="3"/>
 		<line start="212.727768,424.251007" end="225.814224,424.251007" interior-color="#32CD32" endingScale="0.7,0.7" title="شيء" creationdate="D:20240809005524+03'00'" subject="شيء" page="213" date="D:20240813152344+03'00'" flags="print" name="8d31b437-79a3-4099-aad5-241bc03c10fb" rect="212.727768,423.251007,225.814224,425.251007" color="#32CD32" width="2"/>
 		<line start="137.105057,338.826447" end="149.805054,338.826447" interior-color="#32CD32" endingScale="0.7,0.7" title="ميم الجمع" creationdate="D:20240809012426+03'00'" subject="ميم الجمع" page="213" date="D:20240813152344+03'00'" flags="print" name="94f5f072-14cd-405e-90ed-6ea6b694109f" rect="137.105057,337.826447,149.805054,339.826447" color="#32CD32" width="2"/>
