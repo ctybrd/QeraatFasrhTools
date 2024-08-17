@@ -1119,3 +1119,66 @@ order by aya_index,id;
 update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
+
+
+--- أبو جعفر
+
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'J',page_number1,'#007FFF',case when sub_subject like '% %' then  x-width/2  else x end,y,width,
+case when reading like '%بخلف%' then 'D' else 'S' end,
+CASE WHEN  R8_1=1 and R8_2 is null then '1' ELSE
+case WHEN  R8_2=1 and R8_1 is null then '2' else '' END END as circle
+from quran_data where 
+   (R8_1 IS NOT NULL or R8_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+			 
+            (reading like '%بالإخفاء عند الغين والخاء مع الغنة.%')
+			 ORDER by aya_index,id;
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+-- الإدغام
+
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'J',page_number1,'#0000ff',case when sub_subject like '% %' then  x-width/2  else x end,y,width,
+case when reading like '%بخلف%' then 'D' else 'S' end,
+CASE WHEN  R8_1=1 and R8_2 is null then '1' ELSE
+case WHEN  R8_2=1 and R8_1 is null then '2' else '' END END as circle
+from quran_data where 
+   (R8_1 IS NOT NULL or R8_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+      NOT (reading like '%بالإخفاء عند الغين والخاء مع الغنة.%')
+			 and
+            ((reading like '%دغام%')
+			 or
+			 (reading like '%دغم%')
+			 )
+      AND
+			 (reading not like '%ترك%دغام%')
+			 ORDER by aya_index,id;
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
+-- الإبدال
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'J',page_number1,'#32CD32',case when sub_subject like '% %' then  x-width/2  else x end,y,width,
+case when reading like '%بخلف%' then 'D' else 'S' end,
+CASE WHEN  R8_1=1 and R8_2 is null then '1' ELSE
+case WHEN  R8_2=1 and R8_1 is null then '2' else '' END END as circle
+from quran_data where 
+   (R8_1 IS NOT NULL or R8_2 IS NOT NULL) AND
+             (IFNULL(r5_2, 0) = 0) and
+            ((reading like '%إبدال%')
+			 or
+			 (reading like '%أبدل%')
+			 )
+			 ORDER by aya_index,id;
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is Null;
+
+
