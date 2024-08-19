@@ -1,12 +1,13 @@
 import sqlite3
 import uuid
 import datetime
-
-
+import os
+edition ='S'
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute("SELECT page_number, color, x, y, width, style, circle FROM madina_temp")
+    table_name ='madina_temp' if edition == 'M' else 'shmrly_temp'
+    cursor.execute(f'SELECT page_number, color, x, y, width, style, circle FROM {table_name}')
     data = cursor.fetchall()
     conn.close()
 
@@ -14,14 +15,23 @@ def create_xfdf(output_xfdf, db_file):
     annots = []
     for row in data:
         page_number = row[0] - 1
-        
-        page_width = 382
-        page_height = 547
+        if edition == 'M':
+            page_width = 382
+            page_height = 547
 
-        page_width1 = 254
-        page_height1 = 412
-        xmargin = 88 if (page_number + 1) % 2 == 0 else 40
-        ymargin = 67
+            page_width1 = 254
+            page_height1 = 412
+            xmargin = 88 if (page_number + 1) % 2 == 0 else 40
+            ymargin = 67
+        else: #shamarly
+            page_width = 595.22
+            page_height = 842
+
+            page_width1 = 446
+            page_height1 = 693
+            xmargin = 80 if (page_number + 1) % 2 == 0 else 84
+            ymargin = 80
+
 
         if row[2] is None or row[3] is None or row[4] is None:
             continue  # Skip if any necessary value is None
@@ -52,7 +62,7 @@ def create_xfdf(output_xfdf, db_file):
             additional_attribute +='style="dash" dashes="3,3"'
         if circle != "4":
             annot = f'''
-            <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute}/>
+            <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute} endingScale="0.7,0.7" width="4"/>
             '''
         else:
             annot = f'''
@@ -76,4 +86,8 @@ def create_xfdf(output_xfdf, db_file):
         f.write(xfdf_content)
 
 # Example usage
-create_xfdf( "d:/Qeraat/Madina_annots.xfdf", "d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive +'/'
+
+create_xfdf( drive+"Qeraat/output_annots.xfdf", drive+"Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
