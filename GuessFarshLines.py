@@ -72,7 +72,7 @@ def process_image_and_insert_to_db(image_path, db_path, qaree, style, circle):
 
 # Path to the folder containing images
 input_folder = 'D:/pages'
-db_path = 'D:/Qeraat/farsh_v7.db'
+db_path = 'D:/Qeraat/farsh_v9.db'
 
 # Process each image in the folder
 for filename in os.listdir(input_folder):

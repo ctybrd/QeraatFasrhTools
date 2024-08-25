@@ -302,7 +302,9 @@ select 'A',page_number1,'#800080'
 from quran_data where 
             (R1_2 IS NOT NULL ) AND
              (IFNULL(r5_2, 0) = 0) and
-(reading like '%تغليظ%')
+((reading like '%تغليظ%')
+or 
+(reading like '%تفخيم اللام%'))
 order by aya_index,id;
 
 update madina_temp set circle= '' where circle is null;
@@ -316,7 +318,9 @@ select 'A',page_number1,'#FF8C00'
 from quran_data where 
             (R1_2 IS NOT NULL ) AND
              (IFNULL(r5_2, 0) = 0) and
-(reading like  '%ترقيق%الراء%')
+((reading like  '%ترقيق%الراء%')
+or
+(reading like '%مع ترقيقها%'))
 order by aya_index,id;
 
 update madina_temp set circle= '' where circle is null;

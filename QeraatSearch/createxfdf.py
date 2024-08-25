@@ -2,7 +2,7 @@ import sqlite3
 import uuid
 import datetime
 import os
-edition ='S'
+edition ='M'
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()

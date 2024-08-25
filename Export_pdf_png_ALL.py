@@ -78,7 +78,8 @@ for pdf_file in pdf_files:
     for page_num in range(len(pdf_document)):
         page = pdf_document.load_page(page_num)
         dlist = page.get_displaylist()
-        pix = dlist.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+        # pix = dlist.get_pixmap(matrix=fitz.Matrix(zoom_factor, zoom_factor))
+        pix = dlist.get_pixmap()
         output_image_path = os.path.join(output_dir, f'{page_num + 1}.png')
         pix.save(output_image_path)
         print(f'Saved: {output_image_path}')
