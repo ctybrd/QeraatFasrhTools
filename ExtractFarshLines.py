@@ -164,7 +164,7 @@ def insert_comments_sqlite(comments,qaree_key):
         c.execute("update shmrly set circle =4 where qaree='M' and (color='cyan'or color ='#00FFFF' or color or color ='#00ffff') and circle='2' and width<=0.05")
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     #shift circle object left
-    if (qaree_key in ["B","X","A","W","K"]):
+    if (qaree_key in ["B","X","A","W","K","E"]):
         c.execute("UPDATE shmrly SET X=x+0.02 where circle='4' and qaree=?",(qaree_key))
     if qaree_key in ["C", "D", "G","P","Y"]:
         c.execute("UPDATE shmrly SET X = X + CASE WHEN (page_number % 2) = 0 THEN 0.13 ELSE -0.10 END WHERE qaree = ?", (qaree_key,))
