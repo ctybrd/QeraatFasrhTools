@@ -21,7 +21,7 @@ def insert_data(cursor, data, pagenumber):
         )
     ''')
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS hawamesh_chars (
+        CREATE TABLE IF NOT EXISTS Hawamesh_chars (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             x0 REAL,
             x1 REAL,
@@ -74,8 +74,8 @@ def insert_data(cursor, data, pagenumber):
 def main():
     """Reads JSON data from multiple files in a folder, inserts it into the database, and commits the changes."""
 
-    folder_path = "E:/Qeraat/QeraatFasrhTools_Data/Ten_Readings/json"
-    db_path = 'E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
+    folder_path = "d:/Qeraat/QeraatFasrhTools_Data/Ten_Readings/json"
+    db_path = 'd:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
     
     # Establish a connection to the SQLite database
     conn = sqlite3.connect(db_path)
