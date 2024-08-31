@@ -225,7 +225,7 @@ WITH OrderedShmrlyWords AS (
         x,
         ROW_NUMBER() OVER (ORDER BY page_number, lineno, x DESC) AS rn
     FROM 
-        shmrly_words
+        shmrly_words  
 ),
 RedRows AS (
     SELECT 
@@ -240,7 +240,7 @@ RedRows AS (
     JOIN 
         OrderedShmrlyWords osw_blue
     ON 
-        osw_red.page_number = osw_blue.page_number
+        osw_red.page_number >= osw_blue.page_number
         AND osw_blue.color = '#0000ff'
         AND osw_red.rn < osw_blue.rn
     WHERE 
@@ -267,11 +267,33 @@ conn = sqlite3.connect(db_path)
 c = conn.cursor()
 c.execute(update_surah_ayah)
 conn.commit()
+#order the rows
+update_ordr_field ="""
+WITH OrderedRows AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY page_number, lineno, x DESC) AS row_num
+  FROM shmrly_words
+)
+UPDATE shmrly_words
+SET ordr = (
+  SELECT row_num
+  FROM OrderedRows
+  WHERE OrderedRows.id = shmrly_words.id
+);
+
+"""
+conn.close
+conn = sqlite3.connect(db_path)
+c = conn.cursor()
+c.execute(update_ordr_field)
+conn.commit()
+conn.close()
 
 update_words_sql = """
 WITH OrderedShmrlyWords AS (
     SELECT 
-        ROW_NUMBER() OVER (ORDER BY page_number, lineno , x DESC) AS rn,
+        ordr  AS rn,id,
         qaree,
         page_number,
         color,
@@ -281,7 +303,9 @@ WITH OrderedShmrlyWords AS (
         style,
         circle,
         wordindex,
-        rawword
+        rawword,
+        surahno,
+        ayahno
     FROM 
         shmrly_words 
     WHERE 
@@ -289,9 +313,11 @@ WITH OrderedShmrlyWords AS (
 ),
 OrderedWords1 AS (
     SELECT 
-        ROW_NUMBER() OVER (ORDER BY wordindex) AS rn,
+        ROW_NUMBER() OVER (PARTITION BY surah,ayah ORDER BY wordindex) AS rn,
         wordindex,
-        rawword
+        rawword,
+        surah,
+        ayah
     FROM 
         words1
 )
@@ -305,12 +331,12 @@ JOIN
     OrderedWords1 ow 
 ON 
     osw.rn = ow.rn
+    AND osw.surahno = ow.surah
+    AND osw.ayahno = ow.ayah
 WHERE  
     shmrly_words.color = '#ff0000'
-    AND shmrly_words.qaree = osw.qaree
-    AND shmrly_words.page_number = osw.page_number
-    AND shmrly_words.x = osw.x
-    AND shmrly_words.y = osw.y;
+    AND shmrly_words.id = osw.id;
+
 
 """
 conn.close
@@ -320,4 +346,8 @@ c.execute(update_words_sql)
 conn.commit()
 conn.close()
 # SELECT * from shmrly_words order by page_number, lineno , x DESC
+# test1
+#select s.surahno,s.ayahno,w.surah,ayah,s.* from shmrly_words s left join words1 w on s.wordindex=w.wordindex
+# where s.surahno<>w.surah or  s.ayahno<>w.ayah
+
 print("All Done")
