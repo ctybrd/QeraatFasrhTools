@@ -134,7 +134,7 @@ def process_qaree_key(qaree_key):
     else:
         print("File not found:", pdf_path)
 
-def update_line_numbers(threshold=0.01):
+def update_line_numbers(threshold=0.03):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
@@ -172,6 +172,101 @@ if qaree_key == "":
 process_qaree_key(qaree_key)
 
 update_line_numbers()
+conn = sqlite3.connect(db_path)
+c = conn.cursor()
+
+update_aya_heads ="""
+WITH OrderedShmrlyWords AS (
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY page_number, lineno, x DESC) AS rn,
+        id
+    FROM 
+        shmrly_words
+    WHERE 
+        color = '#0000ff'
+),
+OrderedBookQuran AS (
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY aya_index) AS rn,
+        sora,
+        aya
+    FROM 
+        book_quran
+)
+UPDATE shmrly_words
+SET 
+    surahno = obq.sora,
+    ayahno = obq.aya
+FROM 
+    OrderedShmrlyWords osw
+JOIN 
+    OrderedBookQuran obq 
+ON 
+    osw.rn = obq.rn
+WHERE 
+    shmrly_words.id = osw.id
+    AND shmrly_words.color = '#0000ff';
+"""
+conn.close
+conn = sqlite3.connect(db_path)
+c = conn.cursor()
+c.execute(update_aya_heads)
+conn.commit()
+
+update_surah_ayah ="""
+WITH OrderedShmrlyWords AS (
+    SELECT 
+        id,
+        color,
+        surahno,
+        ayahno,
+        page_number,
+        lineno,
+        x,
+        ROW_NUMBER() OVER (ORDER BY page_number, lineno, x DESC) AS rn
+    FROM 
+        shmrly_words
+),
+RedRows AS (
+    SELECT 
+        osw_red.id AS red_id,
+        osw_red.rn AS red_rn,
+        osw_red.page_number,
+        osw_red.lineno,
+        osw_red.x,
+        MIN(osw_blue.rn) AS blue_rn
+    FROM 
+        OrderedShmrlyWords osw_red
+    JOIN 
+        OrderedShmrlyWords osw_blue
+    ON 
+        osw_red.page_number = osw_blue.page_number
+        AND osw_blue.color = '#0000ff'
+        AND osw_red.rn < osw_blue.rn
+    WHERE 
+        osw_red.color = '#ff0000'
+    GROUP BY 
+        osw_red.id, osw_red.rn, osw_red.page_number, osw_red.lineno, osw_red.x
+)
+UPDATE shmrly_words
+SET 
+    surahno = osw_blue.surahno,
+    ayahno = osw_blue.ayahno
+FROM 
+    RedRows red
+JOIN 
+    OrderedShmrlyWords osw_blue 
+ON 
+    red.blue_rn = osw_blue.rn
+WHERE 
+    shmrly_words.id = red.red_id;
+
+"""
+conn.close
+conn = sqlite3.connect(db_path)
+c = conn.cursor()
+c.execute(update_surah_ayah)
+conn.commit()
 
 update_words_sql = """
 WITH OrderedShmrlyWords AS (
@@ -188,7 +283,9 @@ WITH OrderedShmrlyWords AS (
         wordindex,
         rawword
     FROM 
-        shmrly_words
+        shmrly_words 
+    WHERE 
+        color = '#ff0000'
 ),
 OrderedWords1 AS (
     SELECT 
@@ -208,15 +305,19 @@ JOIN
     OrderedWords1 ow 
 ON 
     osw.rn = ow.rn
-WHERE 
-    shmrly_words.qaree = osw.qaree
+WHERE  
+    shmrly_words.color = '#ff0000'
+    AND shmrly_words.qaree = osw.qaree
     AND shmrly_words.page_number = osw.page_number
     AND shmrly_words.x = osw.x
     AND shmrly_words.y = osw.y;
+
 """
+conn.close
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 c.execute(update_words_sql)
 conn.commit()
 conn.close()
 # SELECT * from shmrly_words order by page_number, lineno , x DESC
+print("All Done")
