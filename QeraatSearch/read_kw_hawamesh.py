@@ -1,14 +1,18 @@
 import json
 import sqlite3
 import os
+from docx import Document
+from docx.shared import RGBColor, Pt
+from docx.oxml import OxmlElement, ns
 
-def insert_data(cursor, data, pagenumber):
-    """Inserts the JSON data into the SQLite database with hierarchical rows.
+def insert_data(cursor, data, pagenumber, doc):
+    """Inserts the JSON data into the SQLite database with hierarchical rows and formats them in a Word document.
 
     Args:
         cursor: A SQLite cursor object.
         data: The JSON data to insert.
         pagenumber: The page number associated with the data.
+        doc: The Word document object to add the content to.
     """
 
     # Create tables if they don't exist
@@ -54,32 +58,57 @@ def insert_data(cursor, data, pagenumber):
         Hawamesh_id = cursor.lastrowid
 
         # Insert data into the child table (hawamesh_chars)
+        paragraph = doc.add_paragraph()  # Start a new paragraph
         for char_data in item.get('hawamesh_chars', []):
-            color_data = json.dumps(char_data.get('color'))  # Convert color dict to JSON string
-            cursor.execute('''
-                INSERT INTO hawamesh_chars (
-                    x0, x1, y0, y1, line, size, color, add_tab,
-                    text_y0, text_y1, unicode, upright, fontname,
-                    is_new_line, add_single_space, Hawamesh_id
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                char_data.get('x0'), char_data.get('x1'), char_data.get('y0'), char_data.get('y1'),
-                char_data.get('line'), char_data.get('size'), color_data, char_data.get('add_tab'),
-                char_data.get('text_y0'), char_data.get('text_y1'), char_data.get('unicode'),
-                char_data.get('upright'), char_data.get('fontname'), char_data.get('is_new_line'),
-                char_data.get('add_single_space'), Hawamesh_id
-            ))
+            text = char_data.get('unicode')
+
+            if text == "*":  # Break before '*'
+                paragraph = doc.add_paragraph()  # Start a new paragraph
+
+            run = paragraph.add_run(text)
+
+            # Set font name
+            fontname = char_data.get('fontname')
+            if fontname:
+                run.font.name = fontname
+
+                # Apply font settings for all elements in run
+                rPr = run._element.get_or_add_rPr()
+                rFonts = rPr.get_or_add_rFonts()
+                rFonts.set(ns.qn('w:ascii'), fontname)
+                rFonts.set(ns.qn('w:hAnsi'), fontname)
+                rFonts.set(ns.qn('w:cs'), fontname)
+
+            # Set font color
+            color = char_data.get('color')
+            if isinstance(color, dict) and 'r' in color and 'g' in color and 'b' in color:
+                run.font.color.rgb = RGBColor(color['r'], color['g'], color['b'])
+
+            # Set font size (convert to Pt)
+            size = char_data.get('size')
+            if size:
+                run.font.size = Pt(size)
+
+            # Handle text direction if 'upright' is specified
+            if char_data.get('upright'):
+                rtl = OxmlElement('w:rtl')
+                rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
+                rPr.append(rtl)
 
 def main():
-    """Reads JSON data from multiple files in a folder, inserts it into the database, and commits the changes."""
-
-    folder_path = "d:/Qeraat/QeraatFasrhTools_Data/Ten_Readings/json"
-    db_path = 'd:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
-    
+    """Reads JSON data from multiple files in a folder, inserts it into the database, and commits the changes, also generates a Word document with the formatted text."""
+    script_path = os.path.abspath(__file__)
+    drive, _ = os.path.splitdrive(script_path) 
+    drive = drive + '/'
+    folder_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools_Data/Ten_Readings/json')
+    db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
+    print (db_path)
     # Establish a connection to the SQLite database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+
+    # Create a new Word document
+    doc = Document()
 
     try:
         for filename in os.listdir(folder_path):
@@ -87,7 +116,13 @@ def main():
                 pagenumber = int(filename.split("_")[1].split(".")[0])  # Extract pagenumber from filename
                 with open(os.path.join(folder_path, filename), 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    insert_data(cursor, data, pagenumber)
+                    insert_data(cursor, data, pagenumber, doc)
+                
+                # Insert a page break after processing each file
+                doc.add_page_break()
+
+        # Save the Word document
+        doc.save('Hawamesh_Content.docx')
 
         # Commit all changes to the database
         conn.commit()
