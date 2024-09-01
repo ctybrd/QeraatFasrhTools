@@ -4,6 +4,15 @@ import os
 from docx import Document
 from docx.shared import RGBColor, Pt
 from docx.oxml import OxmlElement, ns
+from bidi.algorithm import get_display
+import arabic_reshaper
+
+def cmyk_to_rgb(c, m, y, k):
+    """Convert CMYK values (0 to 1 range) to RGB values (0 to 255 range)."""
+    r = 255 * (1 - c) * (1 - k)
+    g = 255 * (1 - m) * (1 - k)
+    b = 255 * (1 - y) * (1 - k)
+    return int(r), int(g), int(b)
 
 def insert_data(cursor, data, pagenumber, doc):
     """Inserts the JSON data into the SQLite database with hierarchical rows and formats them in a Word document.
@@ -62,17 +71,17 @@ def insert_data(cursor, data, pagenumber, doc):
         for char_data in item.get('hawamesh_chars', []):
             text = char_data.get('unicode')
 
-            if text == "*":  # Break before '*'
+            if text == "*" or text[0] == '-':  # Break before '*'
                 paragraph = doc.add_paragraph()  # Start a new paragraph
-
+            
+            # reshaped_text = arabic_reshaper.reshape(text)
+            # bidi_text = get_display(reshaped_text)
             run = paragraph.add_run(text)
 
             # Set font name
             fontname = char_data.get('fontname')
             if fontname:
                 run.font.name = fontname
-
-                # Apply font settings for all elements in run
                 rPr = run._element.get_or_add_rPr()
                 rFonts = rPr.get_or_add_rFonts()
                 rFonts.set(ns.qn('w:ascii'), fontname)
@@ -81,8 +90,11 @@ def insert_data(cursor, data, pagenumber, doc):
 
             # Set font color
             color = char_data.get('color')
-            if isinstance(color, dict) and 'r' in color and 'g' in color and 'b' in color:
-                run.font.color.rgb = RGBColor(color['r'], color['g'], color['b'])
+            if isinstance(color, dict) and 'ncolor' in color:
+                cmyk_values = color['ncolor']
+                if len(cmyk_values) == 4:
+                    r, g, b = cmyk_to_rgb(*cmyk_values)
+                    run.font.color.rgb = RGBColor(r, g, b)
 
             # Set font size (convert to Pt)
             size = char_data.get('size')
@@ -91,6 +103,7 @@ def insert_data(cursor, data, pagenumber, doc):
 
             # Handle text direction if 'upright' is specified
             if char_data.get('upright'):
+                rPr = run._element.get_or_add_rPr()
                 rtl = OxmlElement('w:rtl')
                 rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
                 rPr.append(rtl)

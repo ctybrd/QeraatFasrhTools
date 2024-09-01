@@ -64,7 +64,7 @@ def create_xfdf(output_xfdf, db_file):
         annot_name = str(uuid.uuid4())
 
         # Escape the rawword and encode to HTML entities
-        rawword_escaped = html.escape(rawword)
+        rawword_escaped = rawword #html.escape(rawword)
 
         # Create the contents-richtext XML snippet
         contents_richtext = f'''
