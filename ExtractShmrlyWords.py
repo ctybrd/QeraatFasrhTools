@@ -189,6 +189,65 @@ def update_surahno_ayahno():
     conn.commit()
     conn.close()
 
+import sqlite3
+
+def update_words():
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    # Fetch distinct surahno and ayahno from shmrly_words
+    c.execute("SELECT DISTINCT surahno, ayahno FROM shmrly_words WHERE color='#ff0000' ORDER BY surahno, ayahno")
+    distinct_rows = c.fetchall()
+
+    for surahno, ayahno in distinct_rows:
+        # Fetch rows from shmrly_words with the current surahno and ayahno
+        c.execute("""
+            SELECT id, surahno, ayahno, color 
+            FROM shmrly_words 
+            WHERE surahno = ? AND ayahno = ? AND color='#ff0000'
+            ORDER BY page_number, lineno, x DESC
+        """, (surahno, ayahno))
+        shmrly_rows = c.fetchall()
+
+        # Fetch rows from words1 with the current surah and ayah
+        c.execute("""
+            SELECT wordindex, surah, ayah, wordsno, word, rawword, nextword 
+            FROM words1 
+            WHERE surah = ? AND ayah = ? 
+            ORDER BY wordindex
+        """, (surahno, ayahno))
+        words1_rows = c.fetchall()
+
+        words1_index = 0
+        for shmrly_row in shmrly_rows:
+            shmrly_id, surahno, ayahno, color = shmrly_row
+
+            # Ensure we are within the bounds of words1 rows
+            if words1_index >= len(words1_rows):
+                break
+
+            words1_row = words1_rows[words1_index]
+            wordindex, surah, ayah, wordsno, word, rawword, nextword = words1_row
+
+            # Check if the surah and ayah match
+            if surah == surahno and ayah == ayahno:
+                # Update the shmrly_words table with the corresponding wordindex and rawword
+                c.execute("""
+                    UPDATE shmrly_words
+                    SET wordindex = ?, rawword = ?
+                    WHERE id = ?
+                """, (wordindex, rawword, shmrly_id))
+
+                # Move to the next words1 row
+                words1_index += 1
+            else:
+                # If they don't match, skip updating shmrly_words and continue with the next iteration          
+                continue
+
+    conn.commit()
+    conn.close()
+
+
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive + '/'
@@ -237,6 +296,7 @@ conn.close()
 
 # Update surahno and ayahno fields
 update_surahno_ayahno()
+update_words()
 
 # Test the queries
 test_str = "SELECT * from shmrly_words order by page_number, lineno , x DESC"
@@ -244,3 +304,68 @@ test_str2 = """select s.surahno,s.ayahno,w.surah,ayah,s.* from shmrly_words s le
 where s.surahno<>w.surah or  s.ayahno<>w.ayah"""
 print(test_str, test_str2)
 print("All Done")
+test_matching="""
+select * from(
+WITH ShmrlyCounts AS (
+    SELECT
+        surahno AS surah,
+        ayahno AS ayah,
+        COUNT(*) AS row_count_shmrly
+    FROM
+        shmrly_words
+--     WHERE
+--         color = '#ff0000'
+    GROUP BY
+        surahno,
+        ayahno
+),
+Words1Counts AS (
+    SELECT
+        surah AS surah,
+        ayah AS ayah,
+        COUNT(*) AS row_count_words1
+    FROM
+        words1
+    GROUP BY
+        surah,
+        ayah
+)
+SELECT
+    sc.surah,
+    sc.ayah,
+    sc.row_count_shmrly,
+    wc.row_count_words1,
+    CASE
+        WHEN sc.row_count_shmrly = wc.row_count_words1+1 THEN 'Match'
+        ELSE 'Mismatch'
+    END AS count_status
+FROM
+    ShmrlyCounts sc
+LEFT JOIN
+    Words1Counts wc
+ON
+    sc.surah = wc.surah
+    AND sc.ayah = wc.ayah
+
+UNION
+
+SELECT
+    wc.surah,
+    wc.ayah,
+    sc.row_count_shmrly,
+    wc.row_count_words1,
+    CASE
+        WHEN sc.row_count_shmrly = wc.row_count_words1+1 THEN 'Match'
+        ELSE 'Mismatch'
+    END AS count_status
+FROM
+    Words1Counts wc
+LEFT JOIN
+    ShmrlyCounts sc
+ON
+    wc.surah = sc.surah
+    AND wc.ayah = sc.ayah
+) T
+
+where row_count_shmrly is not NULL
+and count_status='Mismatch'"""
