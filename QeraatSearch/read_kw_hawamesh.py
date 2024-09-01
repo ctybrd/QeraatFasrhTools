@@ -23,7 +23,7 @@ def insert_data(cursor, data, pagenumber, doc):
         pagenumber: The page number associated with the data.
         doc: The Word document object to add the content to.
     """
-
+    doc.add_paragraph(f"صفحة: {pagenumber}").bold = True
     # Create tables if they don't exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Hawamesh (
@@ -74,8 +74,6 @@ def insert_data(cursor, data, pagenumber, doc):
             if text == "*" or text[0] == '-':  # Break before '*'
                 paragraph = doc.add_paragraph()  # Start a new paragraph
             
-            # reshaped_text = arabic_reshaper.reshape(text)
-            # bidi_text = get_display(reshaped_text)
             run = paragraph.add_run(text)
 
             # Set font name
@@ -116,6 +114,7 @@ def main():
     folder_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools_Data/Ten_Readings/json')
     db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
     print (db_path)
+    
     # Establish a connection to the SQLite database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -124,13 +123,18 @@ def main():
     doc = Document()
 
     try:
-        for filename in os.listdir(folder_path):
-            if filename.startswith("Hawamesh_") and filename.endswith(".json"):
-                pagenumber = int(filename.split("_")[1].split(".")[0])  # Extract pagenumber from filename
-                with open(os.path.join(folder_path, filename), 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    insert_data(cursor, data, pagenumber, doc)
-                
+        # Extract numeric parts of filenames and sort them
+        files = sorted(
+            [f for f in os.listdir(folder_path) if f.startswith("Hawamesh_") and f.endswith(".json")],
+            key=lambda x: int(x.split("_")[1].split(".")[0])
+        )
+
+        for filename in files:
+            pagenumber = int(filename.split("_")[1].split(".")[0])  # Extract pagenumber from filename
+            with open(os.path.join(folder_path, filename), 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                insert_data(cursor, data, pagenumber, doc)
+
                 # Insert a page break after processing each file
                 doc.add_page_break()
 
