@@ -76,9 +76,10 @@ def process_detail_chars(cursor, detail_chars, qeraat_id, doc):
         text = char_data.get('unicode')
         # text=text.replace('﴿','<b>').replace('﴾','</b>')
         # text=text.replace('<b>','﴾').replace('</b>','﴿',)
-        text=text.replace(')','<b>').replace('(','</b>')
-        text=text.replace('<b>','(').replace('</b>',')',)
-        text = 'ـ ' + text
+        # text=text.replace(')','<b>').replace('('('</b>')
+        # text=text.replace('<b>','(').replace('</b>',')',)
+        text=text.replace('s',' ')
+
 
         run = paragraph.add_run(text)
 
@@ -106,11 +107,11 @@ def process_detail_chars(cursor, detail_chars, qeraat_id, doc):
             run.font.size = Pt(size)
 
         # Handle text direction if 'upright' is specified
-        if char_data.get('upright'):
-            rPr = run._element.get_or_add_rPr()
-            rtl = OxmlElement('w:rtl')
-            rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
-            rPr.append(rtl)
+        # if char_data.get('upright'):
+        rPr = run._element.get_or_add_rPr()
+        rtl = OxmlElement('w:rtl')
+        rtl.text = '1'  # '1' for right-to-left, '0' for left-to-right
+        rPr.append(rtl)
 
         # Insert data into qeraat_chars table
         cursor.execute('''
@@ -127,7 +128,7 @@ def main():
     drive, _ = os.path.splitdrive(script_path)
     drive = drive + '/'
     folder_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools_Data/Ten_Readings/json')
-    db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
+    db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/kw.db')
     print(db_path)
 
     # Establish a connection to the SQLite database

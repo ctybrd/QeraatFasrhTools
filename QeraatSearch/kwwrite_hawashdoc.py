@@ -58,7 +58,7 @@ def create_word_document(data, output_path):
     document.save(output_path)
 
 def main():
-    db_path = 'd:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
+    db_path = 'd:/Qeraat/QeraatFasrhTools/QeraatSearch/kw.db'
     output_path = 'hawamesh_output.docx'
 
     # Get data from the database

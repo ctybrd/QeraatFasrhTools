@@ -4,8 +4,6 @@ import os
 from docx import Document
 from docx.shared import RGBColor, Pt
 from docx.oxml import OxmlElement, ns
-from bidi.algorithm import get_display
-import arabic_reshaper
 
 def cmyk_to_rgb(c, m, y, k):
     """Convert CMYK values (0 to 1 range) to RGB values (0 to 255 range)."""
@@ -73,7 +71,9 @@ def insert_data(cursor, data, pagenumber, doc):
 
             if text == "*" or text[0] == '-':  # Break before '*'
                 paragraph = doc.add_paragraph()  # Start a new paragraph
-            
+            text = text.replace(')','<b>').replace('(','</b>')
+            text=text.replace('<b>','(').replace('</b>',')',)
+            text = text.replace('-','ـ')
             run = paragraph.add_run(text)
 
             # Set font name
@@ -103,7 +103,7 @@ def insert_data(cursor, data, pagenumber, doc):
             if char_data.get('upright'):
                 rPr = run._element.get_or_add_rPr()
                 rtl = OxmlElement('w:rtl')
-                rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
+                rtl.text = '1'  # '1' for right-to-left, '0' for left-to-right
                 rPr.append(rtl)
 
 def main():
@@ -112,7 +112,7 @@ def main():
     drive, _ = os.path.splitdrive(script_path) 
     drive = drive + '/'
     folder_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools_Data/Ten_Readings/json')
-    db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db')
+    db_path = os.path.join(drive, 'Qeraat/QeraatFasrhTools/QeraatSearch/kw.db')
     print (db_path)
     
     # Establish a connection to the SQLite database
