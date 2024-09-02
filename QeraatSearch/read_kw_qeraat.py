@@ -53,7 +53,7 @@ def insert_data(cursor, data, pagenumber, doc):
     for item in data:
         word_text = item.get('word_text', '')
         word_order = item.get('word_order', 0)
-        
+
         cursor.execute('''
             INSERT INTO qeraat (word_text, word_order, pagenumber)
             VALUES (?, ?, ?)
@@ -62,51 +62,64 @@ def insert_data(cursor, data, pagenumber, doc):
         # Get the inserted row ID to use as a foreign key
         qeraat_id = cursor.lastrowid
 
-        # Insert data into the child table (qeraat_chars)
-        paragraph = doc.add_paragraph()  # Start a new paragraph
-        for char_data in item.get('detail_title_chars', []):
-            text = char_data.get('unicode')
+        # Process `detail_title_chars`
+        process_detail_chars(cursor, item.get('detail_title_chars', []), qeraat_id, doc)
 
-            run = paragraph.add_run(text)
+        # Process `quran_ten_word_mp3`
+        for mp3_section in item.get('quran_ten_word_mp3', []):
+            process_detail_chars(cursor, mp3_section.get('detail_chars', []), qeraat_id, doc)
 
-            # Set font name
-            fontname = char_data.get('fontname')
-            if fontname:
-                run.font.name = fontname
-                rPr = run._element.get_or_add_rPr()
-                rFonts = rPr.get_or_add_rFonts()
-                rFonts.set(ns.qn('w:ascii'), fontname)
-                rFonts.set(ns.qn('w:hAnsi'), fontname)
-                rFonts.set(ns.qn('w:cs'), fontname)
+def process_detail_chars(cursor, detail_chars, qeraat_id, doc):
+    """Processes detail characters and inserts them into the database and Word document."""
+    paragraph = doc.add_paragraph()  # Start a new paragraph
+    for char_data in detail_chars:
+        text = char_data.get('unicode')
+        # text=text.replace('﴿','<b>').replace('﴾','</b>')
+        # text=text.replace('<b>','﴾').replace('</b>','﴿',)
+        text=text.replace(')','<b>').replace('(','</b>')
+        text=text.replace('<b>','(').replace('</b>',')',)
+        text = 'ـ ' + text
 
-            # Set font color
-            color = char_data.get('color')
-            if isinstance(color, dict) and 'ncolor' in color:
-                cmyk_values = color['ncolor']
-                if len(cmyk_values) == 4:
-                    r, g, b = cmyk_to_rgb(*cmyk_values)
-                    run.font.color.rgb = RGBColor(r, g, b)
+        run = paragraph.add_run(text)
 
-            # Set font size (convert to Pt)
-            size = char_data.get('size')
-            if size:
-                run.font.size = Pt(size)
+        # Set font name
+        fontname = char_data.get('fontname')
+        if fontname:
+            run.font.name = fontname
+            rPr = run._element.get_or_add_rPr()
+            rFonts = rPr.get_or_add_rFonts()
+            rFonts.set(ns.qn('w:ascii'), fontname)
+            rFonts.set(ns.qn('w:hAnsi'), fontname)
+            rFonts.set(ns.qn('w:cs'), fontname)
 
-            # Handle text direction if 'upright' is specified
-            if char_data.get('upright'):
-                rPr = run._element.get_or_add_rPr()
-                rtl = OxmlElement('w:rtl')
-                rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
-                rPr.append(rtl)
+        # Set font color
+        color = char_data.get('color')
+        if isinstance(color, dict) and 'ncolor' in color:
+            cmyk_values = color['ncolor']
+            if len(cmyk_values) == 4:
+                r, g, b = cmyk_to_rgb(*cmyk_values)
+                run.font.color.rgb = RGBColor(r, g, b)
 
-            # Insert data into qeraat_chars table
-            cursor.execute('''
-                INSERT INTO qeraat_chars (x, y, h, w, size, color, unicode, upright, fontname, qeraat_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                item.get('x', 0), item.get('y', 0), item.get('h', 0), item.get('w', 0),
-                size, json.dumps(color), text, char_data.get('upright'), fontname, qeraat_id
-            ))
+        # Set font size (convert to Pt)
+        size = char_data.get('size')
+        if size:
+            run.font.size = Pt(size)
+
+        # Handle text direction if 'upright' is specified
+        if char_data.get('upright'):
+            rPr = run._element.get_or_add_rPr()
+            rtl = OxmlElement('w:rtl')
+            rtl.text = '0'  # '1' for right-to-left, '0' for left-to-right
+            rPr.append(rtl)
+
+        # Insert data into qeraat_chars table
+        cursor.execute('''
+            INSERT INTO qeraat_chars (x, y, h, w, size, color, unicode, upright, fontname, qeraat_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            char_data.get('x', 0), char_data.get('y', 0), char_data.get('h', 0), char_data.get('w', 0),
+            size, json.dumps(color), text, char_data.get('upright'), fontname, qeraat_id
+        ))
 
 def main():
     """Reads JSON data from multiple files in a folder, inserts it into the database, and commits the changes, also generates a Word document with the formatted text."""
