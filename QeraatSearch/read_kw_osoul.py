@@ -11,8 +11,9 @@ def cmyk_to_rgb(c, m, y, k):
     b = 255 * (1 - y) * (1 - k)
     return int(r), int(g), int(b)
 
-def process_detail_chars(detail_chars, paragraph):
-    """Processes detail characters and formats them in a paragraph."""
+def process_detail_chars(detail_chars, cell):
+    """Processes detail characters and formats them in a table cell."""
+    paragraph = cell.paragraphs[0]
     for char_data in detail_chars:
         unicode_value = char_data.get('unicode', '')
         
@@ -24,8 +25,8 @@ def process_detail_chars(detail_chars, paragraph):
                 text = ''
         else:
             text = unicode_value
-        text=text.replace('s',' ')
-        # Add text to the document
+        text = text.replace('s',' ')
+        
         if text:
             run = paragraph.add_run(text)
 
@@ -61,50 +62,51 @@ def process_detail_chars(detail_chars, paragraph):
             rtl.text = '1'  # '1' for right-to-left, '0' for left-to-right
             rPr.append(rtl)
 
-            # Handle new line
-            if char_data.get('is_new_line', False):
-                # Add a new line if there is existing text in the paragraph
-                if paragraph.text.strip():  # Check if there's any non-whitespace text
-                    paragraph.add_run().add_break()
-
-def process_node(node, doc):
-    """Recursively processes each node and its child nodes."""
+def process_node(node, doc, distinct_key_chars):
+    """Recursively processes each node and its child nodes, adding content to the document."""
     if isinstance(node, dict):
-        paragraph = None
-        content_found = False
-        
-        # Process key_chars
         key_chars = node.get('key_chars', [])
-        if key_chars:
-            paragraph = doc.add_paragraph()
-            content_found = True
-            process_detail_chars(key_chars, paragraph)
-
-        # Process value_chars
         value_chars = node.get('value_chars', [])
-        if value_chars:
-            if not paragraph:
-                paragraph = doc.add_paragraph()
-                content_found = True
-            process_detail_chars(value_chars, paragraph)
 
-        # Add an empty paragraph to separate content if needed
-        if content_found:
-            doc.add_paragraph()  # Add a new paragraph to separate sections
+        # Record distinct key_chars entries
+        for char_data in key_chars:
+            unicode_value = char_data.get('unicode', '')
+            if unicode_value.startswith('0x'):
+                try:
+                    text = chr(int(unicode_value, 16))
+                except ValueError:
+                    text = ''
+            else:
+                text = unicode_value
+            text = text.replace('s',' ')
+            distinct_key_chars.add(text)
+        
+        if key_chars or value_chars:
+            # Create a table with two columns: one for key_chars and one for value_chars
+            table = doc.add_table(rows=1, cols=2)
+            table.autofit = True
+            key_cell = table.cell(0, 0)
+            value_cell = table.cell(0, 1)
+            
+            if key_chars:
+                process_detail_chars(key_chars, key_cell)
+            
+            if value_chars:
+                process_detail_chars(value_chars, value_cell)
 
         # Recursively process nested nodes
         for key, value in node.items():
             if isinstance(value, list):
                 for item in value:
-                    process_node(item, doc)
+                    process_node(item, doc, distinct_key_chars)
 
-def insert_data(data, pagenumber, doc):
+def insert_data(data, pagenumber, doc, distinct_key_chars):
     """Insert formatted data into the Word document."""
     doc.add_paragraph(f"صفحة: {pagenumber}").bold = True
 
     # Process each root node in the data
     for item in data:
-        process_node(item, doc)
+        process_node(item, doc, distinct_key_chars)
 
 def main():
     """Reads JSON data from multiple files in a folder and generates a Word document with the formatted text."""
@@ -115,6 +117,7 @@ def main():
 
     # Create a new Word document
     doc = Document()
+    distinct_key_chars = set()  # To keep track of distinct key_chars
 
     try:
         # Extract numeric parts of filenames and sort them
@@ -127,13 +130,18 @@ def main():
             pagenumber = int(filename.split("_")[1].split(".")[0])  # Extract pagenumber from filename
             with open(os.path.join(folder_path, filename), 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                insert_data(data, pagenumber, doc)
+                insert_data(data, pagenumber, doc, distinct_key_chars)
 
                 # Insert a page break after processing each file
                 doc.add_page_break()
 
         # Save the Word document
         doc.save('Osoul_Content.docx')
+
+        # Print the distinct key_chars entries
+        print("Distinct key_chars entries:")
+        for entry in distinct_key_chars:
+            print(entry)
 
     except Exception as e:
         print(f"An error occurred: {e}")
