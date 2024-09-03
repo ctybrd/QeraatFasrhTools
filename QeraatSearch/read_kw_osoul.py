@@ -11,9 +11,8 @@ def cmyk_to_rgb(c, m, y, k):
     b = 255 * (1 - y) * (1 - k)
     return int(r), int(g), int(b)
 
-def process_detail_chars(detail_chars, doc):
-    """Processes detail characters and formats them in a Word document."""
-    paragraph = doc.add_paragraph()  # Start a new paragraph
+def process_detail_chars(detail_chars, paragraph):
+    """Processes detail characters and formats them in a paragraph."""
     for char_data in detail_chars:
         unicode_value = char_data.get('unicode', '')
         
@@ -25,7 +24,7 @@ def process_detail_chars(detail_chars, doc):
                 text = ''
         else:
             text = unicode_value
-        
+        text=text.replace('s',' ')
         # If there's text, add it to the document
         if text:
             run = paragraph.add_run(text)
@@ -60,18 +59,49 @@ def process_detail_chars(detail_chars, doc):
 
             # Handle new line
             if char_data.get('is_new_line', False):
-                paragraph.add_run().add_break()  # Add a new line if specified
+                # Only add a new line if there is existing text in the paragraph
+                if paragraph.text:
+                    paragraph.add_run().add_break()  # Add a new line if specified
+
+def process_node(node, doc):
+    """Recursively processes each node and its child nodes."""
+    if isinstance(node, dict):
+        # Create a new paragraph only if there's actual content to be processed
+        paragraph = None
+        content_found = False
+        
+        # Process key_chars
+        key_chars = node.get('key_chars', [])
+        if key_chars:
+            paragraph = doc.add_paragraph()
+            content_found = True
+            process_detail_chars(key_chars, paragraph)
+
+        # Process value_chars
+        value_chars = node.get('value_chars', [])
+        if value_chars:
+            if not paragraph:
+                paragraph = doc.add_paragraph()
+                content_found = True
+            process_detail_chars(value_chars, paragraph)
+
+        # Add a new paragraph only if content was found
+        if content_found:
+            doc.add_paragraph()  # Ensures the next content starts on a new line
+
+        # Recursively process nested nodes
+        for key, value in node.items():
+            if isinstance(value, list):
+                for item in value:
+                    process_node(item, doc)
 
 def insert_data(data, pagenumber, doc):
+    """Insert formatted data into the Word document."""
     doc.add_paragraph(f"صفحة: {pagenumber}").bold = True
 
-    # Process `key_chars`
+    # Process each root node in the data
     for item in data:
-        process_detail_chars(item.get('key_chars', []), doc)
-
-        # Process `value_chars`
-        for value_section in item.get('value_chars', []):
-            process_detail_chars(value_section.get('key_chars', []), doc)
+        process_node(item, doc)
 
 def main():
     """Reads JSON data from multiple files in a folder and generates a Word document with the formatted text."""
@@ -86,7 +116,7 @@ def main():
     try:
         # Extract numeric parts of filenames and sort them
         files = sorted(
-            [f for f in os.listdir(folder_path) if f.startswith("Osoul_") and f.endswith(".json")],
+            [f for f in os.listdir(folder_path) if f.startswith("Osoul_") and f.endswith("115.json")],
             key=lambda x: int(x.split("_")[1].split(".")[0])
         )
 
