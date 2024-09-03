@@ -25,7 +25,7 @@ def process_detail_chars(detail_chars, paragraph):
         else:
             text = unicode_value
         text=text.replace('s',' ')
-        # If there's text, add it to the document
+        # Add text to the document
         if text:
             run = paragraph.add_run(text)
 
@@ -56,17 +56,20 @@ def process_detail_chars(detail_chars, paragraph):
             rtl = char_data.get('add_tab', False)
             if rtl:
                 paragraph.add_run(' ' * 2)  # Add a tab space if specified
+            rPr = run._element.get_or_add_rPr()
+            rtl = OxmlElement('w:rtl')
+            rtl.text = '1'  # '1' for right-to-left, '0' for left-to-right
+            rPr.append(rtl)
 
             # Handle new line
             if char_data.get('is_new_line', False):
-                # Only add a new line if there is existing text in the paragraph
-                if paragraph.text:
-                    paragraph.add_run().add_break()  # Add a new line if specified
+                # Add a new line if there is existing text in the paragraph
+                if paragraph.text.strip():  # Check if there's any non-whitespace text
+                    paragraph.add_run().add_break()
 
 def process_node(node, doc):
     """Recursively processes each node and its child nodes."""
     if isinstance(node, dict):
-        # Create a new paragraph only if there's actual content to be processed
         paragraph = None
         content_found = False
         
@@ -85,9 +88,9 @@ def process_node(node, doc):
                 content_found = True
             process_detail_chars(value_chars, paragraph)
 
-        # Add a new paragraph only if content was found
+        # Add an empty paragraph to separate content if needed
         if content_found:
-            doc.add_paragraph()  # Ensures the next content starts on a new line
+            doc.add_paragraph()  # Add a new paragraph to separate sections
 
         # Recursively process nested nodes
         for key, value in node.items():
@@ -116,7 +119,7 @@ def main():
     try:
         # Extract numeric parts of filenames and sort them
         files = sorted(
-            [f for f in os.listdir(folder_path) if f.startswith("Osoul_") and f.endswith("115.json")],
+            [f for f in os.listdir(folder_path) if f.startswith("Osoul_") and f.endswith(".json")],
             key=lambda x: int(x.split("_")[1].split(".")[0])
         )
 
