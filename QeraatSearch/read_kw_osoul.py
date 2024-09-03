@@ -68,7 +68,8 @@ def process_node(node, doc, distinct_key_chars):
         key_chars = node.get('key_chars', [])
         value_chars = node.get('value_chars', [])
 
-        # Record distinct key_chars entries
+        # Record distinct key_chars entries as full strings
+        key_chars_string = ""
         for char_data in key_chars:
             unicode_value = char_data.get('unicode', '')
             if unicode_value.startswith('0x'):
@@ -79,14 +80,18 @@ def process_node(node, doc, distinct_key_chars):
             else:
                 text = unicode_value
             text = text.replace('s',' ')
-            distinct_key_chars.add(text)
+            key_chars_string += text
+
+        # Add the full key_chars string to the distinct set
+        if key_chars_string:
+            distinct_key_chars.add(key_chars_string)
         
         if key_chars or value_chars:
             # Create a table with two columns: one for key_chars and one for value_chars
             table = doc.add_table(rows=1, cols=2)
             table.autofit = True
-            key_cell = table.cell(0, 0)
-            value_cell = table.cell(0, 1)
+            key_cell = table.cell(0, 1)
+            value_cell = table.cell(0, 0)
             
             if key_chars:
                 process_detail_chars(key_chars, key_cell)
