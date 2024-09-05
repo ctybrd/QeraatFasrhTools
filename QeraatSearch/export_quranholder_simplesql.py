@@ -8,8 +8,8 @@ script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive +'/'
 
-source_db_path = drive + r'Qeraat/Wursha_QuranHolder/other/data/data_v17.db'
-destination_db_path = drive +  r'Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db'
+source_db_path = drive + r'Qeraat/Wursha_QuranHolder/other/data/data_v18.db'
+destination_db_path = drive +  r'Qeraat/QeraatFasrhTools/QeraatSearch/data_v18.db'
 shutil.copyfile(source_db_path, destination_db_path)
 
 # changed to be here in py 
@@ -123,7 +123,7 @@ settings=[
     },
     {
         "table_name": "book_all10",
-        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, qarees  || '  ' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  readingresult, qareesrest  || '  ' as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
         "reading <> 'قرؤوا بفتح هاء التأنيث.'",
         "reading <> 'وقف بترك هاء السكت.'",
@@ -226,7 +226,7 @@ def process_result(result, table_name):
 
 
 # Connect to the databases
-conn_data_v17 = sqlite3.connect(drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/data_v17.db')
+conn_data_v18 = sqlite3.connect(drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/data_v18.db')
 db_path = drive +"Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
@@ -259,7 +259,7 @@ for setting in settings:
 
     if processed_result:
         # Create and insert table using processed_result
-        create_and_insert_table(conn_data_v17, table_name, columns, processed_result)
+        create_and_insert_table(conn_data_v18, table_name, columns, processed_result)
     else:
         print("failed " + table_name)
 #prepare view
@@ -271,5 +271,5 @@ for table_setting in settings:
     # view_sql += subquery_sql
 print(view_sql)
 # Close connections
-conn_data_v17.close()
+conn_data_v18.close()
 connection.close()
