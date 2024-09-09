@@ -45,7 +45,8 @@ settings=[
             " (R2_1 IS NOT NULL or R2_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
             " IFNULL(tags, '') NOT LIKE '%basmala%' ",
-            " reading <> 'قرأ بصلة ميم الجمع وصلا.' "
+            " reading <> 'بصلة ميم الجمع وصلا.' ",
+            " reading <> 'بضم ميم الجمع، ووصلها بواو لفظية.' ",
         ]
     },
     {
@@ -100,7 +101,8 @@ settings=[
             " (R8_1 IS NOT NULL or R8_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
             " IFNULL(tags, '') NOT LIKE '%basmala%' ",
-            " reading <> 'قرأ بصلة ميم الجمع وصلا.' "
+            " reading <> 'بصلة ميم الجمع وصلا.' ",
+            " reading <> 'بضم ميم الجمع، ووصلها بواو لفظية.' ",
         ]
     },
     {
@@ -183,9 +185,23 @@ def create_and_insert_table(conn, table_name, columns, data):
     create_table_query = f"CREATE TABLE {table_name} ({columns})"
     cursor1.execute(create_table_query)
 
-    # Insert data into the table
-    insert_query = f"INSERT INTO {table_name} VALUES ({', '.join(['?' for _ in range(len(data[0]))])})"
-    cursor1.executemany(insert_query, data)
+    # Define the Arabic tatweel character
+    tatweel = "ـ"
+
+    # Create a new list where the tatweel character is removed from all strings
+    cleaned_data = [
+        [item.replace(tatweel, "") if isinstance(item, str) else item for item in row] 
+        for row in data
+    ]
+
+    # Prepare the insert query
+    insert_query = f"INSERT INTO {table_name} VALUES ({', '.join(['?' for _ in range(len(cleaned_data[0]))])})"
+
+    # Execute the insert with the cleaned data
+    cursor1.executemany(insert_query, cleaned_data)
+
+
+
 
     # Commit changes
     conn.commit()
