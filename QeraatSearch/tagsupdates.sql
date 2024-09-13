@@ -98,3 +98,35 @@ where tags is not null;
 UPDATE  quran_data set tags= replace(tags,',,',',')
 where tags is not null;
 
+
+UPDATE quran_data set tags=IFNULL(tags,',') ||'waqfh1,'
+where reading = 'بترك السكت وصلا، ووقف بالنقل والتحقيق.'
+and 
+ifnull(tags,',') not like '%waqfh1,%';
+
+update quran_data set done=1 where reading = 'بترك السكت وصلا، ووقف بالنقل والتحقيق.';
+
+
+SELECT reading,count(*),group_concat(distinct sub_subject),group_concat(distinct qarees) from 
+  quran_data
+
+where done is null
+
+and
+(
+    q1 IS NOT NULL OR q2 IS NOT NULL OR q3 IS NOT NULL OR q4 IS NOT NULL OR q5 IS NOT NULL OR 
+    q7 IS NOT NULL OR q8 IS NOT NULL OR q9 IS NOT NULL OR
+    r1_1 IS NOT NULL OR r1_2 IS NOT NULL OR
+    r2_1 IS NOT NULL OR r2_2 IS NOT NULL OR
+    r3_1 IS NOT NULL OR r3_2 IS NOT NULL OR
+    --r4_1 IS NOT NULL OR 
+	r4_2 IS NOT NULL OR
+    r5_1 IS NOT NULL OR r5_2 IS NOT NULL OR
+    --r6_1 IS NOT NULL OR r6_2 IS NOT NULL OR
+    r7_1 IS NOT NULL OR r7_2 IS NOT NULL OR
+    r8_1 IS NOT NULL OR r8_2 IS NOT NULL OR
+    r9_1 IS NOT NULL OR r9_2 IS NOT NULL OR
+    r10_1 IS NOT NULL OR r10_2 IS NOT NULL
+)
+group by reading
+ORDER by count(*) desc
