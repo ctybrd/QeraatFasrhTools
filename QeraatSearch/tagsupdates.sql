@@ -130,3 +130,10 @@ and
 )
 group by reading
 ORDER by count(*) desc
+
+
+
+UPDATE quran_data set resultnew=
+(SELECT case when instr(quran_data.sub_subject,' ')>0 then nextword2 else word END
+from words1 where words1.ayah=quran_data.aya and words1.surah=quran_data.sora and words1.wordsno=quran_data.wordsno)
+ where quran_data.resultnew is null and quran_data.r5_2 is not null
