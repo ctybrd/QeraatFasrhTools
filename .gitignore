@@ -13,3 +13,8 @@ QeraatSearch/Books/book_sho3ba.csv
 QeraatSearch/Books/book_yaqob.csv
 QeraatSearch/data_v17.db
 
+/QeraatSearch/Tags Editor/__history
+QeraatSearch/Tags Editor/TagsEditor.dproj.local
+*.dcu
+QeraatSearch/Tags Editor/TagsEditor.identcache
+QeraatSearch/Tags Editor/TagsEditor.res
