@@ -484,6 +484,6 @@ object MasterF: TMasterF
     LoginPrompt = False
     AfterConnect = DBAfterConnect
     Left = 16
-    Top = 8
+    Top = 16
   end
 end

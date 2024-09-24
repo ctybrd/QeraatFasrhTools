@@ -99,6 +99,19 @@ var
   Text: string;
   TextWidth, TextHeight: Integer;
 begin
+  if gdSelected in State then
+  begin
+    TStringGrid(Sender).Canvas.Brush.Color := clHighlight;
+    TStringGrid(Sender).Canvas.Font.Color := clHighlightText;
+    TStringGrid(Sender).Canvas.FillRect(Rect);
+
+    Text := TStringGrid(Sender).Cells[ACol, ARow];
+    TextWidth := TStringGrid(Sender).Canvas.TextWidth(Text);
+    TextHeight := TStringGrid(Sender).Canvas.TextHeight(Text);
+    TStringGrid(Sender).Canvas.TextRect(Rect, Rect.Right - TextWidth - 2,
+      Rect.Top + (Rect.Height div 2) - (TextHeight div 2), Text);
+  end;
+
   if ARow <> 0 then
     Exit;
 
