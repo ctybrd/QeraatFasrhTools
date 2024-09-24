@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB,
   Vcl.Grids, Vcl.DBGrids, Vcl.Bind.Grid, Math, Vcl.ExtCtrls, Data.Win.ADODB,
-  Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, Vcl.Buttons, System.UITypes;
+  Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, Vcl.Buttons, System.UITypes,
+  Vcl.WinXCtrls;
 
 type
   TMasterF = class(TForm)
@@ -62,6 +63,12 @@ type
     HGrd: TDBGrid;
     DGrd: TDBGrid;
     DCountPnl: TPanel;
+    HafsSW: TToggleSwitch;
+    Label4: TLabel;
+    DoneSW: TToggleSwitch;
+    Label5: TLabel;
+    HQSequence: TIntegerField;
+    DQR5_2: TWideMemoField;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -72,8 +79,10 @@ type
     procedure HGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure DGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure HDSDataChange(Sender: TObject; Field: TField);
+    procedure DoneSWClick(Sender: TObject);
   private
-    Function FilterData(): String;
+    Procedure FilterHData();
+    Procedure FilterDData();
     function AddAnd(Txt: String): String;
     procedure WideMemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
@@ -119,12 +128,16 @@ begin
   HQ.Open();
   DQ.Open();
 
+  FilterHData();
+  FilterDData();
+
   if FileExists('HGrd.ini') then
     HGrd.Columns.LoadFromFile('HGrd.ini');
   if FileExists('DGrd.ini') then
     DGrd.Columns.LoadFromFile('DGrd.ini');
 end;
 
+{$Region 'Grid Positions'}
 procedure TMasterF.HGrdColumnMoved(Sender: TObject; FromIndex,
   ToIndex: Integer);
 begin
@@ -136,7 +149,9 @@ procedure TMasterF.DGrdColumnMoved(Sender: TObject; FromIndex,
 begin
   DGrd.Columns.SaveToFile('DGrd.ini');
 end;
+{$EndRegion}
 
+{$Region 'Map Fields'}
 procedure TMasterF.AssignWideMemoFieldEvents(Qry: TADOQuery);
 var
   i: Integer;
@@ -164,18 +179,35 @@ procedure TMasterF.WideMemoSetText(Sender: TField; const Text: string);
 begin
   Sender.AsWideString := Text;
 end;
+{$EndRegion}
 
-Function TMasterF.AddAnd(Txt: String): String;
+{$Region 'Filter Data'}
+procedure TMasterF.ReadingEdtChange(Sender: TObject);
 begin
-  Result := Ifthen(Txt <> '',Txt + ' And ','');
+  FilterHData();
 end;
 
-procedure TMasterF.ReadingEdtChange(Sender: TObject);
+procedure TMasterF.DoneSWClick(Sender: TObject);
+begin
+  FilterDData();
+end;
+
+Procedure TMasterF.FilterHData();
 var
   Fltr: String;
 begin
+  if ReadingEdt.Text <> '' then
+    Fltr := 'reading like ' + QuotedStr('%' + ReadingEdt.Text + '%');
+
+  if SubjectEdt.Text <> '' then
+    Fltr := AddAnd(Fltr)
+      + 'subject like ' + QuotedStr('%' + SubjectEdt.Text + '%');
+
+  if QuareesEdt.Text <> '' then
+    Fltr := AddAnd(Fltr)
+      + 'qarees like ' + QuotedStr('%' + QuareesEdt.Text + '%');
+
   LockWindowUpdate(Handle);
-  Fltr := FilterData();
 
   if Fltr = '' then
   begin
@@ -194,20 +226,40 @@ begin
   end;
 end;
 
-Function TMasterF.FilterData(): String;
+procedure TMasterF.FilterDData();
+var
+  Fltr: String;
 begin
-  if ReadingEdt.Text <> '' then
-    Result := 'reading like ' + QuotedStr('%' + ReadingEdt.Text + '%');
+  if DoneSW.State = tssOff then
+    Fltr := 'done = NULL'
+  else
+    Fltr := 'done = 1';
 
-  if SubjectEdt.Text <> '' then
-    Result := AddAnd(Result)
-      + 'subject like ' + QuotedStr('%' + SubjectEdt.Text + '%');
+  if HafsSW.State = tssOff then
+    Fltr := AddAnd(Fltr) + 'r5_2 = NULL'
+  else
+    Fltr := AddAnd(Fltr) + 'r5_2 = ' + QuotedStr('1');
 
-  if QuareesEdt.Text <> '' then
-    Result := AddAnd(Result)
-      + 'qarees like ' + QuotedStr('%' + QuareesEdt.Text + '%');
+  LockWindowUpdate(Handle);
+
+  try
+    DQ.Filtered := False;
+    DQ.Filter := Fltr;
+    DQ.Filtered := True;
+  finally
+    LockWindowUpdate(0);
+    RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or
+      RDW_INVALIDATE or RDW_ALLCHILDREN);
+  end;
 end;
 
+Function TMasterF.AddAnd(Txt: String): String;
+begin
+  Result := Ifthen(Txt <> '', Txt + ' And ', '');
+end;
+{$EndRegion}
+
+{$Region 'Action Buttons'}
 procedure TMasterF.UpdateBtnClick(Sender: TObject);
 var
   SQL: String;
@@ -252,7 +304,9 @@ begin
   DGrd.Font.Size := DGrd.Font.Size - 1;
   DGrd.TitleFont.Size := HGrd.Font.Size - 1;
 end;
+{$EndRegion}
 
+{$Region 'Record Count'}
 procedure TMasterF.HDSDataChange(Sender: TObject; Field: TField);
 begin
   if not HQ.IsEmpty then
@@ -268,5 +322,6 @@ begin
   else
     DCountPnl.Caption := '( 0 : 0 )';
 end;
+{$EndRegion}
 
 end.

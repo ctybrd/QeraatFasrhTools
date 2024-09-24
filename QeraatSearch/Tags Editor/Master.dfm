@@ -20,7 +20,7 @@ object MasterF: TMasterF
   object Spltr: TSplitter
     AlignWithMargins = True
     Left = 3
-    Top = 214
+    Top = 246
     Width = 820
     Height = 3
     Cursor = crVSplit
@@ -55,7 +55,7 @@ object MasterF: TMasterF
     Left = 3
     Top = 50
     Width = 820
-    Height = 32
+    Height = 64
     Align = alTop
     BevelOuter = bvNone
     ColumnCollection = <
@@ -107,10 +107,33 @@ object MasterF: TMasterF
         Column = 5
         Control = Label3
         Row = 0
+      end
+      item
+        Column = 2
+        Control = HafsSW
+        Row = 1
+      end
+      item
+        Column = 3
+        Control = Label4
+        Row = 1
+      end
+      item
+        Column = 4
+        Control = DoneSW
+        Row = 1
+      end
+      item
+        Column = 5
+        Control = Label5
+        Row = 1
       end>
     RowCollection = <
       item
-        Value = 100.000000000000000000
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
       end>
     ShowCaption = False
     TabOrder = 1
@@ -183,6 +206,58 @@ object MasterF: TMasterF
       ExplicitWidth = 51
       ExplicitHeight = 18
     end
+    object HafsSW: TToggleSwitch
+      AlignWithMargins = True
+      Left = 276
+      Top = 35
+      Width = 186
+      Height = 26
+      Align = alClient
+      TabOrder = 3
+      OnClick = DoneSWClick
+      ExplicitLeft = 385
+      ExplicitWidth = 77
+      ExplicitHeight = 20
+    end
+    object Label4: TLabel
+      AlignWithMargins = True
+      Left = 468
+      Top = 35
+      Width = 76
+      Height = 26
+      Align = alClient
+      Alignment = taCenter
+      Caption = #1581#1601#1589
+      Layout = tlCenter
+      ExplicitWidth = 35
+      ExplicitHeight = 18
+    end
+    object DoneSW: TToggleSwitch
+      AlignWithMargins = True
+      Left = 550
+      Top = 35
+      Width = 185
+      Height = 26
+      Align = alClient
+      TabOrder = 4
+      OnClick = DoneSWClick
+      ExplicitLeft = 658
+      ExplicitWidth = 77
+      ExplicitHeight = 20
+    end
+    object Label5: TLabel
+      AlignWithMargins = True
+      Left = 741
+      Top = 35
+      Width = 76
+      Height = 26
+      Align = alClient
+      Alignment = taCenter
+      Caption = 'Done'
+      Layout = tlCenter
+      ExplicitWidth = 34
+      ExplicitHeight = 18
+    end
   end
   object StatPnl: TGridPanel
     AlignWithMargins = True
@@ -250,8 +325,6 @@ object MasterF: TMasterF
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
-      ExplicitLeft = 0
-      ExplicitWidth = 612
     end
     object HCountPnl: TPanel
       AlignWithMargins = True
@@ -296,10 +369,6 @@ object MasterF: TMasterF
       ParentBackground = False
       ParentFont = False
       TabOrder = 2
-      ExplicitLeft = 10
-      ExplicitTop = 3
-      ExplicitWidth = 185
-      ExplicitHeight = 19
     end
   end
   object ActnPnl: TGridPanel
@@ -481,7 +550,7 @@ object MasterF: TMasterF
   object HGrd: TDBGrid
     AlignWithMargins = True
     Left = 3
-    Top = 88
+    Top = 120
     Width = 820
     Height = 120
     Align = alTop
@@ -502,9 +571,9 @@ object MasterF: TMasterF
   object DGrd: TDBGrid
     AlignWithMargins = True
     Left = 3
-    Top = 223
+    Top = 255
     Width = 820
-    Height = 279
+    Height = 247
     Align = alClient
     BorderStyle = bsNone
     DataSource = DDS
@@ -525,16 +594,19 @@ object MasterF: TMasterF
     CursorType = ctStatic
     Parameters = <>
     SQL.Strings = (
+      'SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence,'
       
-        'SELECT reading, count(*) count, group_concat(DISTINCT sub_subjec' +
-        't) subject, '
-      'group_concat(DISTINCT qarees) qarees'
-      'FROM quran_data'
-      'WHERE done IS NULL AND r5_2 IS NULL'
+        'reading, count(*) Count, group_concat(DISTINCT sub_subject) Subj' +
+        'ect, '
+      'group_concat(DISTINCT qarees) qarees FROM quran_data'
+      'WHERE done IS NULL AND r5_2 IS NULL '
       'GROUP BY reading'
       'ORDER BY count(*) DESC')
     Left = 16
     Top = 64
+    object HQSequence: TIntegerField
+      FieldName = 'Sequence'
+    end
     object HQreading: TWideMemoField
       DisplayLabel = 'Reading'
       DisplayWidth = 50
@@ -578,9 +650,9 @@ object MasterF: TMasterF
       item
         Name = 'reading'
         Attributes = [paNullable, paLong]
-        DataType = ftWideMemo
-        Size = 43
-        Value = #1576#1578#1581#1602#1610#1602' '#1575#1604#1607#1605#1586#1577' '#1575#1604#1571#1608#1604#1609' '#1608#1578#1587#1607#1610#1604' '#1575#1604#1607#1605#1586#1577' '#1575#1604#1579#1575#1606#1610#1577'.'
+        DataType = ftWideString
+        Size = 65536
+        Value = Null
       end>
     SQL.Strings = (
       
@@ -589,9 +661,9 @@ object MasterF: TMasterF
       
         'page_number1, page_number2, readingresult, qareesrest, count_wor' +
         'ds, '
-      'sub_sno, resultnew, wordsno, done '
-      'FROM quran_data '
-      ' WHERE done IS NULL AND r5_2 IS NULL and  reading = :reading')
+      'sub_sno, resultnew, wordsno, r5_2, done '
+      'FROM quran_data'
+      'where reading = :reading')
     Left = 16
     Top = 112
     object DQaya_index: TIntegerField
@@ -671,6 +743,10 @@ object MasterF: TMasterF
       DisplayLabel = 'Word SNo'
       FieldName = 'wordsno'
     end
+    object DQR5_2: TWideMemoField
+      FieldName = 'R5_2'
+      BlobType = ftWideMemo
+    end
     object DQDone: TIntegerField
       FieldName = 'Done'
     end
@@ -678,8 +754,7 @@ object MasterF: TMasterF
   object DB: TADOConnection
     ConnectionString = 
       #39'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;Database=E:\Wursh' +
-      'a\QeraatFasrhTools\QeraatSearch\Tags Editor\Win32\Debug\qeraat_d' +
-      'ata_simple.db;'
+      'a\QeraatFasrhTools\QeraatSearch\qeraat_data_simple.db;'
     LoginPrompt = False
     AfterConnect = DBAfterConnect
     Left = 16
