@@ -594,8 +594,8 @@ object MasterF: TMasterF
         'page_number1, page_number2, readingresult, qareesrest, count_wor' +
         'ds, '
       'sub_sno, resultnew, wordsno, done '
-      'FROM quran_data'
-      'where reading = :reading')
+      'FROM quran_data '
+      ' WHERE done IS NULL AND r5_2 IS NULL and  reading = :reading')
     Left = 16
     Top = 112
     object DQaya_index: TIntegerField
