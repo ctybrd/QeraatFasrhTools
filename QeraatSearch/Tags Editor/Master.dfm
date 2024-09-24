@@ -74,8 +74,6 @@ object MasterF: TMasterF
     ParentBiDiMode = False
     TabOrder = 1
     OnDrawCell = HGrdDrawCell
-    ExplicitTop = 279
-    ExplicitHeight = 263
     ColWidths = (
       84
       84
@@ -205,9 +203,6 @@ object MasterF: TMasterF
       Align = alClient
       TabOrder = 0
       OnChange = ReadingEdtChange
-      ExplicitLeft = 352
-      ExplicitTop = 8
-      ExplicitWidth = 121
     end
     object Label1: TLabel
       AlignWithMargins = True
@@ -219,7 +214,6 @@ object MasterF: TMasterF
       Alignment = taCenter
       Caption = 'Quarees'
       Layout = tlCenter
-      ExplicitLeft = 162
       ExplicitWidth = 55
       ExplicitHeight = 18
     end
@@ -232,9 +226,6 @@ object MasterF: TMasterF
       Align = alClient
       TabOrder = 1
       OnChange = ReadingEdtChange
-      ExplicitLeft = 352
-      ExplicitTop = 8
-      ExplicitWidth = 121
     end
     object Label2: TLabel
       AlignWithMargins = True
@@ -246,7 +237,6 @@ object MasterF: TMasterF
       Alignment = taCenter
       Caption = 'Subject'
       Layout = tlCenter
-      ExplicitLeft = 435
       ExplicitWidth = 48
       ExplicitHeight = 18
     end
@@ -259,9 +249,6 @@ object MasterF: TMasterF
       Align = alClient
       TabOrder = 2
       OnChange = ReadingEdtChange
-      ExplicitLeft = 352
-      ExplicitTop = 8
-      ExplicitWidth = 121
     end
     object Label3: TLabel
       AlignWithMargins = True
@@ -273,7 +260,6 @@ object MasterF: TMasterF
       Alignment = taCenter
       Caption = 'Reading'
       Layout = tlCenter
-      ExplicitLeft = 708
       ExplicitWidth = 51
       ExplicitHeight = 18
     end
@@ -317,7 +303,6 @@ object MasterF: TMasterF
       end>
     ShowCaption = False
     TabOrder = 4
-    ExplicitLeft = 8
     object StatusBar: TPanel
       AlignWithMargins = True
       Left = 0
@@ -362,7 +347,6 @@ object MasterF: TMasterF
       ParentBackground = False
       ParentFont = False
       TabOrder = 1
-      ExplicitTop = -3
     end
   end
   object ActnPnl: TGridPanel
@@ -411,9 +395,6 @@ object MasterF: TMasterF
       end>
     ShowCaption = False
     TabOrder = 5
-    ExplicitLeft = 328
-    ExplicitTop = 288
-    ExplicitWidth = 185
     object UpdPnl: TPanel
       AlignWithMargins = True
       Left = 331
@@ -424,10 +405,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 0
-      ExplicitLeft = 320
-      ExplicitTop = 0
-      ExplicitWidth = 185
-      ExplicitHeight = 41
       object UpdShp: TShape
         Left = 0
         Top = 0
@@ -472,8 +449,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 1
-      ExplicitLeft = 11
-      ExplicitTop = 6
       object DecFontShp: TShape
         Left = 0
         Top = 0
@@ -518,10 +493,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 2
-      ExplicitLeft = 320
-      ExplicitTop = 0
-      ExplicitWidth = 185
-      ExplicitHeight = 41
       object IncFontShp: TShape
         Left = 0
         Top = 0

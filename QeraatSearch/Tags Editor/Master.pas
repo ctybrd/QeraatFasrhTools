@@ -96,7 +96,9 @@ procedure TMasterF.FormCreate(Sender: TObject);
 var
   Pth: String;
 begin
-  Pth := ExtractFilePath(Application.ExeName) + 'qeraat_data_simple.db';
+  Pth := ExtractFileDir(
+    ExtractFileDir(ExtractFileDir(
+    ExtractFileDir(Application.ExeName)))) + '\qeraat_data_simple.db';
   StatusBar.Caption := Pth;
 
   DB.Connected := False;
