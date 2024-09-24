@@ -20,7 +20,7 @@ object MasterF: TMasterF
   object Spltr: TSplitter
     AlignWithMargins = True
     Left = 3
-    Top = 276
+    Top = 214
     Width = 820
     Height = 3
     Cursor = crVSplit
@@ -30,86 +30,6 @@ object MasterF: TMasterF
     ExplicitLeft = 0
     ExplicitTop = 126
     ExplicitWidth = 457
-  end
-  object HGrd: TStringGrid
-    Tag = 4
-    AlignWithMargins = True
-    Left = 3
-    Top = 88
-    Width = 820
-    Height = 182
-    Align = alTop
-    BorderStyle = bsNone
-    ColCount = 4
-    FixedCols = 0
-    RowCount = 2
-    Options = [goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goEditing, goTabs, goFixedRowDefAlign]
-    TabOrder = 0
-    OnDrawCell = HGrdDrawCell
-    ColWidths = (
-      404
-      84
-      2044
-      2044)
-    ColAligments = (
-      0
-      1
-      0
-      0)
-  end
-  object DGrd: TStringGrid
-    Tag = 17
-    AlignWithMargins = True
-    Left = 3
-    Top = 285
-    Width = 820
-    Height = 217
-    Align = alClient
-    BiDiMode = bdRightToLeft
-    BorderStyle = bsNone
-    ColCount = 17
-    FixedCols = 0
-    RowCount = 2
-    Options = [goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goEditing, goTabs, goFixedRowDefAlign]
-    ParentBiDiMode = False
-    TabOrder = 1
-    OnDrawCell = HGrdDrawCell
-    ColWidths = (
-      84
-      84
-      84
-      84
-      124
-      364
-      324
-      124
-      106
-      106
-      124
-      364
-      89
-      84
-      84
-      84
-      84)
-    ColAligments = (
-      1
-      1
-      1
-      1
-      0
-      0
-      0
-      0
-      1
-      1
-      0
-      0
-      1
-      1
-      0
-      1
-      1)
   end
   object HeadPnl: TPanel
     AlignWithMargins = True
@@ -128,7 +48,7 @@ object MasterF: TMasterF
     Font.Style = [fsBold]
     ParentBackground = False
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 0
   end
   object CondPnl: TGridPanel
     AlignWithMargins = True
@@ -193,7 +113,7 @@ object MasterF: TMasterF
         Value = 100.000000000000000000
       end>
     ShowCaption = False
-    TabOrder = 3
+    TabOrder = 1
     object QuareesEdt: TEdit
       AlignWithMargins = True
       Left = 3
@@ -302,7 +222,7 @@ object MasterF: TMasterF
         Value = 100.000000000000000000
       end>
     ShowCaption = False
-    TabOrder = 4
+    TabOrder = 2
     object StatusBar: TPanel
       AlignWithMargins = True
       Left = 0
@@ -394,7 +314,7 @@ object MasterF: TMasterF
         Value = 100.000000000000000000
       end>
     ShowCaption = False
-    TabOrder = 5
+    TabOrder = 3
     object UpdPnl: TPanel
       AlignWithMargins = True
       Left = 331
@@ -524,6 +444,48 @@ object MasterF: TMasterF
         ExplicitTop = 3
       end
     end
+  end
+  object HGrd: TDBGrid
+    AlignWithMargins = True
+    Left = 3
+    Top = 88
+    Width = 820
+    Height = 120
+    Align = alTop
+    BorderStyle = bsNone
+    DataSource = HDS
+    DrawingStyle = gdsGradient
+    FixedColor = 16766678
+    GradientEndColor = 16766678
+    GradientStartColor = 16766678
+    TabOrder = 4
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -15
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    OnColumnMoved = HGrdColumnMoved
+  end
+  object DGrd: TDBGrid
+    AlignWithMargins = True
+    Left = 3
+    Top = 223
+    Width = 820
+    Height = 279
+    Align = alClient
+    BorderStyle = bsNone
+    DataSource = DDS
+    DrawingStyle = gdsGradient
+    FixedColor = 16766678
+    GradientEndColor = 16766678
+    GradientStartColor = 16766678
+    TabOrder = 5
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -15
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    OnColumnMoved = DGrdColumnMoved
   end
   object HQ: TADOQuery
     Connection = DB
@@ -678,36 +640,6 @@ object MasterF: TMasterF
     object DQDone: TIntegerField
       FieldName = 'Done'
     end
-  end
-  object BindSourceDB1: TBindSourceDB
-    DataSet = HQ
-    ScopeMappings = <>
-    Left = 48
-    Top = 160
-  end
-  object BindingsList1: TBindingsList
-    Methods = <>
-    OutputConverters = <>
-    Left = 16
-    Top = 160
-    object LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource
-      Category = 'Quick Bindings'
-      DataSource = BindSourceDB1
-      GridControl = HGrd
-      Columns = <>
-    end
-    object LinkGridToDataSourceBindSourceDB2: TLinkGridToDataSource
-      Category = 'Quick Bindings'
-      DataSource = BindSourceDB2
-      GridControl = DGrd
-      Columns = <>
-    end
-  end
-  object BindSourceDB2: TBindSourceDB
-    DataSet = DQ
-    ScopeMappings = <>
-    Left = 80
-    Top = 160
   end
   object DB: TADOConnection
     ConnectionString = 

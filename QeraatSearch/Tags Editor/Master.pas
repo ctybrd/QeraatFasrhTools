@@ -12,8 +12,6 @@ uses
 
 type
   TMasterF = class(TForm)
-    HGrd: TStringGrid;
-    DGrd: TStringGrid;
     Spltr: TSplitter;
     HeadPnl: TPanel;
     HQ: TADOQuery;
@@ -41,11 +39,6 @@ type
     DQresultnew: TWideMemoField;
     DQwordsno: TIntegerField;
     DQDone: TIntegerField;
-    BindSourceDB1: TBindSourceDB;
-    BindingsList1: TBindingsList;
-    LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource;
-    BindSourceDB2: TBindSourceDB;
-    LinkGridToDataSourceBindSourceDB2: TLinkGridToDataSource;
     DB: TADOConnection;
     CondPnl: TGridPanel;
     QuareesEdt: TEdit;
@@ -68,18 +61,24 @@ type
     IncFontPnl: TPanel;
     IncFontShp: TShape;
     IncFontBtn: TSpeedButton;
+    HGrd: TDBGrid;
+    DGrd: TDBGrid;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
-    procedure HGrdDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-      State: TGridDrawState);
     procedure ReadingEdtChange(Sender: TObject);
     procedure UpdateBtnClick(Sender: TObject);
     procedure IncFontBtnClick(Sender: TObject);
     procedure DecFontBtnClick(Sender: TObject);
+    procedure HGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
+    procedure DGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
   private
     Function FilterData(): String;
     function AddAnd(Txt: String): String;
+    procedure WideMemoGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure WideMemoSetText(Sender: TField; const Text: string);
+    procedure AssignWideMemoFieldEvents(Qry: TADOQuery);
     { Private declarations }
   public
     { Public declarations }
@@ -112,44 +111,58 @@ begin
   end;
 end;
 
-procedure TMasterF.HGrdDrawCell(Sender: TObject; ACol, ARow: Integer;
-  Rect: TRect; State: TGridDrawState);
-var
-  Text: string;
-  TextWidth, TextHeight: Integer;
-begin
-  if gdSelected in State then
-  begin
-    TStringGrid(Sender).Canvas.Brush.Color := clHighlight;
-    TStringGrid(Sender).Canvas.Font.Color := clHighlightText;
-    TStringGrid(Sender).Canvas.FillRect(Rect);
-
-    Text := TStringGrid(Sender).Cells[ACol, ARow];
-    TextWidth := TStringGrid(Sender).Canvas.TextWidth(Text);
-    TextHeight := TStringGrid(Sender).Canvas.TextHeight(Text);
-    TStringGrid(Sender).Canvas.TextRect(Rect, Rect.Right - TextWidth - 2,
-      Rect.Top + (Rect.Height div 2) - (TextHeight div 2), Text);
-  end;
-
-  if ARow <> 0 then
-    Exit;
-
-  TStringGrid(Sender).Canvas.Brush.Color := $00FFD6D6;
-  TStringGrid(Sender).Canvas.FillRect(Rect);
-  Text := TStringGrid(Sender).Cells[ACol, ARow];
-
-  TextWidth := TStringGrid(Sender).Canvas.TextWidth(Text);
-  TextHeight := TStringGrid(Sender).Canvas.TextHeight(Text);
-
-  TStringGrid(Sender).Canvas.TextRect(Rect,
-    Rect.Left + (Rect.Width - TextWidth) div 2,
-    Rect.Top + (Rect.Height - TextHeight) div 2, Text);
-end;
-
 procedure TMasterF.DBAfterConnect(Sender: TObject);
 begin
+  AssignWideMemoFieldEvents(HQ);
+  AssignWideMemoFieldEvents(DQ);
+
   HQ.Open();
   DQ.Open();
+
+  if FileExists('HGrd.ini') then
+    HGrd.Columns.LoadFromFile('HGrd.ini');
+  if FileExists('DGrd.ini') then
+    DGrd.Columns.LoadFromFile('DGrd.ini');
+end;
+
+procedure TMasterF.HGrdColumnMoved(Sender: TObject; FromIndex,
+  ToIndex: Integer);
+begin
+  HGrd.Columns.SaveToFile('HGrd.ini');
+end;
+
+procedure TMasterF.DGrdColumnMoved(Sender: TObject; FromIndex,
+  ToIndex: Integer);
+begin
+  DGrd.Columns.SaveToFile('DGrd.ini');
+end;
+
+procedure TMasterF.AssignWideMemoFieldEvents(Qry: TADOQuery);
+var
+  i: Integer;
+  Field: TField;
+begin
+  for i := 0 to Qry.Fields.Count - 1 do
+  begin
+    Field := Qry.Fields[i];
+
+    if Field.DataType = ftWideMemo then
+    begin
+      Field.OnGetText := WideMemoGetText;
+      Field.OnSetText := WideMemoSetText;
+    end;
+  end;
+end;
+
+procedure TMasterF.WideMemoGetText(Sender: TField; var Text: string;
+  DisplayText: Boolean);
+begin
+  Text := Sender.AsWideString;
+end;
+
+procedure TMasterF.WideMemoSetText(Sender: TField; const Text: string);
+begin
+  Sender.AsWideString := Text;
 end;
 
 Function TMasterF.AddAnd(Txt: String): String;
@@ -223,16 +236,20 @@ procedure TMasterF.IncFontBtnClick(Sender: TObject);
 begin
   Self.Font.Size := Self.Font.Size + 1;
   CondPnl.Height := CondPnl.Height + 3;
-  HGrd.DefaultRowHeight := HGrd.DefaultRowHeight + 3;
-  DGrd.DefaultRowHeight := DGrd.DefaultRowHeight + 3;
+  HGrd.Font.Size := HGrd.Font.Size + 1;
+  HGrd.TitleFont.Size := HGrd.Font.Size + 1;
+  DGrd.Font.Size := DGrd.Font.Size + 1;
+  DGrd.TitleFont.Size := HGrd.Font.Size + 1;
 end;
 
 procedure TMasterF.DecFontBtnClick(Sender: TObject);
 begin
   Self.Font.Size := Self.Font.Size - 1;
   CondPnl.Height := CondPnl.Height - 3;
-  HGrd.DefaultRowHeight := HGrd.DefaultRowHeight - 3;
-  DGrd.DefaultRowHeight := DGrd.DefaultRowHeight - 3;
+  HGrd.Font.Size := HGrd.Font.Size - 1;
+  HGrd.TitleFont.Size := HGrd.Font.Size - 1;
+  DGrd.Font.Size := DGrd.Font.Size - 1;
+  DGrd.TitleFont.Size := HGrd.Font.Size - 1;
 end;
 
 procedure TMasterF.DDSDataChange(Sender: TObject; Field: TField);

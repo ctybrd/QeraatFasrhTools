@@ -1,17 +1,10 @@
 ﻿[]
-Coordinates=296,71,60,51
+Coordinates=750,50,40,51
 Visible=True
 
 [DMF.]
 Coordinates=11,55,54,33
 Visible=False
-
-[HGrd]
-Coordinates=140,70,40,51
-
-[DGrd]
-Coordinates=750,50,40,51
-Visible=True
 
 [Spltr]
 Coordinates=0,0,40,33
@@ -60,12 +53,10 @@ Coordinates=413,261,89,33
 Coordinates=503,100,103,33
 
 [HQ]
-Coordinates=40,130,40,33
-Visible=False
+Coordinates=90,140,40,33
 
 [DQ]
-Coordinates=121,130,40,33
-Visible=False
+Coordinates=171,140,40,33
 
 [DQqarees]
 Coordinates=413,313,62,33
@@ -94,15 +85,6 @@ Coordinates=413,521,81,33
 
 [DQpage_number1]
 Coordinates=503,209,103,33
-
-[BindSourceDB1]
-Coordinates=40,130,92,141
-
-[BindingsList1]
-Coordinates=59,1,82,33
-
-[BindSourceDB2]
-Coordinates=600,30,92,375
 
 [DB]
 Coordinates=40,52,40,33
