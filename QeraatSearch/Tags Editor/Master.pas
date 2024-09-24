@@ -213,12 +213,12 @@ var
   SQL: String;
 begin
   SQL := 'UPDATE quran_data ' +
-    'SET resultnew = a.resultnew ' +
+    'SET resultnew = (Select a.resultnew ' +
     'FROM quran_data AS a ' +
-    'WHERE (quran_data.resultnew IS NULL or quran_data.resultnew='') ' +
-    'AND NOT(a.resultnew IS NULL or a.resultnew='') ' +
+    'WHERE NOT(a.resultnew IS NULL or a.resultnew = '''') ' +
     'AND a.sub_subject = quran_data.sub_subject ' +
-    'AND a.reading = quran_data.reading; ';
+    'AND a.reading = quran_data.reading) ' +
+    'WHERE (quran_data.resultnew IS NULL or quran_data.resultnew='''')';
 
   Qry.SQL.Text := SQL;
   ShowMessage(SQL);
@@ -228,6 +228,7 @@ begin
   begin
     Qry.ExecSQL;
     HQ.Requery();
+    DQ.Requery();
     ShowMessage('Done');
   end;
 end;
