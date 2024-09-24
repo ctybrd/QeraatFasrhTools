@@ -21,20 +21,14 @@ type
     HDS: TDataSource;
     DDS: TDataSource;
     DQ: TADOQuery;
-    DQaya_index: TIntegerField;
-    DQid: TIntegerField;
     DQsora: TIntegerField;
     DQaya: TIntegerField;
     DQsub_subject: TWideMemoField;
-    DQqarees: TWideMemoField;
     DQreading: TWideMemoField;
     DQtags: TWideMemoField;
-    DQpage_number1: TIntegerField;
     DQpage_number2: TIntegerField;
     DQreadingresult: TWideMemoField;
     DQqareesrest: TWideMemoField;
-    DQcount_words: TIntegerField;
-    DQsub_sno: TIntegerField;
     DQresultnew: TWideMemoField;
     DQwordsno: TIntegerField;
     DQDone: TIntegerField;
@@ -68,7 +62,10 @@ type
     DoneSW: TToggleSwitch;
     Label5: TLabel;
     HQSequence: TIntegerField;
-    DQR5_2: TWideMemoField;
+    DQsub_subject1: TWideMemoField;
+    Panel1: TPanel;
+    Shape1: TShape;
+    SpeedButton1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -80,6 +77,9 @@ type
     procedure DGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure HDSDataChange(Sender: TObject; Field: TField);
     procedure DoneSWClick(Sender: TObject);
+    procedure ActnPnlDblClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure DGrdKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     Procedure FilterHData();
     Procedure FilterDData();
@@ -89,20 +89,20 @@ type
     procedure WideMemoSetText(Sender: TField; const Text: string);
     procedure AssignWideMemoFieldEvents(Qry: TADOQuery);
     { Private declarations }
+    procedure OpenDSets;
   public
     { Public declarations }
   end;
 
 var
   MasterF: TMasterF;
-
+  Pth: String;
 implementation
 
 {$R *.dfm}
 
 procedure TMasterF.FormCreate(Sender: TObject);
-var
-  Pth: String;
+
 begin
   Pth := ExtractFileDir(
     ExtractFileDir(ExtractFileDir(
@@ -149,6 +149,20 @@ procedure TMasterF.DGrdColumnMoved(Sender: TObject; FromIndex,
 begin
   DGrd.Columns.SaveToFile('DGrd.ini');
 end;
+procedure TMasterF.DGrdKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key= VK_F3 then
+    begin
+      try
+         DQ.edit;
+      except
+
+      end;
+      DQ.fieldbyname('resultnew').asstring:=DQ.fieldbyname('sub_subject1').asstring;
+    end;
+end;
+
 {$EndRegion}
 
 {$Region 'Map Fields'}
@@ -187,9 +201,15 @@ begin
   FilterHData();
 end;
 
+procedure TMasterF.SpeedButton1Click(Sender: TObject);
+begin
+  DBAfterConnect(DB);
+end;
+
 procedure TMasterF.DoneSWClick(Sender: TObject);
 begin
-  FilterDData();
+//  FilterDData();
+  OpenDSets;
 end;
 
 Procedure TMasterF.FilterHData();
@@ -230,20 +250,22 @@ procedure TMasterF.FilterDData();
 var
   Fltr: String;
 begin
+exit;
   if DoneSW.State = tssOff then
-    Fltr := 'done = NULL'
+    Fltr := ''
   else
     Fltr := 'done = 1';
 
   if HafsSW.State = tssOff then
-    Fltr := AddAnd(Fltr) + 'r5_2 = NULL'
+    Fltr := AddAnd(Fltr) + ''
   else
     Fltr := AddAnd(Fltr) + 'r5_2 = ' + QuotedStr('1');
 
   LockWindowUpdate(Handle);
-
+  DQ.Filtered := False;
+  if fltr<>'' then
+  begin
   try
-    DQ.Filtered := False;
     DQ.Filter := Fltr;
     DQ.Filtered := True;
   finally
@@ -251,11 +273,80 @@ begin
     RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or
       RDW_INVALIDATE or RDW_ALLCHILDREN);
   end;
+  end;
+end;
+
+procedure TMasterF.ActnPnlDblClick(Sender: TObject);
+begin
+ showmessage(hq.sql.text);
+ showmessage(dq.sql.text);
 end;
 
 Function TMasterF.AddAnd(Txt: String): String;
 begin
   Result := Ifthen(Txt <> '', Txt + ' And ', '');
+end;
+procedure TMasterF.OpenDSets;
+var
+  SQLH:string;
+  SQLD:string;
+  fltrALL:string;
+begin
+  fltrALL:='';
+  if DoneSW.State <> tssOff then
+    fltrALL := ' done = 1';
+
+  if HafsSW.State <> tssOff then
+    fltrALL := AddAnd(fltrALL) + ' r5_2 IS NULL';
+
+  SQLH:='SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence,reading, count(*) Count,'+
+  ' group_concat(DISTINCT sub_subject) Subject,'+
+  ' group_concat(DISTINCT qarees) qarees FROM quran_data '+
+   ifthen(fltrALL<>'',' WHERE '+fltrAll,'')+
+   ' GROUP BY reading '+
+  ' ORDER BY count(*) DESC ';
+
+  SQLD :='SELECT aya_index, id, sora, aya, sub_subject, qarees, reading, tags,'+
+  ' page_number1, page_number2, readingresult, qareesrest, count_words,' +
+  'sub_sno, resultnew, wordsno, r5_2, done  FROM quran_data'+
+  ' where reading = :reading '+
+  ifthen(fltrALL<>'',' AND '+fltrAll,'');
+  HQ.Filtered :=false;
+  DQ.Filtered := False;
+
+  DB.Connected := False;
+  DB.ConnectionString := 'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;'
+    + 'Database=' + Pth + ';';
+
+  try
+    DB.Connected := True;
+  except on e: Exception do
+    ShowMessage('Error: ' + e.Message);
+  end;
+  DBAfterConnect(DB);
+//
+//  DQ.Close; // Make sure it's closed before executing
+//  DQ.SQL.Clear; // Clear any previous SQL
+//  DQ.SQL.Text := SQLD; // Assign new SQL
+//
+//  HQ.Close; // Make sure it's closed before executing
+//  HQ.SQL.Clear; // Clear any previous SQL
+//  HQ.SQL.Text := SQLH; // Assign new SQL
+//
+//  try
+//    HQ.Open; // Activate the dataset
+//  except
+//    on E: Exception do
+//      ShowMessage('Error opening dataset: ' + E.Message); // Catch the error
+//  end;
+//try
+//  DQ.Open; // Activate the dataset
+//except
+//  on E: Exception do
+//    ShowMessage('Error opening dataset: ' + E.Message); // Catch the error
+//end;
+
+
 end;
 {$EndRegion}
 

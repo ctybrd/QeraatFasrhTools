@@ -1,5 +1,5 @@
 ﻿[]
-Coordinates=750,50,40,51
+Coordinates=503,209,103,33
 Visible=True
 
 [DMF.]
@@ -12,9 +12,6 @@ Visible=True
 
 [HQsubject]
 Coordinates=296,141,65,33
-
-[DQaya_index]
-Coordinates=207,162,79,33
 
 [DQreading]
 Coordinates=399,1,66,33
@@ -37,14 +34,8 @@ Coordinates=413,105,77,33
 [DDS]
 Coordinates=42,272,40,33
 
-[DQcount_words]
-Coordinates=413,157,93,33
-
 [HQreading]
 Coordinates=413,209,66,33
-
-[DQid]
-Coordinates=324,349,40,33
 
 [DQsub_subject]
 Coordinates=413,261,89,33
@@ -57,12 +48,6 @@ Coordinates=90,140,40,33
 
 [DQ]
 Coordinates=171,140,40,33
-
-[DQqarees]
-Coordinates=413,313,62,33
-
-[DQsub_sno]
-Coordinates=413,365,72,33
 
 [HQcount]
 Coordinates=324,401,57,33
@@ -82,9 +67,6 @@ Coordinates=413,469,95,33
 
 [DQqareesrest]
 Coordinates=413,521,81,33
-
-[DQpage_number1]
-Coordinates=503,209,103,33
 
 [DB]
 Coordinates=40,52,40,33

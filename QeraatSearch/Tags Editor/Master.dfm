@@ -381,19 +381,22 @@ object MasterF: TMasterF
     BevelOuter = bvNone
     ColumnCollection = <
       item
-        Value = 20.000000000000000000
+        Value = 17.848691435696990000
       end
       item
-        Value = 20.000000000000000000
+        Value = 17.739003825193370000
       end
       item
-        Value = 20.000000000000000000
+        Value = 17.739003825193370000
       end
       item
-        Value = 20.000000000000000000
+        Value = 16.744458478718840000
       end
       item
-        Value = 20.000000000000000000
+        Value = 15.610676783737870000
+      end
+      item
+        Value = 14.318165651459550000
       end>
     ControlCollection = <
       item
@@ -410,6 +413,11 @@ object MasterF: TMasterF
         Column = 3
         Control = IncFontPnl
         Row = 0
+      end
+      item
+        Column = 0
+        Control = Panel1
+        Row = 0
       end>
     RowCollection = <
       item
@@ -417,20 +425,24 @@ object MasterF: TMasterF
       end>
     ShowCaption = False
     TabOrder = 3
+    OnDblClick = ActnPnlDblClick
+    ExplicitLeft = -2
     object UpdPnl: TPanel
       AlignWithMargins = True
-      Left = 331
+      Left = 295
       Top = 3
-      Width = 158
+      Width = 139
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 0
+      ExplicitLeft = 331
+      ExplicitWidth = 158
       object UpdShp: TShape
         Left = 0
         Top = 0
-        Width = 158
+        Width = 139
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -443,7 +455,7 @@ object MasterF: TMasterF
       object UpdateBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 158
+        Width = 139
         Height = 35
         Align = alClient
         Caption = 'Update Same'
@@ -463,18 +475,20 @@ object MasterF: TMasterF
     end
     object DecFontPnl: TPanel
       AlignWithMargins = True
-      Left = 167
+      Left = 149
       Top = 3
-      Width = 158
+      Width = 140
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 1
+      ExplicitLeft = 167
+      ExplicitWidth = 158
       object DecFontShp: TShape
         Left = 0
         Top = 0
-        Width = 158
+        Width = 140
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -487,7 +501,7 @@ object MasterF: TMasterF
       object DecFontBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 158
+        Width = 140
         Height = 35
         Align = alClient
         Caption = '-- Font'
@@ -507,18 +521,20 @@ object MasterF: TMasterF
     end
     object IncFontPnl: TPanel
       AlignWithMargins = True
-      Left = 495
+      Left = 440
       Top = 3
-      Width = 158
+      Width = 132
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 2
+      ExplicitLeft = 495
+      ExplicitWidth = 158
       object IncFontShp: TShape
         Left = 0
         Top = 0
-        Width = 158
+        Width = 132
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -531,7 +547,7 @@ object MasterF: TMasterF
       object IncFontBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 158
+        Width = 132
         Height = 35
         Align = alClient
         Caption = '++ Font'
@@ -543,6 +559,49 @@ object MasterF: TMasterF
         Font.Style = [fsBold]
         ParentFont = False
         OnClick = IncFontBtnClick
+        ExplicitTop = -3
+      end
+    end
+    object Panel1: TPanel
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 140
+      Height = 35
+      Align = alClient
+      BevelOuter = bvNone
+      ShowCaption = False
+      TabOrder = 3
+      ExplicitLeft = 11
+      ExplicitTop = 6
+      object Shape1: TShape
+        Left = 0
+        Top = 0
+        Width = 140
+        Height = 35
+        Align = alClient
+        Pen.Color = 2823171
+        Shape = stRoundRect
+        ExplicitLeft = 48
+        ExplicitTop = -16
+        ExplicitWidth = 65
+        ExplicitHeight = 65
+      end
+      object SpeedButton1: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 140
+        Height = 35
+        Align = alClient
+        Caption = 'Refresh'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        OnClick = SpeedButton1Click
         ExplicitTop = 3
       end
     end
@@ -581,6 +640,12 @@ object MasterF: TMasterF
     FixedColor = 16766678
     GradientEndColor = 16766678
     GradientStartColor = 16766678
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -32
+    Font.Name = 'Sakkal Majalla'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -588,10 +653,12 @@ object MasterF: TMasterF
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
     OnColumnMoved = DGrdColumnMoved
+    OnKeyDown = DGrdKeyDown
   end
   object HQ: TADOQuery
     Connection = DB
-    CursorType = ctStatic
+    CursorType = ctDynamic
+    CommandTimeout = 60000
     Parameters = <>
     SQL.Strings = (
       'SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence,'
@@ -644,7 +711,8 @@ object MasterF: TMasterF
   end
   object DQ: TADOQuery
     Connection = DB
-    CursorType = ctStatic
+    CursorType = ctDynamic
+    CommandTimeout = 600000
     DataSource = HDS
     Parameters = <
       item
@@ -652,7 +720,7 @@ object MasterF: TMasterF
         Attributes = [paNullable, paLong]
         DataType = ftWideString
         Size = 65536
-        Value = Null
+        Value = ''
       end>
     SQL.Strings = (
       
@@ -661,19 +729,14 @@ object MasterF: TMasterF
       
         'page_number1, page_number2, readingresult, qareesrest, count_wor' +
         'ds, '
-      'sub_sno, resultnew, wordsno, r5_2, done '
+      'sub_sno, resultnew, wordsno, r5_2, done ,sub_subject1'
       'FROM quran_data'
-      'where reading = :reading')
+      'where reading = :reading'
+      'and'
+      'r5_2 IS NULL'
+      'and done is null')
     Left = 16
     Top = 112
-    object DQaya_index: TIntegerField
-      DisplayLabel = 'Aya Index'
-      FieldName = 'aya_index'
-    end
-    object DQid: TIntegerField
-      DisplayLabel = 'ID'
-      FieldName = 'id'
-    end
     object DQsora: TIntegerField
       DisplayLabel = 'Sora'
       FieldName = 'sora'
@@ -688,16 +751,13 @@ object MasterF: TMasterF
       FieldName = 'sub_subject'
       BlobType = ftWideMemo
     end
-    object DQqarees: TWideMemoField
-      DisplayLabel = 'Qurees'
-      DisplayWidth = 45
-      FieldName = 'qarees'
+    object DQsub_subject1: TWideMemoField
+      FieldName = 'sub_subject1'
       BlobType = ftWideMemo
     end
-    object DQreading: TWideMemoField
-      DisplayLabel = 'Reading'
-      DisplayWidth = 40
-      FieldName = 'reading'
+    object DQresultnew: TWideMemoField
+      DisplayLabel = 'Result New'
+      FieldName = 'resultnew'
       BlobType = ftWideMemo
     end
     object DQtags: TWideMemoField
@@ -706,13 +766,24 @@ object MasterF: TMasterF
       FieldName = 'tags'
       BlobType = ftWideMemo
     end
-    object DQpage_number1: TIntegerField
-      DisplayLabel = 'Page Number 1'
-      FieldName = 'page_number1'
+    object DQqareesrest: TWideMemoField
+      DisplayLabel = 'Qarees Rest'
+      DisplayWidth = 45
+      FieldName = 'qareesrest'
+      BlobType = ftWideMemo
+    end
+    object DQDone: TIntegerField
+      FieldName = 'Done'
     end
     object DQpage_number2: TIntegerField
       DisplayLabel = 'Page Number 2'
       FieldName = 'page_number2'
+    end
+    object DQreading: TWideMemoField
+      DisplayLabel = 'Reading'
+      DisplayWidth = 40
+      FieldName = 'reading'
+      BlobType = ftWideMemo
     end
     object DQreadingresult: TWideMemoField
       DisplayLabel = 'Reading Result'
@@ -720,41 +791,16 @@ object MasterF: TMasterF
       FieldName = 'readingresult'
       BlobType = ftWideMemo
     end
-    object DQqareesrest: TWideMemoField
-      DisplayLabel = 'Qarees Rest'
-      DisplayWidth = 45
-      FieldName = 'qareesrest'
-      BlobType = ftWideMemo
-    end
-    object DQcount_words: TIntegerField
-      DisplayLabel = 'Count Words'
-      FieldName = 'count_words'
-    end
-    object DQsub_sno: TIntegerField
-      DisplayLabel = 'Sub SNo'
-      FieldName = 'sub_sno'
-    end
-    object DQresultnew: TWideMemoField
-      DisplayLabel = 'Result New'
-      FieldName = 'resultnew'
-      BlobType = ftWideMemo
-    end
     object DQwordsno: TIntegerField
       DisplayLabel = 'Word SNo'
       FieldName = 'wordsno'
-    end
-    object DQR5_2: TWideMemoField
-      FieldName = 'R5_2'
-      BlobType = ftWideMemo
-    end
-    object DQDone: TIntegerField
-      FieldName = 'Done'
     end
   end
   object DB: TADOConnection
     ConnectionString = 
       #39'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;Database=E:\Wursh' +
       'a\QeraatFasrhTools\QeraatSearch\qeraat_data_simple.db;'
+    ConnectionTimeout = 600000
     LoginPrompt = False
     AfterConnect = DBAfterConnect
     Left = 16
@@ -762,6 +808,7 @@ object MasterF: TMasterF
   end
   object Qry: TADOQuery
     Connection = DB
+    CommandTimeout = 600000
     Parameters = <>
     Left = 48
     Top = 16
