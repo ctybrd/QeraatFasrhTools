@@ -49,7 +49,7 @@ type
     Label3: TLabel;
     StatPnl: TGridPanel;
     StatusBar: TPanel;
-    CountPnl: TPanel;
+    HCountPnl: TPanel;
     Qry: TADOQuery;
     ActnPnl: TGridPanel;
     UpdPnl: TPanel;
@@ -63,6 +63,7 @@ type
     IncFontBtn: TSpeedButton;
     HGrd: TDBGrid;
     DGrd: TDBGrid;
+    DCountPnl: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -72,6 +73,7 @@ type
     procedure DecFontBtnClick(Sender: TObject);
     procedure HGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure DGrdColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
+    procedure HDSDataChange(Sender: TObject; Field: TField);
   private
     Function FilterData(): String;
     function AddAnd(Txt: String): String;
@@ -252,12 +254,20 @@ begin
   DGrd.TitleFont.Size := HGrd.Font.Size - 1;
 end;
 
+procedure TMasterF.HDSDataChange(Sender: TObject; Field: TField);
+begin
+  if not HQ.IsEmpty then
+    HCountPnl.Caption := Format('( %d : %d )', [HQ.RecNo, HQ.RecordCount])
+  else
+    HCountPnl.Caption := '( 0 : 0 )';
+end;
+
 procedure TMasterF.DDSDataChange(Sender: TObject; Field: TField);
 begin
   if not DQ.IsEmpty then
-    CountPnl.Caption := Format('( %d : %d )', [DQ.RecNo, DQ.RecordCount])
+    DCountPnl.Caption := Format('( %d : %d )', [DQ.RecNo, DQ.RecordCount])
   else
-    CountPnl.Caption := '( 0 : 0 )';
+    DCountPnl.Caption := '( 0 : 0 )';
 end;
 
 end.

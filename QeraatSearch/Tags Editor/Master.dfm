@@ -207,14 +207,19 @@ object MasterF: TMasterF
       end>
     ControlCollection = <
       item
-        Column = 0
-        ColumnSpan = 3
+        Column = 1
+        ColumnSpan = 2
         Control = StatusBar
         Row = 0
       end
       item
         Column = 3
-        Control = CountPnl
+        Control = HCountPnl
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = DCountPnl
         Row = 0
       end>
     RowCollection = <
@@ -225,9 +230,9 @@ object MasterF: TMasterF
     TabOrder = 2
     object StatusBar: TPanel
       AlignWithMargins = True
-      Left = 0
+      Left = 205
       Top = 0
-      Width = 612
+      Width = 407
       Height = 25
       Margins.Left = 0
       Margins.Top = 0
@@ -245,8 +250,10 @@ object MasterF: TMasterF
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
+      ExplicitLeft = 0
+      ExplicitWidth = 612
     end
-    object CountPnl: TPanel
+    object HCountPnl: TPanel
       AlignWithMargins = True
       Left = 618
       Top = 0
@@ -267,6 +274,32 @@ object MasterF: TMasterF
       ParentBackground = False
       ParentFont = False
       TabOrder = 1
+    end
+    object DCountPnl: TPanel
+      AlignWithMargins = True
+      Left = 0
+      Top = 0
+      Width = 202
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 0
+      Margins.Bottom = 0
+      Align = alClient
+      BevelOuter = bvNone
+      Caption = #1593#1583#1583' '#1575#1604#1576#1581#1579
+      Color = 2823171
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 2
+      ExplicitLeft = 10
+      ExplicitTop = 3
+      ExplicitWidth = 185
+      ExplicitHeight = 19
     end
   end
   object ActnPnl: TGridPanel
@@ -527,6 +560,7 @@ object MasterF: TMasterF
   end
   object HDS: TDataSource
     DataSet = HQ
+    OnDataChange = HDSDataChange
     Left = 48
     Top = 64
   end
