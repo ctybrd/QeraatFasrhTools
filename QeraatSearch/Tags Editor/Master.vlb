@@ -1,5 +1,5 @@
 ﻿[]
-Coordinates=570,30,92,51
+Coordinates=296,71,60,51
 Visible=True
 
 [DMF.]
@@ -22,9 +22,6 @@ Coordinates=296,141,65,33
 
 [DQaya_index]
 Coordinates=207,162,79,33
-
-[CountPnl]
-Coordinates=296,71,60,51
 
 [DQreading]
 Coordinates=399,1,66,33

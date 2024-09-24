@@ -18,12 +18,16 @@ object MasterF: TMasterF
   PixelsPerInch = 96
   TextHeight = 18
   object Spltr: TSplitter
-    Left = 0
-    Top = 273
-    Width = 826
+    AlignWithMargins = True
+    Left = 3
+    Top = 276
+    Width = 820
     Height = 3
     Cursor = crVSplit
     Align = alTop
+    Color = 2823171
+    ParentColor = False
+    ExplicitLeft = 0
     ExplicitTop = 126
     ExplicitWidth = 457
   end
@@ -57,9 +61,9 @@ object MasterF: TMasterF
     Tag = 17
     AlignWithMargins = True
     Left = 3
-    Top = 279
+    Top = 285
     Width = 820
-    Height = 263
+    Height = 264
     Align = alClient
     BiDiMode = bdRightToLeft
     BorderStyle = bsNone
@@ -70,6 +74,8 @@ object MasterF: TMasterF
     ParentBiDiMode = False
     TabOrder = 1
     OnDrawCell = HGrdDrawCell
+    ExplicitTop = 279
+    ExplicitHeight = 263
     ColWidths = (
       84
       84
@@ -107,26 +113,6 @@ object MasterF: TMasterF
       1
       1)
   end
-  object CountPnl: TPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 548
-    Width = 820
-    Height = 32
-    Align = alBottom
-    BevelOuter = bvNone
-    Caption = #1593#1583#1583' '#1575#1604#1576#1581#1579
-    Color = 2823171
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentBackground = False
-    ParentFont = False
-    TabOrder = 2
-    ExplicitTop = 539
-  end
   object Panel1: TPanel
     AlignWithMargins = True
     Left = 3
@@ -144,7 +130,7 @@ object MasterF: TMasterF
     Font.Style = [fsBold]
     ParentBackground = False
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 2
   end
   object CondPnl: TGridPanel
     AlignWithMargins = True
@@ -209,7 +195,7 @@ object MasterF: TMasterF
         Value = 100.000000000000000000
       end>
     ShowCaption = False
-    TabOrder = 4
+    TabOrder = 3
     object QuareesEdt: TEdit
       AlignWithMargins = True
       Left = 3
@@ -290,6 +276,93 @@ object MasterF: TMasterF
       ExplicitLeft = 708
       ExplicitWidth = 51
       ExplicitHeight = 18
+    end
+  end
+  object GridPanel1: TGridPanel
+    AlignWithMargins = True
+    Left = 3
+    Top = 555
+    Width = 820
+    Height = 25
+    Align = alBottom
+    BevelOuter = bvNone
+    ColumnCollection = <
+      item
+        Value = 25.000000000000000000
+      end
+      item
+        Value = 25.000000000000000000
+      end
+      item
+        Value = 25.000000000000000000
+      end
+      item
+        Value = 25.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        ColumnSpan = 3
+        Control = StatusBar
+        Row = 0
+      end
+      item
+        Column = 3
+        Control = CountPnl
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ShowCaption = False
+    TabOrder = 4
+    ExplicitLeft = 8
+    object StatusBar: TPanel
+      AlignWithMargins = True
+      Left = 0
+      Top = 0
+      Width = 612
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 0
+      Margins.Bottom = 0
+      Align = alClient
+      BevelOuter = bvNone
+      BiDiMode = bdLeftToRight
+      Color = 2823171
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentBiDiMode = False
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 0
+    end
+    object CountPnl: TPanel
+      AlignWithMargins = True
+      Left = 618
+      Top = 0
+      Width = 202
+      Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alClient
+      BevelOuter = bvNone
+      Caption = #1593#1583#1583' '#1575#1604#1576#1581#1579
+      Color = 2823171
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 1
+      ExplicitTop = -3
     end
   end
   object HQ: TADOQuery

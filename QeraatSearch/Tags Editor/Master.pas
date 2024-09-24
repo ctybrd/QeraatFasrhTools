@@ -8,14 +8,13 @@ uses
   Vcl.Grids, Vcl.DBGrids, Vcl.Bind.Grid, System.Rtti, System.Bindings.Outputs,
   Vcl.Bind.Editors, Data.Bind.EngExt, Vcl.Bind.DBEngExt, Data.Bind.Components,
   Data.Bind.Grid, Data.Bind.DBScope, Math, Vcl.ExtCtrls, Data.Win.ADODB,
-  Vcl.StdCtrls, System.StrUtils;
+  Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls;
 
 type
   TMasterF = class(TForm)
     HGrd: TStringGrid;
     DGrd: TStringGrid;
     Spltr: TSplitter;
-    CountPnl: TPanel;
     Panel1: TPanel;
     HQ: TADOQuery;
     HQreading: TWideMemoField;
@@ -55,6 +54,9 @@ type
     Label2: TLabel;
     ReadingEdt: TEdit;
     Label3: TLabel;
+    GridPanel1: TGridPanel;
+    StatusBar: TPanel;
+    CountPnl: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -81,6 +83,7 @@ var
   Pth: String;
 begin
   Pth := ExtractFilePath(Application.ExeName) + 'qeraat_data_simple.db';
+  StatusBar.Caption := Pth;
 
   DB.Connected := False;
   DB.ConnectionString := 'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;'
