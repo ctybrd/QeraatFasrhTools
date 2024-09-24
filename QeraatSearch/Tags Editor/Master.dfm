@@ -63,7 +63,7 @@ object MasterF: TMasterF
     Left = 3
     Top = 285
     Width = 820
-    Height = 264
+    Height = 217
     Align = alClient
     BiDiMode = bdRightToLeft
     BorderStyle = bsNone
@@ -113,7 +113,7 @@ object MasterF: TMasterF
       1
       1)
   end
-  object Panel1: TPanel
+  object HeadPnl: TPanel
     AlignWithMargins = True
     Left = 3
     Top = 3
@@ -278,7 +278,7 @@ object MasterF: TMasterF
       ExplicitHeight = 18
     end
   end
-  object GridPanel1: TGridPanel
+  object StatPnl: TGridPanel
     AlignWithMargins = True
     Left = 3
     Top = 555
@@ -363,6 +363,195 @@ object MasterF: TMasterF
       ParentFont = False
       TabOrder = 1
       ExplicitTop = -3
+    end
+  end
+  object ActnPnl: TGridPanel
+    AlignWithMargins = True
+    Left = 3
+    Top = 508
+    Width = 820
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    ColumnCollection = <
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 2
+        Control = UpdPnl
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = DecFontPnl
+        Row = 0
+      end
+      item
+        Column = 3
+        Control = IncFontPnl
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ShowCaption = False
+    TabOrder = 5
+    ExplicitLeft = 328
+    ExplicitTop = 288
+    ExplicitWidth = 185
+    object UpdPnl: TPanel
+      AlignWithMargins = True
+      Left = 331
+      Top = 3
+      Width = 158
+      Height = 35
+      Align = alClient
+      BevelOuter = bvNone
+      ShowCaption = False
+      TabOrder = 0
+      ExplicitLeft = 320
+      ExplicitTop = 0
+      ExplicitWidth = 185
+      ExplicitHeight = 41
+      object UpdShp: TShape
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Pen.Color = 2823171
+        Shape = stRoundRect
+        ExplicitLeft = 48
+        ExplicitTop = -16
+        ExplicitWidth = 65
+        ExplicitHeight = 65
+      end
+      object UpdateBtn: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Caption = 'Update Same'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        OnClick = UpdateBtnClick
+        ExplicitLeft = 72
+        ExplicitTop = 8
+        ExplicitWidth = 23
+        ExplicitHeight = 22
+      end
+    end
+    object DecFontPnl: TPanel
+      AlignWithMargins = True
+      Left = 167
+      Top = 3
+      Width = 158
+      Height = 35
+      Align = alClient
+      BevelOuter = bvNone
+      ShowCaption = False
+      TabOrder = 1
+      ExplicitLeft = 11
+      ExplicitTop = 6
+      object DecFontShp: TShape
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Pen.Color = 2823171
+        Shape = stRoundRect
+        ExplicitLeft = 48
+        ExplicitTop = -16
+        ExplicitWidth = 65
+        ExplicitHeight = 65
+      end
+      object DecFontBtn: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Caption = '-- Font'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        OnClick = DecFontBtnClick
+        ExplicitLeft = 72
+        ExplicitTop = 8
+        ExplicitWidth = 23
+        ExplicitHeight = 22
+      end
+    end
+    object IncFontPnl: TPanel
+      AlignWithMargins = True
+      Left = 495
+      Top = 3
+      Width = 158
+      Height = 35
+      Align = alClient
+      BevelOuter = bvNone
+      ShowCaption = False
+      TabOrder = 2
+      ExplicitLeft = 320
+      ExplicitTop = 0
+      ExplicitWidth = 185
+      ExplicitHeight = 41
+      object IncFontShp: TShape
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Pen.Color = 2823171
+        Shape = stRoundRect
+        ExplicitLeft = 48
+        ExplicitTop = -16
+        ExplicitWidth = 65
+        ExplicitHeight = 65
+      end
+      object IncFontBtn: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 158
+        Height = 35
+        Align = alClient
+        Caption = '++ Font'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        OnClick = IncFontBtnClick
+        ExplicitTop = 3
+      end
     end
   end
   object HQ: TADOQuery
@@ -557,6 +746,12 @@ object MasterF: TMasterF
     LoginPrompt = False
     AfterConnect = DBAfterConnect
     Left = 16
+    Top = 16
+  end
+  object Qry: TADOQuery
+    Connection = DB
+    Parameters = <>
+    Left = 48
     Top = 16
   end
 end

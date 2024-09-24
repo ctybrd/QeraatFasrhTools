@@ -8,14 +8,14 @@ uses
   Vcl.Grids, Vcl.DBGrids, Vcl.Bind.Grid, System.Rtti, System.Bindings.Outputs,
   Vcl.Bind.Editors, Data.Bind.EngExt, Vcl.Bind.DBEngExt, Data.Bind.Components,
   Data.Bind.Grid, Data.Bind.DBScope, Math, Vcl.ExtCtrls, Data.Win.ADODB,
-  Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls;
+  Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, Vcl.Buttons, System.UITypes;
 
 type
   TMasterF = class(TForm)
     HGrd: TStringGrid;
     DGrd: TStringGrid;
     Spltr: TSplitter;
-    Panel1: TPanel;
+    HeadPnl: TPanel;
     HQ: TADOQuery;
     HQreading: TWideMemoField;
     HQcount: TIntegerField;
@@ -54,15 +54,29 @@ type
     Label2: TLabel;
     ReadingEdt: TEdit;
     Label3: TLabel;
-    GridPanel1: TGridPanel;
+    StatPnl: TGridPanel;
     StatusBar: TPanel;
     CountPnl: TPanel;
+    Qry: TADOQuery;
+    ActnPnl: TGridPanel;
+    UpdPnl: TPanel;
+    UpdShp: TShape;
+    UpdateBtn: TSpeedButton;
+    DecFontPnl: TPanel;
+    DecFontShp: TShape;
+    DecFontBtn: TSpeedButton;
+    IncFontPnl: TPanel;
+    IncFontShp: TShape;
+    IncFontBtn: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
     procedure HGrdDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
       State: TGridDrawState);
     procedure ReadingEdtChange(Sender: TObject);
+    procedure UpdateBtnClick(Sender: TObject);
+    procedure IncFontBtnClick(Sender: TObject);
+    procedure DecFontBtnClick(Sender: TObject);
   private
     Function FilterData(): String;
     function AddAnd(Txt: String): String;
@@ -177,6 +191,46 @@ begin
   if QuareesEdt.Text <> '' then
     Result := AddAnd(Result)
       + 'qarees like ' + QuotedStr('%' + QuareesEdt.Text + '%');
+end;
+
+procedure TMasterF.UpdateBtnClick(Sender: TObject);
+var
+  SQL: String;
+begin
+  SQL := 'UPDATE quran_data ' +
+    'SET resultnew = a.resultnew ' +
+    'FROM quran_data AS a ' +
+    'WHERE (quran_data.resultnew IS NULL or quran_data.resultnew='') ' +
+    'AND NOT(a.resultnew IS NULL or a.resultnew='') ' +
+    'AND a.sub_subject = quran_data.sub_subject ' +
+    'AND a.reading = quran_data.reading; ';
+
+  Qry.SQL.Text := SQL;
+  ShowMessage(SQL);
+
+  if MessageDlg('Are you sure you want to update same records?',
+    mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    Qry.ExecSQL;
+    HQ.Requery();
+    ShowMessage('Done');
+  end;
+end;
+
+procedure TMasterF.IncFontBtnClick(Sender: TObject);
+begin
+  Self.Font.Size := Self.Font.Size + 1;
+  CondPnl.Height := CondPnl.Height + 3;
+  HGrd.DefaultRowHeight := HGrd.DefaultRowHeight + 3;
+  DGrd.DefaultRowHeight := DGrd.DefaultRowHeight + 3;
+end;
+
+procedure TMasterF.DecFontBtnClick(Sender: TObject);
+begin
+  Self.Font.Size := Self.Font.Size - 1;
+  CondPnl.Height := CondPnl.Height - 3;
+  HGrd.DefaultRowHeight := HGrd.DefaultRowHeight - 3;
+  DGrd.DefaultRowHeight := DGrd.DefaultRowHeight - 3;
 end;
 
 procedure TMasterF.DDSDataChange(Sender: TObject; Field: TField);

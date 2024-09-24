@@ -63,9 +63,6 @@ Coordinates=503,100,103,33
 Coordinates=40,130,40,33
 Visible=False
 
-[Panel1]
-Coordinates=296,1,47,51
-
 [DQ]
 Coordinates=121,130,40,33
 Visible=False
@@ -109,4 +106,7 @@ Coordinates=600,30,92,375
 
 [DB]
 Coordinates=40,52,40,33
+
+[HeadPnl]
+Coordinates=296,1,47,51
 
