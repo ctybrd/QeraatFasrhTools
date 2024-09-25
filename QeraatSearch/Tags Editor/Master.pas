@@ -7,7 +7,7 @@ uses
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB,
   Vcl.Grids, Vcl.DBGrids, Vcl.Bind.Grid, Math, Vcl.ExtCtrls, Data.Win.ADODB,
   Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, Vcl.Buttons, System.UITypes,
-  Vcl.WinXCtrls;
+  Vcl.WinXCtrls, Vcl.Mask, Vcl.DBCtrls;
 
 type
   TMasterF = class(TForm)
@@ -63,9 +63,9 @@ type
     Label5: TLabel;
     HQSequence: TIntegerField;
     DQsub_subject1: TWideMemoField;
-    Panel1: TPanel;
-    Shape1: TShape;
-    SpeedButton1: TSpeedButton;
+    RequeryPnl: TPanel;
+    RequeryShp: TShape;
+    RequeryBtn: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -78,8 +78,9 @@ type
     procedure HDSDataChange(Sender: TObject; Field: TField);
     procedure DoneSWClick(Sender: TObject);
     procedure ActnPnlDblClick(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
+    procedure RequeryBtnClick(Sender: TObject);
     procedure DGrdKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DGrdCellClick(Column: TColumn);
   private
     Procedure FilterHData();
     Procedure FilterDData();
@@ -97,12 +98,12 @@ type
 var
   MasterF: TMasterF;
   Pth: String;
+
 implementation
 
 {$R *.dfm}
 
 procedure TMasterF.FormCreate(Sender: TObject);
-
 begin
   Pth := ExtractFileDir(
     ExtractFileDir(ExtractFileDir(
@@ -137,6 +138,50 @@ begin
     DGrd.Columns.LoadFromFile('DGrd.ini');
 end;
 
+procedure TMasterF.OpenDSets;
+var
+  SQLH: String;
+  SQLD: String;
+  fltrALL: String;
+begin
+  fltrALL:='';
+  if DoneSW.State <> tssOff then
+    fltrALL := ' done = 1';
+
+  if HafsSW.State <> tssOff then
+    fltrALL := AddAnd(fltrALL) + ' r5_2 IS NULL';
+
+  SQLH := 'SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence, ' +
+    'reading, count(*) Count, ' +
+    'group_concat(DISTINCT sub_subject) Subject, ' +
+    'group_concat(DISTINCT qarees) qarees FROM quran_data ' +
+    IfThen(fltrALL <> '', ' WHERE ' + fltrAll, '') +
+    'GROUP BY reading ' +
+    'ORDER BY count(*) DESC';
+
+  SQLD := 'SELECT aya_index, id, sora, aya, sub_subject, qarees, reading, ' +
+    'tags, page_number1, page_number2, readingresult, qareesrest, ' +
+    'count_words, sub_sno, resultnew, wordsno, r5_2, done ' +
+    'FROM quran_data ' +
+    'where reading = :reading ' +
+    IfThen(fltrALL <> '', ' AND ' + fltrAll, '');
+
+  HQ.Filtered := False;
+  DQ.Filtered := False;
+
+  DB.Connected := False;
+  DB.ConnectionString := 'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;'
+    + 'Database=' + Pth + ';';
+
+  try
+    DB.Connected := True;
+  except on e: Exception do
+    ShowMessage('Error: ' + e.Message);
+  end;
+
+  DBAfterConnect(DB);
+end;
+
 {$Region 'Grid Positions'}
 procedure TMasterF.HGrdColumnMoved(Sender: TObject; FromIndex,
   ToIndex: Integer);
@@ -149,20 +194,31 @@ procedure TMasterF.DGrdColumnMoved(Sender: TObject; FromIndex,
 begin
   DGrd.Columns.SaveToFile('DGrd.ini');
 end;
+
 procedure TMasterF.DGrdKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if key= VK_F3 then
-    begin
-      try
-         DQ.edit;
-      except
-
-      end;
-      DQ.fieldbyname('resultnew').asstring:=DQ.fieldbyname('sub_subject1').asstring;
+  if Key = VK_F3 then
+  begin
+    try
+       DQ.edit;
+    except
     end;
+
+    DQ.FieldByName('resultnew').AsString :=
+      DQ.FieldByName('sub_subject1').AsString;
+  end;
 end;
 
+procedure TMasterF.DGrdCellClick(Column: TColumn);
+begin
+  // Enter edit mode by simulating the F2 keypress
+  SendMessage(DGrd.Handle, WM_KEYDOWN, VK_F2, 0);
+
+  // Optional: Select all text in the editor for easy copying
+  if DGrd.EditorMode then
+    (DGrd.Controls[0] as TWinControl).Perform(EM_SETSEL, 0, -1);
+end;
 {$EndRegion}
 
 {$Region 'Map Fields'}
@@ -196,22 +252,6 @@ end;
 {$EndRegion}
 
 {$Region 'Filter Data'}
-procedure TMasterF.ReadingEdtChange(Sender: TObject);
-begin
-  FilterHData();
-end;
-
-procedure TMasterF.SpeedButton1Click(Sender: TObject);
-begin
-  DBAfterConnect(DB);
-end;
-
-procedure TMasterF.DoneSWClick(Sender: TObject);
-begin
-//  FilterDData();
-  OpenDSets;
-end;
-
 Procedure TMasterF.FilterHData();
 var
   Fltr: String;
@@ -246,6 +286,11 @@ begin
   end;
 end;
 
+procedure TMasterF.ReadingEdtChange(Sender: TObject);
+begin
+  FilterHData();
+end;
+
 procedure TMasterF.FilterDData();
 var
   Fltr: String;
@@ -276,81 +321,25 @@ exit;
   end;
 end;
 
-procedure TMasterF.ActnPnlDblClick(Sender: TObject);
+procedure TMasterF.DoneSWClick(Sender: TObject);
 begin
- showmessage(hq.sql.text);
- showmessage(dq.sql.text);
+//  FilterDData();
+  OpenDSets;
 end;
 
 Function TMasterF.AddAnd(Txt: String): String;
 begin
   Result := Ifthen(Txt <> '', Txt + ' And ', '');
 end;
-procedure TMasterF.OpenDSets;
-var
-  SQLH:string;
-  SQLD:string;
-  fltrALL:string;
-begin
-  fltrALL:='';
-  if DoneSW.State <> tssOff then
-    fltrALL := ' done = 1';
-
-  if HafsSW.State <> tssOff then
-    fltrALL := AddAnd(fltrALL) + ' r5_2 IS NULL';
-
-  SQLH:='SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence,reading, count(*) Count,'+
-  ' group_concat(DISTINCT sub_subject) Subject,'+
-  ' group_concat(DISTINCT qarees) qarees FROM quran_data '+
-   ifthen(fltrALL<>'',' WHERE '+fltrAll,'')+
-   ' GROUP BY reading '+
-  ' ORDER BY count(*) DESC ';
-
-  SQLD :='SELECT aya_index, id, sora, aya, sub_subject, qarees, reading, tags,'+
-  ' page_number1, page_number2, readingresult, qareesrest, count_words,' +
-  'sub_sno, resultnew, wordsno, r5_2, done  FROM quran_data'+
-  ' where reading = :reading '+
-  ifthen(fltrALL<>'',' AND '+fltrAll,'');
-  HQ.Filtered :=false;
-  DQ.Filtered := False;
-
-  DB.Connected := False;
-  DB.ConnectionString := 'Provider=MSDASQL.1;Driver=SQLite3 ODBC Driver;'
-    + 'Database=' + Pth + ';';
-
-  try
-    DB.Connected := True;
-  except on e: Exception do
-    ShowMessage('Error: ' + e.Message);
-  end;
-  DBAfterConnect(DB);
-//
-//  DQ.Close; // Make sure it's closed before executing
-//  DQ.SQL.Clear; // Clear any previous SQL
-//  DQ.SQL.Text := SQLD; // Assign new SQL
-//
-//  HQ.Close; // Make sure it's closed before executing
-//  HQ.SQL.Clear; // Clear any previous SQL
-//  HQ.SQL.Text := SQLH; // Assign new SQL
-//
-//  try
-//    HQ.Open; // Activate the dataset
-//  except
-//    on E: Exception do
-//      ShowMessage('Error opening dataset: ' + E.Message); // Catch the error
-//  end;
-//try
-//  DQ.Open; // Activate the dataset
-//except
-//  on E: Exception do
-//    ShowMessage('Error opening dataset: ' + E.Message); // Catch the error
-//end;
-
-
-end;
 {$EndRegion}
 
 {$Region 'Action Buttons'}
+procedure TMasterF.ActnPnlDblClick(Sender: TObject);
+begin
+  ShowMessage(HQ.SQL.Text);
+  ShowMessage(DQ.SQL.Text);
+end;
+
 procedure TMasterF.UpdateBtnClick(Sender: TObject);
 var
   SQL: String;
@@ -374,6 +363,11 @@ begin
     DQ.Requery();
     ShowMessage('Done');
   end;
+end;
+
+procedure TMasterF.RequeryBtnClick(Sender: TObject);
+begin
+  DBAfterConnect(DB);
 end;
 
 procedure TMasterF.IncFontBtnClick(Sender: TObject);

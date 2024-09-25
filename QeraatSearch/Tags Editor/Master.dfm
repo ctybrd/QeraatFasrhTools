@@ -400,7 +400,7 @@ object MasterF: TMasterF
       end>
     ControlCollection = <
       item
-        Column = 2
+        Column = 3
         Control = UpdPnl
         Row = 0
       end
@@ -410,13 +410,13 @@ object MasterF: TMasterF
         Row = 0
       end
       item
-        Column = 3
+        Column = 4
         Control = IncFontPnl
         Row = 0
       end
       item
-        Column = 0
-        Control = Panel1
+        Column = 2
+        Control = RequeryPnl
         Row = 0
       end>
     RowCollection = <
@@ -426,23 +426,20 @@ object MasterF: TMasterF
     ShowCaption = False
     TabOrder = 3
     OnDblClick = ActnPnlDblClick
-    ExplicitLeft = -2
     object UpdPnl: TPanel
       AlignWithMargins = True
-      Left = 295
+      Left = 440
       Top = 3
-      Width = 139
+      Width = 132
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 0
-      ExplicitLeft = 331
-      ExplicitWidth = 158
       object UpdShp: TShape
         Left = 0
         Top = 0
-        Width = 139
+        Width = 132
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -455,7 +452,7 @@ object MasterF: TMasterF
       object UpdateBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 139
+        Width = 132
         Height = 35
         Align = alClient
         Caption = 'Update Same'
@@ -483,8 +480,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 1
-      ExplicitLeft = 167
-      ExplicitWidth = 158
       object DecFontShp: TShape
         Left = 0
         Top = 0
@@ -521,20 +516,18 @@ object MasterF: TMasterF
     end
     object IncFontPnl: TPanel
       AlignWithMargins = True
-      Left = 440
+      Left = 578
       Top = 3
-      Width = 132
+      Width = 122
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 2
-      ExplicitLeft = 495
-      ExplicitWidth = 158
       object IncFontShp: TShape
         Left = 0
         Top = 0
-        Width = 132
+        Width = 122
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -547,7 +540,7 @@ object MasterF: TMasterF
       object IncFontBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 132
+        Width = 122
         Height = 35
         Align = alClient
         Caption = '++ Font'
@@ -560,24 +553,23 @@ object MasterF: TMasterF
         ParentFont = False
         OnClick = IncFontBtnClick
         ExplicitTop = -3
+        ExplicitWidth = 132
       end
     end
-    object Panel1: TPanel
+    object RequeryPnl: TPanel
       AlignWithMargins = True
-      Left = 3
+      Left = 295
       Top = 3
-      Width = 140
+      Width = 139
       Height = 35
       Align = alClient
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 3
-      ExplicitLeft = 11
-      ExplicitTop = 6
-      object Shape1: TShape
+      object RequeryShp: TShape
         Left = 0
         Top = 0
-        Width = 140
+        Width = 139
         Height = 35
         Align = alClient
         Pen.Color = 2823171
@@ -587,10 +579,10 @@ object MasterF: TMasterF
         ExplicitWidth = 65
         ExplicitHeight = 65
       end
-      object SpeedButton1: TSpeedButton
+      object RequeryBtn: TSpeedButton
         Left = 0
         Top = 0
-        Width = 140
+        Width = 139
         Height = 35
         Align = alClient
         Caption = 'Refresh'
@@ -601,8 +593,9 @@ object MasterF: TMasterF
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        OnClick = SpeedButton1Click
+        OnClick = RequeryBtnClick
         ExplicitTop = 3
+        ExplicitWidth = 140
       end
     end
   end
@@ -652,6 +645,7 @@ object MasterF: TMasterF
     TitleFont.Height = -15
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnCellClick = DGrdCellClick
     OnColumnMoved = DGrdColumnMoved
     OnKeyDown = DGrdKeyDown
   end
