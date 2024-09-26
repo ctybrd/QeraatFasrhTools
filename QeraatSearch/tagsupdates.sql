@@ -132,8 +132,21 @@ group by reading
 ORDER by count(*) desc
 
 
-
-UPDATE quran_data set resultnew=
-(SELECT case when instr(quran_data.sub_subject,' ')>0 then nextword2 else word END
-from words1 where words1.ayah=quran_data.aya and words1.surah=quran_data.sora and words1.wordsno=quran_data.wordsno)
- where quran_data.resultnew is null and quran_data.r5_2 is not null
+UPDATE quran_data
+SET resultnew = (
+    SELECT a.resultnew
+    FROM quran_data AS a
+    WHERE a.sub_subject = quran_data.sub_subject
+      AND a.reading = quran_data.reading
+      AND a.resultnew IS NOT NULL
+      AND a.resultnew != ''
+)
+WHERE (quran_data.resultnew IS NULL OR quran_data.resultnew = '')
+AND EXISTS (
+    SELECT 1
+    FROM quran_data AS a
+    WHERE a.sub_subject = quran_data.sub_subject
+      AND a.reading = quran_data.reading
+      AND a.resultnew IS NOT NULL
+      AND a.resultnew != ''
+);
