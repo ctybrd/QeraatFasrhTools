@@ -208,6 +208,14 @@ begin
     DQ.FieldByName('resultnew').AsString :=
       DQ.FieldByName('sub_subject1').AsString;
   end;
+ if Key = VK_Next   then
+  begin
+    try
+       HQ.next;
+    except
+    end;
+  end;
+
 end;
 
 procedure TMasterF.DGrdCellClick(Column: TColumn);

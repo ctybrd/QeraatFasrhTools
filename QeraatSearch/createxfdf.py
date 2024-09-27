@@ -4,7 +4,7 @@ import datetime
 import os
 import html
 
-edition = 'A'
+edition = 'S'
 
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
@@ -39,6 +39,7 @@ def create_xfdf(output_xfdf, db_file):
 
             page_width1 = 446
             page_height1 = 693
+            #yaqoob xmargin = 20 if (page_number + 1) % 2 == 0 else 124
             xmargin = 80 if (page_number + 1) % 2 == 0 else 84
             ymargin = 80
 
