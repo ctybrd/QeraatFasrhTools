@@ -660,7 +660,7 @@ object MasterF: TMasterF
         'reading, count(*) Count, group_concat(DISTINCT sub_subject) Subj' +
         'ect, '
       'group_concat(DISTINCT qarees) qarees FROM quran_data'
-      'WHERE done IS NULL AND r5_2 IS NULL and  resultnew is not null '
+      'WHERE done IS NULL AND r5_2 IS NULL '
       'GROUP BY reading'
       'ORDER BY count(*) DESC')
     Left = 16
