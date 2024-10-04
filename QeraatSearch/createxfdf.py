@@ -65,20 +65,23 @@ def create_xfdf(output_xfdf, db_file):
         annot_name = str(uuid.uuid4())
 
         # Escape the rawword and encode to HTML entities
+
         rawword_escaped = rawword #html.escape(rawword)
 
         # Create the contents-richtext XML snippet
-        contents_richtext = f'''
-        <contents-richtext>
-            <body xmlns="http://www.w3.org/1999/xhtml" 
-                  xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" 
-                  xfa:APIVersion="Acrobat:10.1.5" 
-                  xfa:spec="2.1" 
-                  style="text-align:left;font-family:Arial;font-size:12pt;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;">
-                <p><span>{rawword_escaped}</span></p>
-            </body>
-        </contents-richtext>
-        '''
+        contents_richtext = ''
+        if rawword:
+            contents_richtext = f'''
+            <contents-richtext>
+                <body xmlns="http://www.w3.org/1999/xhtml" 
+                    xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" 
+                    xfa:APIVersion="Acrobat:10.1.5" 
+                    xfa:spec="2.1" 
+                    style="text-align:left;font-family:Arial;font-size:12pt;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;">
+                    <p><span>{rawword_escaped}</span></p>
+                </body>
+            </contents-richtext>
+            '''
 
         # Determine the additional attribute based on the circle value
         additional_attribute = ''
@@ -97,7 +100,7 @@ def create_xfdf(output_xfdf, db_file):
             '''
         else:
             annot = f'''
-            <circle {'interior-color="' + color + '" ' if style != 'H' else ''}title="Title" creationdate="{creation_date}" subject="Subject" page="{page_number}" date="{creation_date}" opacity="0.7" flags="print" name="{annot_name}" rect="{x_start},{y_start},{x_start+6},{y_start+6}" color="{color}" width="1">
+            <circle {'interior-color="' + color + '" ' if style != 'H' else ''}title="Title" creationdate="{creation_date}" subject="Subject" page="{page_number}" date="{creation_date}" opacity="0.7" flags="print" name="{annot_name}" rect="{x_start},{y_start},{x_start+8},{y_start+8}" color="{color}" width="1">
                 {contents_richtext}
             </circle>
             '''
