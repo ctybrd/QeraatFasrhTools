@@ -39,13 +39,18 @@ def transliterate_number(number):
     return ''.join(mapping.get(char, char) for char in str(number))
 
 # Connect to the SQLite database
-conn = sqlite3.connect("F:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+conn = sqlite3.connect("e:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
 cursor = conn.cursor()
 
 # Execute the SQL query
 sql_query = """
-    SELECT aya, sub_subject, reading, page_number2 
-    FROM Asbahani 
+SELECT aya, sub_subject, reading, page_number2 ,resultnew from quran_data
+where 
+reading not like 'بصلة ميم الجمع وصلا بخلف.'
+and 
+reading not like '٠بضم ميم الجمع، ووصلها بواو لفظية بخلف'
+and r5_2 is null
+and r1_1 is not null
     ORDER BY aya_index, id
 """
 
@@ -56,11 +61,11 @@ doc = Document()
 
 # Set the page width to 30mm
 section = doc.sections[0]
-section.page_width = Pt(30 * 28.35)  # converting mm to points (1 mm = 28.35 points)
+section.page_width = Pt(25 * 28.35)  # converting mm to points (1 mm = 28.35 points)
 
 # Iterate through the SQL results and add them to the document
 current_page_number = None
-for aya, sub_subject, reading, page_number in cursor.fetchall():
+for aya, sub_subject, reading, page_number,resulutnew in cursor.fetchall():
     # Add new page for each change in value of page_number2
     if current_page_number is None or current_page_number != page_number:
         doc.add_page_break()
@@ -75,12 +80,10 @@ for aya, sub_subject, reading, page_number in cursor.fetchall():
     sub_subject_run = para.add_run(f"{sub_subject}\n")
     # Reading column value with replacements
     edited_text = replacement_dict.get(reading, reading)
-    if "بالإبدال" in edited_text:
-        sub_subject_run.font.color.rgb = RGBColor(0x00, 0x80, 0x00)  # Green
-    elif "بالنقل" in edited_text:
-        sub_subject_run.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)  # Blue
-    elif "صلة ميم الجمع وصلا" in edited_text:
-        sub_subject_run.font.color.rgb = RGBColor(184, 134, 11) #gold
+    if sub_subject in "'وهو','فهو','لهو','وهو','فهي','لهي','فهي','وهي','ثم هو'":
+        sub_subject_run.font.color.rgb = RGBColor(205, 82, 82)  
+    elif 'دغ' in reading:
+        sub_subject_run.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
     else:
         sub_subject_run.font.color.rgb = RGBColor(0xFF, 0x00, 0x00)  # Red (default)
     edited_text = edited_text.replace("ـ", "")
@@ -90,8 +93,8 @@ for aya, sub_subject, reading, page_number in cursor.fetchall():
     reading_run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Black
 
 # Save the document to the specified folder
-output_folder = "F:/Qeraat/QeraatFasrhTools/QeraatSearch/output"
-doc.save(output_folder + "/quran_data.docx")
+output_folder = "e:/Qeraat/QeraatFasrhTools/QeraatSearch/output"
+doc.save(output_folder + "/qaloon_hamsh.docx")
 
 # Close the database connection
 conn.close()
