@@ -3851,6 +3851,9 @@
 		<line start="216.361115,125.857903" end="246.093414,125.857903" interior-color="#FF0000" title="Shalaby" creationdate="D:20180525162732+02'00'" subject="Line" page="411" date="D:20240717225412+03'00'" flags="print" name="51f647e5-1ccf-4298-94409fa228cd5be4" rect="216.361115,124.357903,246.093414,127.357903" color="#FF0000" width="3">
 			<popup open="no" page="411" flags="print,nozoom,norotate" rect="202.677155,403.586609,382.677155,545.586609"/>
 		</line>
+		<line start="133.062866,235.255203" end="162.795166,235.255203" interior-color="#FF0000" title="Shalaby" creationdate="D:20180525162732+02'00'" subject="Line" page="411" date="D:20241009001024+03'00'" flags="print" name="72432388-298c-474b-9d1da772cb4efe63" rect="133.062866,233.755203,162.795166,236.755203" color="#FF0000" width="3">
+			<popup open="no" page="411" flags="print,nozoom,norotate" rect="202.677155,403.586609,382.677155,545.586609"/>
+		</line>
 		<line start="198.657654,315.29361" end="223.875641,315.29361" interior-color="#8B0000" title="باب فهو" creationdate="D:20180725043527+02'00'" subject="باب فهو" page="412" date="D:20240718042602+03'00'" flags="print" name="e15ecd05-7321-4b2b-9233-2a5eca97c886" rect="198.657654,313.79361,223.875641,316.79361" color="#8B0000" width="3">
 			<popup open="no" page="412" flags="print,nozoom,norotate" rect="274.677155,0,382.677155,85.200012"/>
 		</line>
