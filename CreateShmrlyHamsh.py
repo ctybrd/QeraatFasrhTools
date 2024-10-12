@@ -2,6 +2,7 @@ import sqlite3
 from docx import Document
 from docx.shared import Pt
 from docx.shared import RGBColor
+import os
 
 # Replacement dictionary for reading field
 replacement_dict = {
@@ -15,6 +16,10 @@ replacement_dict = {
     "بالنقل، مع ترك الوقف بهاء السكت.": "بالنقل",
     "بالنقل، مع قصر اللين.": "بالنقل",
     "بالنقل، مع قصر البدل، وترك الوقف بهاء السكت.": "بالنقل",
+    "، مع ترك الوقف بهاء السكت":"",
+    "، مع تحقيق الهمزتين وصلا ووقفا":"",
+    "، مع تحقيق الهمزتين":"",
+
     # Add more replacements as needed
 }
 
@@ -34,12 +39,17 @@ def transliterate_number(number):
         ')': '(',
         '[': ']',
         ']': '[',
-        '.' : '',                  
+        '.' : '٠',                  
     }
     return ''.join(mapping.get(char, char) for char in str(number))
 
 # Connect to the SQLite database
-conn = sqlite3.connect("d:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive + '/'
+db_path = os.path.join(drive,"Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+output_folder = os.path.join(drive,"Qeraat/QeraatFasrhTools/QeraatSearch/output")
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 # Execute the SQL query
@@ -65,7 +75,7 @@ section.page_width = Pt(25 * 28.35)  # converting mm to points (1 mm = 28.35 poi
 
 # Iterate through the SQL results and add them to the document
 current_page_number = None
-for aya, sub_subject, reading, page_number,resulutnew in cursor.fetchall():
+for aya, sub_subject, reading, page_number,resultnew in cursor.fetchall():
     # Add new page for each change in value of page_number2
     if current_page_number is None or current_page_number != page_number:
         doc.add_page_break()
@@ -77,6 +87,8 @@ for aya, sub_subject, reading, page_number,resulutnew in cursor.fetchall():
     # Sub_subject column value with color based on reading content
     sub_subject_run = para.add_run(transliterate_number(f"{aya} "))
     sub_subject_run.font.size = Pt(10)
+    if resultnew:
+       sub_subject1 =  
     sub_subject_run = para.add_run(f"{sub_subject}\n")
     # Reading column value with replacements
     edited_text = replacement_dict.get(reading, reading)
@@ -93,7 +105,7 @@ for aya, sub_subject, reading, page_number,resulutnew in cursor.fetchall():
     reading_run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Black
 
 # Save the document to the specified folder
-output_folder = "d:/Qeraat/QeraatFasrhTools/QeraatSearch/output"
+
 doc.save(output_folder + "/qaloon_hamsh.docx")
 
 # Close the database connection

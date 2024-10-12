@@ -38,8 +38,8 @@ def convert_ppm_to_svg(ppm_paths):
     return svg_paths
 
 # Main process
-input_folder = 'F:/QaloonColored'
-output_folder = 'F:/QaloonColored_out'
+input_folder = 'e:/temp'
+output_folder = 'e:/temp'
 os.makedirs(output_folder, exist_ok=True)
 
 # List all PNG files in the input folder
