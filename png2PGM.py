@@ -22,19 +22,48 @@ def quantize_image(image_path, n_colors=16):
     quantized_img_data = new_colors.reshape(img_data.shape).astype('uint8')
     quantized_image = Image.fromarray(quantized_img_data)
 
-    # Save the quantized image as PPM (needed for Potrace to keep color data)
+    # Save the quantized image as PPM (needed for Inkscape to keep color data)
     ppm_path = image_path.replace('.png', '.ppm')
     quantized_image.save(ppm_path, 'PPM')
 
     return ppm_path
 
-# Function to convert PPM to SVG using Potrace
+# Function to optimize SVG using SVGO
+def optimize_svg_with_svgo(svg_path):
+    try:
+        # Call SVGO to optimize the SVG file
+        subprocess.run(['svgo', svg_path, '-o', svg_path], check=True)
+        print(f"Optimized {svg_path} with SVGO.")
+    except FileNotFoundError:
+        print("SVGO is not installed. Skipping optimization.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error optimizing {svg_path} with SVGO: {e}")
+
+# Function to convert PPM to SVG using Inkscape
 def convert_ppm_to_svg(ppm_paths):
     svg_paths = []
     for ppm_path in ppm_paths:
         svg_path = ppm_path.replace('.ppm', '.svg')
-        subprocess.run(['potrace', ppm_path, '-s', '-o', svg_path])
-        svg_paths.append(svg_path)
+        
+        # Run Inkscape and capture the output to log errors if any
+        try:
+            result = subprocess.run([
+                'inkscape', ppm_path, 
+                '--export-filename', svg_path, 
+                '--export-dpi=300'  # Export at 300 DPI for clarity without excessive resolution
+            ], capture_output=True, text=True, check=True)
+            
+            # Print Inkscape output for debugging
+            print(result.stdout)
+            print(f"SVG created: {svg_path}")
+
+            # Optimize the SVG using SVGO if available
+            optimize_svg_with_svgo(svg_path)
+            svg_paths.append(svg_path)
+
+        except subprocess.CalledProcessError as e:
+            print(f"Error generating {svg_path} with Inkscape: {e.stderr}")
+        
     return svg_paths
 
 # Main process
@@ -51,7 +80,7 @@ for image_path in image_paths:
     ppm_path = quantize_image(image_path, n_colors=16)
     ppm_paths.append(ppm_path)
 
-# Convert PPM to SVG
+# Convert PPM to SVG and optimize with SVGO
 svg_paths = convert_ppm_to_svg(ppm_paths)
 
-print("SVG files generated:", svg_paths)
+print("Optimized SVG files generated:", svg_paths)
