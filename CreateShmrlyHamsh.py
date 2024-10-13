@@ -19,6 +19,7 @@ replacement_dict = {
     "، مع ترك الوقف بهاء السكت":"",
     "، مع تحقيق الهمزتين وصلا ووقفا":"",
     "، مع تحقيق الهمزتين":"",
+    "بإسكان الهاء، مع ترك الوقف بهاء السكت.":" بإسكان الهاء",
 
     # Add more replacements as needed
 }
@@ -35,8 +36,8 @@ def transliterate_number(number):
         '7': '٧',
         '8': '٨',
         '9': '٩',
-        '(': ')',
-        ')': '(',
+        '(': '',
+        ')': '',
         '[': ']',
         ']': '[',
         '.' : '٠',                  
@@ -58,7 +59,7 @@ SELECT aya, sub_subject, reading, page_number2 ,resultnew from quran_data
 where 
 reading not like 'بصلة ميم الجمع وصلا بخلف.'
 and 
-reading not like '٠بضم ميم الجمع، ووصلها بواو لفظية بخلف'
+reading not like '%بضم ميم الجمع، ووصلها بواو لفظية بخلف.%'
 and r5_2 is null
 and r1_1 is not null
     ORDER BY aya_index, id
@@ -88,8 +89,10 @@ for aya, sub_subject, reading, page_number,resultnew in cursor.fetchall():
     sub_subject_run = para.add_run(transliterate_number(f"{aya} "))
     sub_subject_run.font.size = Pt(10)
     if resultnew:
-       sub_subject1 =  
-    sub_subject_run = para.add_run(f"{sub_subject}\n")
+       sub_subject1 =  sub_subject +': ' +resultnew
+    else:
+        sub_subject1 =  sub_subject
+    sub_subject_run = para.add_run(f"{sub_subject1}\n")
     # Reading column value with replacements
     edited_text = replacement_dict.get(reading, reading)
     if sub_subject in "'وهو','فهو','لهو','وهو','فهي','لهي','فهي','وهي','ثم هو'":

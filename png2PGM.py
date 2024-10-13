@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 
 # Function to quantize the image (reduce the number of colors)
-def quantize_image(image_path, n_colors=16):
+def quantize_image(image_path, output_folder, n_colors=16):
     image = Image.open(image_path)
     image = image.convert('RGB')  # Ensure the image is in RGB mode
     
@@ -22,8 +22,9 @@ def quantize_image(image_path, n_colors=16):
     quantized_img_data = new_colors.reshape(img_data.shape).astype('uint8')
     quantized_image = Image.fromarray(quantized_img_data)
 
-    # Save the quantized image as PPM (needed for Inkscape to keep color data)
-    ppm_path = image_path.replace('.png', '.ppm')
+    # Save the quantized image as PPM in the output folder (needed for Inkscape to keep color data)
+    base_filename = os.path.basename(image_path).replace('.png', '.ppm')
+    ppm_path = os.path.join(output_folder, base_filename)
     quantized_image.save(ppm_path, 'PPM')
 
     return ppm_path
@@ -40,10 +41,11 @@ def optimize_svg_with_svgo(svg_path):
         print(f"Error optimizing {svg_path} with SVGO: {e}")
 
 # Function to convert PPM to SVG using Inkscape
-def convert_ppm_to_svg(ppm_paths):
+def convert_ppm_to_svg(ppm_paths, output_folder):
     svg_paths = []
     for ppm_path in ppm_paths:
-        svg_path = ppm_path.replace('.ppm', '.svg')
+        base_filename = os.path.basename(ppm_path).replace('.ppm', '.svg')
+        svg_path = os.path.join(output_folder, base_filename)
         
         # Run Inkscape and capture the output to log errors if any
         try:
@@ -67,8 +69,8 @@ def convert_ppm_to_svg(ppm_paths):
     return svg_paths
 
 # Main process
-input_folder = 'e:/temp'
-output_folder = 'e:/temp'
+input_folder = 'F:/QaloonColored'
+output_folder = 'F:/QaloonColored_SVG'
 os.makedirs(output_folder, exist_ok=True)
 
 # List all PNG files in the input folder
@@ -77,10 +79,10 @@ image_paths = [os.path.join(input_folder, f) for f in os.listdir(input_folder) i
 # Quantize and convert PNG to PPM
 ppm_paths = []
 for image_path in image_paths:
-    ppm_path = quantize_image(image_path, n_colors=16)
+    ppm_path = quantize_image(image_path, output_folder, n_colors=16)
     ppm_paths.append(ppm_path)
 
 # Convert PPM to SVG and optimize with SVGO
-svg_paths = convert_ppm_to_svg(ppm_paths)
+svg_paths = convert_ppm_to_svg(ppm_paths, output_folder)
 
 print("Optimized SVG files generated:", svg_paths)
