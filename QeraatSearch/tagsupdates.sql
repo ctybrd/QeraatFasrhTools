@@ -150,3 +150,40 @@ AND EXISTS (
       AND a.resultnew IS NOT NULL
       AND a.resultnew != ''
 );
+
+
+
+--- split tags
+
+WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, tag, remaining_tags) AS (
+    SELECT aya_index, id, sub_subject, reading,
+        CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, 2, INSTR(tags, ',') - 1)
+        ELSE SUBSTR(tags, 1, INSTR(tags, ',') - 1) END,
+        CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, INSTR(tags, ',') + 1)
+        ELSE '' END
+    FROM quran_data 
+    WHERE tags IS NOT NULL AND tags NOT LIKE '%nochange%' and page_shmrly is not null
+    
+    UNION ALL
+    
+    SELECT aya_index, id, sub_subject, reading,
+        CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, 2, INSTR(remaining_tags, ',') - 1)
+        ELSE SUBSTR(remaining_tags, 1, INSTR(remaining_tags, ',') - 1) END,
+        CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, INSTR(remaining_tags, ',') + 1)
+        ELSE '' END
+    FROM tags_split
+    WHERE remaining_tags != ''
+)
+
+SELECT ts.aya_index, 
+       ts.id, 
+       ts.sub_subject, 
+       ts.reading, 
+       ts.tag, 
+       tm.description,
+       qd.page_shmrly  -- Add the page_shmrly column from quran_data
+FROM tags_split ts
+LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
+JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id  -- Ensure the join to get page_shmrly
+WHERE ts.tag != ''
+ORDER BY ts.aya_index, ts.id;

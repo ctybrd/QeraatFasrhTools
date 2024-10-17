@@ -860,3 +860,6 @@ FROM quran_data qd
 JOIN quran_data_original qdo ON qd.aya_index = qdo.aya_index AND qd.id = qdo.id
 WHERE qd.reading <> REPLACE(REPLACE(qdo.reading, 'قرأ ', ''), 'قرؤوا ', '');
 
+update quran_data set page_shmrly=(SELECT words1.page_number2  
+ from words1 where words1.aya_index= quran_data.aya_index
+and words1.wordsno=quran_data.wordsno)
