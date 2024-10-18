@@ -1,8 +1,8 @@
 import sqlite3
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Cm  # To set margins
-from docx.oxml.ns import qn  # For reducing row spacing
+from docx.shared import Cm
+from docx.oxml import OxmlElement
 
 # Connect to the SQLite database
 conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
@@ -10,8 +10,8 @@ cursor = conn.cursor()
 
 # SQL query with correct usage of page_shmrly
 query = """
-WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading,qareesrest, tag, remaining_tags) AS (
-    SELECT aya_index, id, sub_subject, reading,qareesrest,
+WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, tag, remaining_tags) AS (
+    SELECT aya_index, id, sub_subject, reading, qareesrest,
         CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, 2, INSTR(tags, ',') - 1)
         ELSE SUBSTR(tags, 1, INSTR(tags, ',') - 1) END,
         CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, INSTR(tags, ',') + 1)
@@ -21,7 +21,7 @@ WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading,qareesrest, tag, r
 
     UNION ALL
 
-    SELECT aya_index, id, sub_subject, reading,qareesrest,
+    SELECT aya_index, id, sub_subject, reading, qareesrest,
         CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, 2, INSTR(remaining_tags, ',') - 1)
         ELSE SUBSTR(remaining_tags, 1, INSTR(remaining_tags, ',') - 1) END,
         CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, INSTR(remaining_tags, ',') + 1)
@@ -43,7 +43,7 @@ SELECT ts.aya_index,
 FROM tags_split ts
 LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
 JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
-WHERE ts.tag != '' and ts.tag !='meemsela' and ts.tag !='waqfhesham' and ts.tag !='waqfhamza'
+WHERE ts.tag != '' and ts.tag !='meemsela' and ts.tag !='waqfhesham' and ts.tag !='waqfham'
 ORDER BY qd.page_shmrly, ts.tag, ts.aya_index, ts.id;
 """
 
@@ -51,17 +51,7 @@ ORDER BY qd.page_shmrly, ts.tag, ts.aya_index, ts.id;
 data = cursor.execute(query).fetchall()
 conn.close()
 
-# Create a new Word document
-doc = Document()
-
-# Set page margins to 0.7 cm
-section = doc.sections[0]
-section.top_margin = Cm(0.7)
-section.bottom_margin = Cm(0.7)
-section.left_margin = Cm(0.7)
-section.right_margin = Cm(0.7)
-
-# Group data by page_shmrly and then by tag
+# Group data by page_shmrly
 grouped_data = {}
 for row in data:
     page_shmrly = row[7]  # page_shmrly column
@@ -72,8 +62,23 @@ for row in data:
         grouped_data[page_shmrly][tag] = []
     grouped_data[page_shmrly][tag].append(row)
 
-# Generate the document
+# Create Word documents in batches of 50 pages
+doc = None
+current_page_batch = 0
+
 for page, tags in grouped_data.items():
+    if current_page_batch % 50 == 0:  # New document for every 50 pages
+        if doc:
+            doc.save(f'shmrly_osoul_{current_page_batch // 50}.docx')  # Save previous document
+        doc = Document()
+
+        # Set page margins to 0.7 cm
+        section = doc.sections[0]
+        section.top_margin = Cm(0.7)
+        section.bottom_margin = Cm(0.7)
+        section.left_margin = Cm(0.7)
+        section.right_margin = Cm(0.7)
+
     # Add a page header with the page number
     doc.add_heading(f'صفحة: {page}', level=1).alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     
@@ -106,9 +111,18 @@ for page, tags in grouped_data.items():
                 paragraph_format.space_after = Cm(0)  # No space after each paragraph
                 paragraph_format.space_before = Cm(0)  # No space before each paragraph
 
+                # Add RTL support directly to the paragraph element
+                p_element = paragraph._element
+                rPr = p_element.get_or_add_pPr()  # Get or add paragraph properties
+                rtl = OxmlElement('w:rtl')
+                rtl.text = '1'  # '1' for right-to-left
+                rPr.append(rtl)
+
         doc.add_paragraph()  # Add a space after each tag section
     
+    current_page_batch += 1
     doc.add_page_break()  # Add a page break after each page group
 
-# Save the document
-doc.save('shmrly_osoul.docx')
+# Save the last document if it exists
+if doc:
+    doc.save(f'shmrly_osoul_{current_page_batch // 50}.docx')
