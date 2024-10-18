@@ -1,7 +1,7 @@
 import sqlite3
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Cm  # To set margins
+from docx.shared import Cm , RGBColor # To set margins
 from docx.oxml.ns import qn  # For reducing row spacing
 
 # Connect to the SQLite database
@@ -95,7 +95,12 @@ for page, tags in grouped_data.items():
         for record in records:
             row_cells = table.add_row().cells
             row_cells[0].text = str(record[9])  # Aya
-            row_cells[1].text = str(record[2])  # Sub Subject
+            cell_sub_subject = row_cells[1]
+            cell_sub_subject.text = str(record[2])  # Sub Subject
+              # Change the text color of the sub_subject cell to green
+            for paragraph in cell_sub_subject.paragraphs:
+                for run in paragraph.runs:
+                    run.font.color.rgb = RGBColor(0, 128, 0)  # Green color
             row_cells[2].text = str(record[3])  # Reading
             row_cells[3].text = str(record[10])  # qareesrest
             

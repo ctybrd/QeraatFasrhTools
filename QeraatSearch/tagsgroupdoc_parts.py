@@ -1,14 +1,14 @@
 import sqlite3
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Cm
+from docx.shared import Cm, RGBColor
 from docx.oxml import OxmlElement
 
 # Connect to the SQLite database
 conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
 cursor = conn.cursor()
 
-# SQL query with correct usage of page_shmrly
+# SQL query (remains unchanged)
 query = """
 WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, tag, remaining_tags) AS (
     SELECT aya_index, id, sub_subject, reading, qareesrest,
@@ -43,15 +43,15 @@ SELECT ts.aya_index,
 FROM tags_split ts
 LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
 JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
-WHERE ts.tag != '' and ts.tag !='meemsela' and ts.tag !='waqfhesham' and ts.tag !='waqfham'
+WHERE ts.tag != '' and ts.tag !='meemsela' and ts.tag !='waqfhesham' and ts.tag !='waqfhamza'
 ORDER BY qd.page_shmrly, ts.tag, ts.aya_index, ts.id;
 """
 
-# Fetch data
+# Fetch data (remains unchanged)
 data = cursor.execute(query).fetchall()
 conn.close()
 
-# Group data by page_shmrly
+# Group data by page_shmrly (remains unchanged)
 grouped_data = {}
 for row in data:
     page_shmrly = row[7]  # page_shmrly column
@@ -62,7 +62,7 @@ for row in data:
         grouped_data[page_shmrly][tag] = []
     grouped_data[page_shmrly][tag].append(row)
 
-# Create Word documents in batches of 50 pages
+# Create Word documents in batches of 50 pages (remains unchanged)
 doc = None
 current_page_batch = 0
 
@@ -100,7 +100,14 @@ for page, tags in grouped_data.items():
         for record in records:
             row_cells = table.add_row().cells
             row_cells[0].text = str(record[9])  # Aya
-            row_cells[1].text = str(record[2])  # Sub Subject
+            cell_sub_subject = row_cells[1]
+            cell_sub_subject.text = str(record[2])  # Sub Subject
+            
+            # Change the text color of the sub_subject cell to green
+            for paragraph in cell_sub_subject.paragraphs:
+                for run in paragraph.runs:
+                    run.font.color.rgb = RGBColor(0, 128, 0)  # Green color
+            
             row_cells[2].text = str(record[3])  # Reading
             row_cells[3].text = str(record[10])  # qareesrest
             
