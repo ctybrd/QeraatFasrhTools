@@ -8,8 +8,8 @@ cursor = conn.cursor()
 
 # Execute the updated SQL query
 query = """
-WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, tag, remaining_tags) AS (
-    SELECT aya_index, id, sub_subject, reading,
+WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading,qareesrest, tag, remaining_tags) AS (
+    SELECT aya_index, id, sub_subject, reading,qareesrest,
         CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, 2, INSTR(tags, ',') - 1)
         ELSE SUBSTR(tags, 1, INSTR(tags, ',') - 1) END,
         CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, INSTR(tags, ',') + 1)
@@ -19,7 +19,7 @@ WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, tag, remaining_ta
 
     UNION ALL
 
-    SELECT aya_index, id, sub_subject, reading,
+    SELECT aya_index, id, sub_subject, reading,qareesrest,
         CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, 2, INSTR(remaining_tags, ',') - 1)
         ELSE SUBSTR(remaining_tags, 1, INSTR(remaining_tags, ',') - 1) END,
         CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, INSTR(remaining_tags, ',') + 1)
@@ -37,7 +37,7 @@ SELECT ts.aya_index,
        tm.category,
        qd.page_shmrly,
        qd.sora,
-       qd.aya
+       qd.aya,qd.qareesrest
 FROM tags_split ts
 LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
 JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
@@ -74,7 +74,7 @@ for page, tags in grouped_data.items():
         doc.add_heading(f' {tag_description} - {category}', level=2)
         
         # Create a table for the records under the tag
-        table = doc.add_table(rows=1, cols=5)  # 5 columns for sora, aya, id, sub_subject, reading
+        table = doc.add_table(rows=1, cols=6)  # 5 columns for sora, aya, id, sub_subject, reading
         
         # Setting header values
         hdr_cells = table.rows[0].cells
@@ -86,9 +86,10 @@ for page, tags in grouped_data.items():
         
         # Set column widths
         for i in range(3):  # Adjust widths for first three columns
-            table.columns[i].width = int(1.5 * 914400)  # 1.5 cm in EMU (1 cm = 914400 EMU)
-        table.columns[3].width = int(2.0 * 914400)  # 2 cm for Sub Subject
-        table.columns[4].width = int(2.0 * 914400)  # 2 cm for Reading
+            table.columns[i].width = int(0.5 * 914400)  # 1.5 cm in EMU (1 cm = 914400 EMU)
+        table.columns[3].width = int(4.0 * 914400)  # 2 cm for Sub Subject
+        table.columns[4].width = int(4.0 * 914400)  # 2 cm for Reading
+        table.columns[5].width = int(4.0 * 914400)  # 2 cm for Reading
         
         for record in records:
             row_cells = table.add_row().cells
@@ -97,6 +98,7 @@ for page, tags in grouped_data.items():
             row_cells[2].text = str(record[1])  # ID
             row_cells[3].text = str(record[2])  # Sub Subject
             row_cells[4].text = str(record[3])  # Reading
+            row_cells[5].text = str(record[10])  # qarees
 
         doc.add_paragraph()  # Add a space after each tag section
     
