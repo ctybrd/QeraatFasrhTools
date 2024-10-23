@@ -369,3 +369,28 @@ ON
 
 where row_count_shmrly is not NULL
 and count_status='Mismatch'"""
+
+update_line="""
+SELECT
+  id,
+  y,
+  page_number,rawword,
+  lineno,
+  CAST(((y * 2189.0)-65.0) / 145.93 AS INTEGER)+1  AS predicted_line
+FROM shmrly_words
+where lineno<>predicted_line
+order by page_number,predicted_line ;
+WITH updated_lines AS (
+  SELECT
+    id,
+    CAST(((y * 2189.0) - 65.0) / 145.93 AS INTEGER) + 1 AS predicted_line
+  FROM shmrly_words
+)
+UPDATE shmrly_words
+SET reallineno = (
+  SELECT predicted_line
+  FROM updated_lines
+  WHERE shmrly_words.id = updated_lines.id
+);
+
+"""
