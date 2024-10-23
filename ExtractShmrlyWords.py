@@ -392,5 +392,5 @@ SET reallineno = (
   FROM updated_lines
   WHERE shmrly_words.id = updated_lines.id
 );
-
+UPDATE words1 set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words1.wordindex);
 """
