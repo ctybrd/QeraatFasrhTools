@@ -187,3 +187,14 @@ LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
 JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id  -- Ensure the join to get page_shmrly
 WHERE ts.tag != ''
 ORDER BY ts.aya_index, ts.id;
+
+select case when q7=1 then 'الكسائي' 
+else case WHEN r7_2 =1 then 'الدوري عن الكسائي' 
+else 'أبو الحارث عن الكسائي' 
+end end   "القاريء",
+aya  "آية",
+sora_name  "سورة",
+sub_subject,page_number2   "صفحة"
+  from all_qeraat where tags like '%,imala,%' and qareesrest like '%كسائ%' 
+and qareesrest not like '%خلف العاشر%'
+ORDER by aya_index,id;

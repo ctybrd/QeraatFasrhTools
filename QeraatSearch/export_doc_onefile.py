@@ -25,19 +25,17 @@ GREEN = RGBColor(0, 128, 0)
 BLUE = RGBColor(0, 0, 255)
 
 # Open the SQLite database
-db_path = "E:\Qeraat\QeraatFasrhTools\QeraatSearch\qeraat_data.db"
+db_path = "D:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 
 # Execute the SQLite query
 query = """
-SELECT sora_name, aya, text_full, sub_subject, qareesrest, reading, sora
+SELECT sora_name, aya, text_full, sub_subject, qareesrest,'' reading, sora
  from all_qeraat where 
-qarees like '%ورش%'
-and reading like '%تقليل%'
-and reading not like '%تقليل بخلف%'
-and reading not like '%تقليل وقفا بخلف%'
-and reading not like '%تقليل وقفاً بخلف%'
+ (tags like '%,ibdal,%')
+ and (r1_2 is not null and r3_2 is null and (r8_1 is  null and r8_2 is  null))
+
 order by aya_index,id
 """
 cursor.execute(query)
@@ -104,6 +102,6 @@ for row in cursor.fetchall():
 
 # Save the last sura document
 if doc:
-    doc.save(f"./output/WarshTakleel.docx")
+    doc.save(f"./output/WarshOnlyIbdal.docx")
 # Close the database connection
 connection.close()
