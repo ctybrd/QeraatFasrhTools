@@ -3,11 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-site = 'ibn-atiyah'
-table = 'ibnatiyah'
+site = 'zad-almaseer'
+table = 'zadmaseer'
 
 # Connect to the SQLite database
-db_path = 'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
+db_path = 'E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
@@ -55,23 +55,23 @@ for record in records:
 conn.execute(f"UPDATE book_{table} SET text=REPLACE(REPLACE(text,'﴿','<b>'),'﴾','</b>')")
 
 # Delete duplicates
-delete_duplicates = f"""
-WITH CTE AS (
-    SELECT
-        aya_index,
-        text,
-        ROW_NUMBER() OVER (PARTITION BY text ORDER BY aya_index) AS rn
-    FROM
-        book_{table}
-)
-DELETE FROM book_{table}
-WHERE aya_index IN (
-    SELECT aya_index
-    FROM CTE
-    WHERE rn > 1
-);
-"""
-cursor.executescript(delete_duplicates)
+# delete_duplicates = f"""
+# WITH CTE AS (
+#     SELECT
+#         aya_index,
+#         text,
+#         ROW_NUMBER() OVER (PARTITION BY text ORDER BY aya_index) AS rn
+#     FROM
+#         book_{table}
+# )
+# DELETE FROM book_{table}
+# WHERE aya_index IN (
+#     SELECT aya_index
+#     FROM CTE
+#     WHERE rn > 1
+# );
+# """
+# cursor.executescript(delete_duplicates)
 conn.commit()
 
 # Close the database connection
