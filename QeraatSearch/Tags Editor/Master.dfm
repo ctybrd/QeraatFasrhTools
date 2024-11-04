@@ -612,6 +612,12 @@ object MasterF: TMasterF
     FixedColor = 16766678
     GradientEndColor = 16766678
     GradientStartColor = 16766678
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -32
+    Font.Name = 'Sakkal Majalla'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 4
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -635,7 +641,7 @@ object MasterF: TMasterF
     GradientStartColor = 16766678
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -32
+    Font.Height = -35
     Font.Name = 'Sakkal Majalla'
     Font.Style = []
     ParentFont = False
