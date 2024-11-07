@@ -661,12 +661,15 @@ object MasterF: TMasterF
     CommandTimeout = 60000
     Parameters = <>
     SQL.Strings = (
-      'SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence,'
+      
+        'SELECT CAST(ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS INTEGE' +
+        'R)  AS Sequence,'
       
         'reading, count(*) Count, group_concat(DISTINCT sub_subject) Subj' +
         'ect, '
       'group_concat(DISTINCT qarees) qarees FROM quran_data'
       'WHERE done IS NULL AND r5_2 IS NULL '
+      'and tags!='#39',meemsela,'#39
       'GROUP BY reading'
       'ORDER BY count(*) DESC')
     Left = 16

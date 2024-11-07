@@ -61,11 +61,11 @@ type
     Label4: TLabel;
     DoneSW: TToggleSwitch;
     Label5: TLabel;
-    HQSequence: TIntegerField;
     DQsub_subject1: TWideMemoField;
     RequeryPnl: TPanel;
     RequeryShp: TShape;
     RequeryBtn: TSpeedButton;
+    HQSequence: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -151,7 +151,7 @@ begin
   if HafsSW.State <> tssOff then
     fltrALL := AddAnd(fltrALL) + ' r5_2 IS NULL';
 
-  SQLH := 'SELECT ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS Sequence, ' +
+  SQLH := 'SELECT CAST(ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS INTEGER)  AS Sequence, ' +
     'reading, count(*) Count, ' +
     'group_concat(DISTINCT sub_subject) Subject, ' +
     'group_concat(DISTINCT qarees) qarees FROM quran_data ' +
