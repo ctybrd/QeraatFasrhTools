@@ -146,7 +146,7 @@ var
 begin
   fltrALL:='';
   if DoneSW.State = tssOn then
-    fltrALL := 'done = 1'
+    fltrALL := ''
   else
     fltrALL := 'done = null';
 
@@ -155,20 +155,22 @@ begin
   else
     fltrALL := AddAnd(fltrALL) + 'r5_2 = null';
 
-  SQLH := 'SELECT CAST(ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS INTEGER)  AS Sequence, ' +
-    'reading, count(*) Count, ' +
-    'group_concat(DISTINCT sub_subject) Subject, ' +
-    'group_concat(DISTINCT qarees) qarees FROM quran_data ' +
-    IfThen(fltrALL <> '', ' WHERE ' + fltrAll, '') +
-    'GROUP BY reading ' +
-    'ORDER BY count(*) DESC';
-
-  SQLD := 'SELECT aya_index, id, sora, aya, sub_subject, qarees, reading, ' +
-    'tags, page_number1, page_number2, readingresult, qareesrest, ' +
-    'count_words, sub_sno, resultnew, wordsno, r5_2, done ' +
-    'FROM quran_data ' +
-    'where reading = :reading ' +
-    IfThen(fltrALL <> '', ' AND ' + fltrAll, '');
+//  SQLH := 'SELECT CAST(ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS INTEGER)  AS Sequence, ' +
+//    'reading, count(*) Count, ' +
+//    'group_concat(DISTINCT sub_subject) Subject, ' +
+//    'group_concat(DISTINCT qarees) qarees FROM quran_data ' +
+//    IfThen(fltrALL <> '', ' WHERE ' + fltrAll, '') +
+//    'GROUP BY reading ' +
+//    'ORDER BY count(*) DESC';
+//
+//  SQLD := 'SELECT aya_index, id, sora, aya, sub_subject, qarees, reading, ' +
+//    'tags, page_number1, page_number2, readingresult, qareesrest, ' +
+//    'count_words, sub_sno, resultnew, wordsno, r5_2, done ' +
+//    'FROM quran_data ' +
+//    'where reading = :reading ' +
+//    IfThen(fltrALL <> '', ' AND ' + fltrAll, '');
+  sqlh:=hq.sql.text;
+  sqld:=dq.sql.text;
 
   HQ.Filtered := False;
   DQ.Filtered := False;
@@ -280,7 +282,7 @@ begin
       + 'qarees like ' + QuotedStr('%' + QuareesEdt.Text + '%');
 
   LockWindowUpdate(Handle);
-
+  fltr :='';
   if Fltr = '' then
   begin
     HQ.Filtered := False;
@@ -310,7 +312,7 @@ begin
   Fltr := '';
 
   if DoneSW.State = tssOn then
-    Fltr := 'done = 1'
+    Fltr := 'done = null'
   else
     Fltr := 'done = null';
 
@@ -323,7 +325,7 @@ begin
 
   try
     DQ.Filtered := False;
-
+    fltr:='';
     if fltr <> '' then
     begin
       DQ.Filter := Fltr;

@@ -11,6 +11,7 @@ object MasterF: TMasterF
   Font.Height = -15
   Font.Name = 'Tahoma'
   Font.Style = []
+  OldCreateOrder = True
   ParentBiDiMode = False
   WindowState = wsMaximized
   OnCreate = FormCreate
@@ -21,14 +22,11 @@ object MasterF: TMasterF
     Left = 3
     Top = 246
     Width = 820
-    Height = 3
+    Height = 11
     Cursor = crVSplit
     Align = alTop
     Color = 2823171
     ParentColor = False
-    ExplicitLeft = 0
-    ExplicitTop = 126
-    ExplicitWidth = 457
   end
   object HeadPnl: TPanel
     AlignWithMargins = True
@@ -628,9 +626,9 @@ object MasterF: TMasterF
   object DGrd: TDBGrid
     AlignWithMargins = True
     Left = 3
-    Top = 255
+    Top = 263
     Width = 820
-    Height = 247
+    Height = 239
     Align = alClient
     BorderStyle = bsNone
     DataSource = DDS
@@ -667,8 +665,12 @@ object MasterF: TMasterF
         'reading, count(*) Count, group_concat(DISTINCT sub_subject) Subj' +
         'ect, '
       'group_concat(DISTINCT qarees) qarees FROM quran_data'
-      'WHERE done IS NULL AND r5_2 IS NULL '
-      'and tags!='#39',meemsela,'#39
+      'WHERE  r5_2 IS NULL '
+      
+        'and (tags like '#39'%,farsh,%'#39' or tags like '#39'%2hamz%'#39' or tags like '#39 +
+        '%1hamz%'#39') '
+      'and '
+      'resultnew is null'
       'GROUP BY reading'
       'ORDER BY count(*) DESC')
     Left = 16
