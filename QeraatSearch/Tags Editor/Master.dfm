@@ -11,7 +11,6 @@ object MasterF: TMasterF
   Font.Height = -15
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   ParentBiDiMode = False
   WindowState = wsMaximized
   OnCreate = FormCreate
@@ -734,10 +733,7 @@ object MasterF: TMasterF
         'ds, '
       'sub_sno, resultnew, wordsno, r5_2, done ,sub_subject1'
       'FROM quran_data'
-      'where reading = :reading'
-      'and'
-      'r5_2 IS NULL'
-      'and done is null')
+      'where reading = :reading')
     Left = 16
     Top = 112
     object DQsora: TIntegerField

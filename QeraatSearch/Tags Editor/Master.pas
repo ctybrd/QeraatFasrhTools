@@ -145,11 +145,15 @@ var
   fltrALL: String;
 begin
   fltrALL:='';
-  if DoneSW.State <> tssOff then
-    fltrALL := ' done = 1';
+  if DoneSW.State = tssOn then
+    fltrALL := 'done = 1'
+  else
+    fltrALL := 'done = null';
 
-  if HafsSW.State <> tssOff then
-    fltrALL := AddAnd(fltrALL) + ' r5_2 IS NULL';
+  if HafsSW.State = tssOn then
+    fltrALL := AddAnd(fltrALL) + 'r5_2 = ' + QuotedStr('1')
+  else
+    fltrALL := AddAnd(fltrALL) + 'r5_2 = null';
 
   SQLH := 'SELECT CAST(ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) AS INTEGER)  AS Sequence, ' +
     'reading, count(*) Count, ' +
@@ -303,36 +307,39 @@ procedure TMasterF.FilterDData();
 var
   Fltr: String;
 begin
-exit;
-  if DoneSW.State = tssOff then
-    Fltr := ''
-  else
-    Fltr := 'done = 1';
+  Fltr := '';
 
-  if HafsSW.State = tssOff then
-    Fltr := AddAnd(Fltr) + ''
+  if DoneSW.State = tssOn then
+    Fltr := 'done = 1'
   else
-    Fltr := AddAnd(Fltr) + 'r5_2 = ' + QuotedStr('1');
+    Fltr := 'done = null';
+
+  if HafsSW.State = tssOn then
+    Fltr := AddAnd(Fltr) + 'r5_2 = ' + QuotedStr('1')
+  else
+    Fltr := AddAnd(Fltr) + 'r5_2 = null';
 
   LockWindowUpdate(Handle);
-  DQ.Filtered := False;
-  if fltr<>'' then
-  begin
+
   try
-    DQ.Filter := Fltr;
-    DQ.Filtered := True;
+    DQ.Filtered := False;
+
+    if fltr <> '' then
+    begin
+      DQ.Filter := Fltr;
+      DQ.Filtered := True;
+    end;
   finally
     LockWindowUpdate(0);
     RedrawWindow(Handle, nil, 0, RDW_ERASE or RDW_FRAME or
       RDW_INVALIDATE or RDW_ALLCHILDREN);
   end;
-  end;
 end;
 
 procedure TMasterF.DoneSWClick(Sender: TObject);
 begin
-//  FilterDData();
-  OpenDSets;
+  FilterDData();
+  //OpenDSets;
 end;
 
 Function TMasterF.AddAnd(Txt: String): String;
