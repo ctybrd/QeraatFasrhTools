@@ -144,7 +144,7 @@ def insert_comments_sqlite(comments,qaree_key):
     
     for comment in comments:
         # print(comment['content'], comment['coordinates'], comment['color'])
-        yshift = 65.0
+        yshift = 68.0
         if comment['pageno']<3:
             yshift = 95.0
             if comment['pageno'] % 2 == 0:
