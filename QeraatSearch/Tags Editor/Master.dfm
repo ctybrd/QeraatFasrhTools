@@ -20,13 +20,14 @@ object MasterF: TMasterF
   object Spltr: TSplitter
     AlignWithMargins = True
     Left = 3
-    Top = 246
+    Top = 266
     Width = 820
     Height = 11
     Cursor = crVSplit
     Align = alTop
     Color = 2823171
     ParentColor = False
+    ExplicitTop = 246
   end
   object HeadPnl: TPanel
     AlignWithMargins = True
@@ -601,7 +602,7 @@ object MasterF: TMasterF
     Left = 3
     Top = 120
     Width = 820
-    Height = 120
+    Height = 140
     Align = alTop
     BorderStyle = bsNone
     DataSource = HDS
@@ -611,7 +612,7 @@ object MasterF: TMasterF
     GradientStartColor = 16766678
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -32
+    Font.Height = -29
     Font.Name = 'Sakkal Majalla'
     Font.Style = []
     ParentFont = False
@@ -626,9 +627,9 @@ object MasterF: TMasterF
   object DGrd: TDBGrid
     AlignWithMargins = True
     Left = 3
-    Top = 263
+    Top = 283
     Width = 820
-    Height = 239
+    Height = 219
     Align = alClient
     BorderStyle = bsNone
     DataSource = DDS
@@ -735,7 +736,8 @@ object MasterF: TMasterF
         'ds, '
       'sub_sno, resultnew, wordsno, r5_2, done ,sub_subject1'
       'FROM quran_data'
-      'where reading = :reading')
+      'where reading = :reading'
+      'order by sub_subject')
     Left = 16
     Top = 112
     object DQsora: TIntegerField

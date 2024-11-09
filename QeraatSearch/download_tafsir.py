@@ -3,11 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-site = 'zad-almaseer'
-table = 'zadmaseer'
+site = 'jalalayn'
+table = 'jlalin'
 
 # Connect to the SQLite database
-db_path = 'E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
+db_path = 'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
