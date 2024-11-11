@@ -7,7 +7,6 @@ from datetime import datetime
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
 
 # Fix Mojibake escapes
 fix_mojibake_escapes = partial(
@@ -15,12 +14,12 @@ fix_mojibake_escapes = partial(
     lambda m: bytes.fromhex(m[1].decode()),
 )
 
-filename = 'f:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
+filename = 'e:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
 
 # Step 1: Read the file in binary mode and fix encoding issues
 with open(filename, 'rb') as binary_data:
     repaired = fix_mojibake_escapes(binary_data.read())
-    json_str = repaired.decode('utf-8', errors='replace')  # Decode with UTF-8, replacing errors
+    json_str = repaired.decode('utf-8', errors='replace')
 
 # Step 2: Load the JSON data
 try:
@@ -58,24 +57,26 @@ for entry in data:
     for post_entry in posts_data:
         post_text = post_entry.get('post', '')
         if post_text:
-            # Extract hashtags from the post text
             hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
             hashtags_str = ', '.join(hashtags)
-
-            # Insert data into the table
             cursor.execute('''
                 INSERT INTO posts (timestamp, real_datetime, post_text, hashtags, title)
                 VALUES (?, ?, ?, ?, ?)
             ''', (timestamp, real_datetime, post_text, hashtags_str, title))
 
-# Commit the changes to the database
+# Commit the changes
 conn.commit()
 
-# Step 3: Create output folder for Word documents
+# Create output folder for Word documents
 output_folder = 'output_documents'
 os.makedirs(output_folder, exist_ok=True)
 
-# Step 4: Generate Word documents for each unique hashtag
+# Function to sanitize filenames
+def sanitize_filename(filename):
+    # Remove invalid characters for Windows
+    return re.sub(r'[<>:"/\\|?*]', '_', filename)
+
+# Generate Word documents for each unique hashtag
 cursor.execute("SELECT DISTINCT hashtags FROM posts")
 all_hashtags = set()
 for row in cursor.fetchall():
@@ -85,11 +86,10 @@ for row in cursor.fetchall():
 print("Generating Word documents...")
 
 for hashtag in all_hashtags:
-    # Create a new Word document
+    sanitized_hashtag = sanitize_filename(hashtag)
     doc = Document()
     doc.add_heading(f'Posts for #{hashtag}', level=1)
 
-    # Query posts with this hashtag
     cursor.execute("SELECT real_datetime, post_text FROM posts WHERE hashtags LIKE ?", (f'%{hashtag}%',))
     posts = cursor.fetchall()
 
@@ -97,21 +97,14 @@ for hashtag in all_hashtags:
         continue
 
     for real_datetime, post_text in posts:
-        # Create a paragraph for each post with a border
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         run = p.add_run(f"{real_datetime}\n{post_text}")
         run.font.size = Pt(12)
-
-        # Add a border to the paragraph using docx API (instead of manipulating XML directly)
-        p.style = 'Normal'
-        p_format = p.paragraph_format
-        # p_format.border_bottom.width = Pt(1)  # Adding a simple border (if needed)
-
         doc.add_paragraph()  # Add a blank line between posts
 
-    # Save the document for this hashtag in the output folder
-    filename = os.path.join(output_folder, f'hashtag_{hashtag}.docx')
+    # Save the document for this hashtag
+    filename = os.path.join(output_folder, f'hashtag_{sanitized_hashtag}.docx')
     doc.save(filename)
     print(f"Document created: {filename}")
 
