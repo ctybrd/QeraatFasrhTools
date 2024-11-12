@@ -9,30 +9,40 @@ conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_
 cursor = conn.cursor()
 
 # Updated SQL query with GROUP BY
-query = """
+query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, tag, remaining_tags) AS (
+    -- Base case: Initial split
+    SELECT aya_index, id, sub_subject, reading, qareesrest,
+           TRIM(',' || CASE 
+               WHEN INSTR(TRIM(tags), ',') > 0 THEN SUBSTR(TRIM(tags), 1, INSTR(TRIM(tags), ',') - 1)
+               ELSE TRIM(tags)
+           END, ','),
+           TRIM(',' || CASE 
+               WHEN INSTR(TRIM(tags), ',') > 0 THEN SUBSTR(TRIM(tags), INSTR(TRIM(tags), ',') + 1)
+               ELSE ''
+           END, ',')
+    FROM quran_data 
+    WHERE tags IS NOT NULL AND tags NOT LIKE '%nochange%' AND page_shmrly IS NOT NULL
+
+    UNION ALL
+
+    -- Recursive case: Continue splitting the remaining tags
+    SELECT aya_index, id, sub_subject, reading, qareesrest,
+           TRIM(',' || CASE 
+               WHEN INSTR(TRIM(remaining_tags), ',') > 0 THEN SUBSTR(TRIM(remaining_tags), 1, INSTR(TRIM(remaining_tags), ',') - 1)
+               ELSE TRIM(remaining_tags)
+           END, ','),
+           TRIM(',' || CASE 
+               WHEN INSTR(TRIM(remaining_tags), ',') > 0 THEN SUBSTR(TRIM(remaining_tags), INSTR(TRIM(remaining_tags), ',') + 1)
+               ELSE ''
+           END, ',')
+    FROM tags_split
+    WHERE remaining_tags != ''
+)
+
+-- Final query with JOINs and filtering
 SELECT page_shmrly, description, reading, group_concat(distinct sub_subject) AS sub_subject, 
        group_concat(distinct qareesrest) AS qareesrest
 FROM (
-    WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, tag, remaining_tags) AS (
-        SELECT aya_index, id, sub_subject, reading, qareesrest,
-            CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, 2, INSTR(tags, ',') - 1)
-            ELSE SUBSTR(tags, 1, INSTR(tags, ',') - 1) END,
-            CASE WHEN tags LIKE ',%' THEN SUBSTR(tags, INSTR(tags, ',') + 1)
-            ELSE '' END
-        FROM quran_data 
-        WHERE tags IS NOT NULL AND tags NOT LIKE '%nochange%' AND page_shmrly IS NOT NULL
-
-        UNION ALL
-
-        SELECT aya_index, id, sub_subject, reading, qareesrest,
-            CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, 2, INSTR(remaining_tags, ',') - 1)
-            ELSE SUBSTR(remaining_tags, 1, INSTR(remaining_tags, ',') - 1) END,
-            CASE WHEN remaining_tags LIKE ',%' THEN SUBSTR(remaining_tags, INSTR(remaining_tags, ',') + 1)
-            ELSE '' END
-        FROM tags_split
-        WHERE remaining_tags != ''
-    )
-
     SELECT ts.aya_index, 
            ts.id, 
            ts.sub_subject, 
@@ -47,10 +57,14 @@ FROM (
     FROM tags_split ts
     LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
     JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
-    WHERE ts.tag != '' AND ts.tag != 'meemsela' AND ts.tag != 'waqfhesham' AND ts.tag != 'waqfhamza'
+    WHERE ts.tag != '' 
+      AND ts.tag != 'meemsela' 
+      AND ts.tag != 'waqfhesham' 
+      AND ts.tag != 'waqfhamza'
     ORDER BY qd.page_shmrly, ts.tag, ts.aya_index, ts.id
 )
-GROUP BY page_shmrly, description, reading;
+GROUP BY page_shmrly, tag, description, reading;
+
 """
 
 # Fetch data
