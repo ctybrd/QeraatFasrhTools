@@ -5,8 +5,10 @@ import json
 import re
 from datetime import datetime
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import nsdecls
 
 # Fix Mojibake escapes
 fix_mojibake_escapes = partial(
@@ -19,7 +21,7 @@ filename = 'e:/facebook/your_facebook_activity/posts/your_posts__check_ins__phot
 # Step 1: Read the file in binary mode and fix encoding issues
 with open(filename, 'rb') as binary_data:
     repaired = fix_mojibake_escapes(binary_data.read())
-    json_str = repaired.decode('utf-8', errors='replace')
+    json_str = repaired.decode('utf-8', errors='replace')  # Decode with UTF-8, replacing errors
 
 # Step 2: Load the JSON data
 try:
@@ -57,26 +59,24 @@ for entry in data:
     for post_entry in posts_data:
         post_text = post_entry.get('post', '')
         if post_text:
+            # Extract hashtags from the post text
             hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
             hashtags_str = ', '.join(hashtags)
+
+            # Insert data into the table
             cursor.execute('''
                 INSERT INTO posts (timestamp, real_datetime, post_text, hashtags, title)
                 VALUES (?, ?, ?, ?, ?)
             ''', (timestamp, real_datetime, post_text, hashtags_str, title))
 
-# Commit the changes
+# Commit the changes to the database
 conn.commit()
 
-# Create output folder for Word documents
+# Step 3: Create output folder for Word documents
 output_folder = 'output_documents'
 os.makedirs(output_folder, exist_ok=True)
 
-# Function to sanitize filenames
-def sanitize_filename(filename):
-    # Remove invalid characters for Windows
-    return re.sub(r'[<>:"/\\|?*]', '_', filename)
-
-# Generate Word documents for each unique hashtag
+# Step 4: Generate Word documents for each unique hashtag
 cursor.execute("SELECT DISTINCT hashtags FROM posts")
 all_hashtags = set()
 for row in cursor.fetchall():
@@ -85,26 +85,52 @@ for row in cursor.fetchall():
 
 print("Generating Word documents...")
 
+def add_border(paragraph):
+  """Adds a rounded border and light background color to a paragraph."""
+  p = paragraph._element
+  pPr = p.get_or_add_pPr()
+
+  # Declare the WordprocessingML namespace
+  w_ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+
+  # Create a shading element for light background color
+  shd = OxmlElement('w:shd')
+  shd.set(nsdecls('w') + 'fill', 'E6F7FF')
+  pPr.append(shd)
+
+  
 for hashtag in all_hashtags:
-    sanitized_hashtag = sanitize_filename(hashtag)
+    # Create a new Word document
     doc = Document()
     doc.add_heading(f'Posts for #{hashtag}', level=1)
 
-    cursor.execute("SELECT real_datetime, post_text FROM posts WHERE hashtags LIKE ?", (f'%{hashtag}%',))
+    # Query posts with this hashtag
+    cursor.execute("SELECT real_datetime, post_text, hashtags FROM posts WHERE hashtags LIKE ?", (f'%{hashtag}%',))
     posts = cursor.fetchall()
 
     if not posts:
         continue
 
-    for real_datetime, post_text in posts:
+    for real_datetime, post_text, hashtags in posts:
+        # Skip the post if it has more than 10 hashtags
+        if len(hashtags.split(', ')) > 10:
+            continue
+
+        # Create a paragraph for each post with enhanced appearance
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         run = p.add_run(f"{real_datetime}\n{post_text}")
         run.font.size = Pt(12)
+        run.font.color.rgb = RGBColor(0, 0, 0)
+
+        # Apply border and background color
+        add_border(p)
+
         doc.add_paragraph()  # Add a blank line between posts
 
-    # Save the document for this hashtag
-    filename = os.path.join(output_folder, f'hashtag_{sanitized_hashtag}.docx')
+    # Save the document for this hashtag in the output folder
+    sanitized_filename = re.sub(r'[<>:"/\\|?*]', '_', f'hashtag_{hashtag}.docx')
+    filename = os.path.join(output_folder, sanitized_filename)
     doc.save(filename)
     print(f"Document created: {filename}")
 
