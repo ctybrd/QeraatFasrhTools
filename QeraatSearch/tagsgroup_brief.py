@@ -5,7 +5,7 @@ from docx.shared import Cm, RGBColor  # To set margins
 from docx.oxml.ns import qn  # For reducing row spacing
 
 # Connect to the SQLite database
-conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
+conn = sqlite3.connect('E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
 cursor = conn.cursor()
 
 # Updated SQL query with GROUP BY
@@ -41,7 +41,7 @@ query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qarees
 
 -- Final query with JOINs and filtering
 SELECT page_shmrly, description, reading, group_concat(distinct sub_subject) AS sub_subject, 
-       group_concat(distinct qareesrest) AS qareesrest
+       group_concat(distinct qareesrest) AS qareesrest,srt
 FROM (
     SELECT ts.aya_index, 
            ts.id, 
@@ -49,6 +49,7 @@ FROM (
            ts.reading, 
            ts.tag, 
            tm.description,
+		   tm.srt,
            tm.category,
            qd.page_shmrly,
            qd.sora,
@@ -57,13 +58,12 @@ FROM (
     FROM tags_split ts
     LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
     JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
-    WHERE ts.tag != '' 
-      AND ts.tag != 'meemsela' 
-      AND ts.tag != 'waqfhesham' 
-      AND ts.tag != 'waqfhamza'
-    ORDER BY qd.page_shmrly, ts.tag, ts.aya_index, ts.id
+    WHERE ts.tag != ''  and ts.tag != 'farsh' and ts.tag != 'nakl' 
+      AND ts.tag != 'meemsela' and ts.tag<>'sakt' and ts.tag<>'saktharf'
+
+    ORDER BY qd.page_shmrly, tm.srt,ts.tag, ts.aya_index, ts.id
 )
-GROUP BY page_shmrly, tag, description, reading;
+GROUP BY page_shmrly,srt, tag, description;
 
 """
 
@@ -91,6 +91,7 @@ for row in data:
     reading = row[2]       # reading
     sub_subjects = row[3]  # sub_subject
     qareesrests = row[4]   # qareesrest
+    tagsrt = row[5]
 
     # Check if we need a page break
     if last_page_shmrly is None or page_shmrly != last_page_shmrly:
