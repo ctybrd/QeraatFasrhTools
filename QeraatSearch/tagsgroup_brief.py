@@ -1,17 +1,16 @@
 import sqlite3
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Cm, RGBColor  # To set margins
-from docx.oxml.ns import qn  # For reducing row spacing
+from docx.shared import Cm, RGBColor
+from docx.shared import Pt
 
 # Connect to the SQLite database
-conn = sqlite3.connect('E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
+conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
 cursor = conn.cursor()
 
 # Updated SQL query with GROUP BY
-query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, tag, remaining_tags) AS (
-    -- Base case: Initial split
-    SELECT aya_index, id, sub_subject, reading, qareesrest,
+query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest,rasaya, tag, remaining_tags) AS (
+    SELECT aya_index, id, sub_subject, reading, qareesrest,rasaya,
            TRIM(',' || CASE 
                WHEN INSTR(TRIM(tags), ',') > 0 THEN SUBSTR(TRIM(tags), 1, INSTR(TRIM(tags), ',') - 1)
                ELSE TRIM(tags)
@@ -25,8 +24,7 @@ query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qarees
 
     UNION ALL
 
-    -- Recursive case: Continue splitting the remaining tags
-    SELECT aya_index, id, sub_subject, reading, qareesrest,
+    SELECT aya_index, id, sub_subject, reading, qareesrest,rasaya,
            TRIM(',' || CASE 
                WHEN INSTR(TRIM(remaining_tags), ',') > 0 THEN SUBSTR(TRIM(remaining_tags), 1, INSTR(TRIM(remaining_tags), ',') - 1)
                ELSE TRIM(remaining_tags)
@@ -39,9 +37,9 @@ query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qarees
     WHERE remaining_tags != ''
 )
 
--- Final query with JOINs and filtering
-SELECT page_shmrly, description, reading, group_concat(distinct sub_subject) AS sub_subject, 
-       group_concat(distinct qareesrest) AS qareesrest,srt
+SELECT page_shmrly, description, group_concat(distinct sub_subject) AS sub_subject, 
+       '' qareesrest, srt,case when rasaya is NOT null then 'رأس آية'
+	   ELSE '' END rasaya
 FROM (
     SELECT ts.aya_index, 
            ts.id, 
@@ -49,57 +47,70 @@ FROM (
            ts.reading, 
            ts.tag, 
            tm.description,
-		   tm.srt,
-           tm.category,
+           tm.srt,
            qd.page_shmrly,
-           qd.sora,
-           qd.aya, 
-           qd.qareesrest
+           qd.qareesrest,
+		   case when ts.tag in ('imala','taklel') then qd.rasaya else 1 end rasaya
     FROM tags_split ts
     LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
     JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
-    WHERE ts.tag != ''  and ts.tag != 'farsh' and ts.tag != 'nakl' 
-      AND ts.tag != 'meemsela' and ts.tag<>'sakt' and ts.tag<>'saktharf'
-
-    ORDER BY qd.page_shmrly, tm.srt,ts.tag, ts.aya_index, ts.id
+    WHERE ts.tag != '' AND ts.tag NOT IN ('farsh', 'nakl', 'meemsela', 'sakt', 'saktharf','hoomoo','imalah','haasakt')
+    ORDER BY qd.page_shmrly, tm.srt, ts.tag,qd.rasaya desc,ts.aya_index, ts.id
 )
-GROUP BY page_shmrly,srt, tag, description;
-
+GROUP BY page_shmrly, srt, tag,rasaya, description
+ORDER by  page_shmrly, srt, tag,rasaya desc, description;
 """
 
 # Fetch data
 data = cursor.execute(query).fetchall()
 conn.close()
 
-# Create a new Word document
+# Variables to manage splitting documents
 doc = Document()
-
-# Set page margins to 0.7 cm
-section = doc.sections[0]
-section.top_margin = Cm(0.7)
-section.bottom_margin = Cm(0.7)
-section.left_margin = Cm(0.7)
-section.right_margin = Cm(0.7)
-
-# Variable to track the last page_shmrly for conditional page breaks
+file_index = 1
+page_count = 0
 last_page_shmrly = None
+
+# Function to set margins and add page number header
+def setup_document():
+    section = doc.sections[0]
+    section.top_margin = Cm(0.7)
+    section.bottom_margin = Cm(0.7)
+    section.left_margin = Cm(0.7)
+    section.right_margin = Cm(0.7)
+    doc.add_heading(f'صفحة: {last_page_shmrly}', level=1).alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
+# Function to save the document and reset for a new one
+def save_and_reset_document():
+    global doc, file_index, page_count
+    doc.save(f'D:/Qeraat/مشروع العشر/shmrly_osoul_brief_part_{file_index}.docx')
+    doc = Document()
+    file_index += 1
+    page_count = 0
+    setup_document()
+
+# Set up the first document
+setup_document()
 
 # Generate the document
 for row in data:
     page_shmrly = row[0]  # page_shmrly
     description = row[1]   # description
-    reading = row[2]       # reading
-    sub_subjects = row[3]  # sub_subject
-    qareesrests = row[4]   # qareesrest
-    tagsrt = row[5]
+    # reading = row[2]       # reading
+    sub_subjects = row[2]  # sub_subject
+    qareesrests = row[3]   # qareesrest
+    tagsrt = row[4]
+
+    # Check if a new document should be started
+    if page_count >= 10:
+        save_and_reset_document()
 
     # Check if we need a page break
     if last_page_shmrly is None or page_shmrly != last_page_shmrly:
         if last_page_shmrly is not None:  # Add a page break only if it's not the first page
             doc.add_page_break()
-        
-        # Update the last_page_shmrly
-        last_page_shmrly = page_shmrly  
+        last_page_shmrly = page_shmrly
+        page_count += 1
         
         # Add a header with the page number
         doc.add_heading(f'صفحة: {page_shmrly}', level=1).alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
@@ -108,34 +119,25 @@ for row in data:
     doc.add_heading(description, level=2)
 
     # Create a table for the records
-    table = doc.add_table(rows=1, cols=4)  # 4 columns for page_shmrly, description, reading, qareesrest
-    
-    # Set column widths
-    table.columns[0].width = int(1.5 * 914400)  # 1.5 cm for Aya
-    table.columns[1].width = int(3.0 * 914400)  # 3 cm for Sub Subject
-    table.columns[2].width = int(5.0 * 914400)  # 5 cm for Reading
-    table.columns[3].width = int(3.0 * 914400)  # 3 cm for Qareesrest
-    
-    # Create a new row
+    table = doc.add_table(rows=1, cols=4)
     row_cells = table.add_row().cells
-    row_cells[0].text = str(page_shmrly)  # Page number
-    cell_sub_subject = row_cells[1]
-    cell_sub_subject.text = str(sub_subjects)  # Sub Subjects
-    # Change the text color of the sub_subject cell to green
+    cell_sub_subject = row_cells[3]
+    cell_sub_subject.text = str(sub_subjects)
     for paragraph in cell_sub_subject.paragraphs:
         for run in paragraph.runs:
-            run.font.color.rgb = RGBColor(0, 128, 0)  # Green color
-    row_cells[2].text = str(reading)  # Reading
-    row_cells[3].text = str(qareesrests)  # Qareesrest
+            run.font.color.rgb = RGBColor(255, 0, 50)
+            run.font.size = Pt(14) 
+            row_cells[1].text = '' #str(reading)
+    row_cells[0].text = str(qareesrests)
 
     # Reduce the space between rows
     for cell in row_cells:
         paragraph = cell.paragraphs[0]
-        paragraph_format = paragraph.paragraph_format
-        paragraph_format.space_after = Cm(0)  # No space after each paragraph
-        paragraph_format.space_before = Cm(0)  # No space before each paragraph
+        paragraph.paragraph_format.space_after = Cm(0)
+        paragraph.paragraph_format.space_before = Cm(0)
 
-    doc.add_paragraph()  # Add a space before the next entry
+    doc.add_paragraph()
 
-# Save the document
-doc.save('shmrly_osoul_brief.docx')
+# Save the last document if it contains data
+if page_count > 0:
+    save_and_reset_document()
