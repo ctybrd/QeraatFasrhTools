@@ -10,7 +10,7 @@ cursor = conn.cursor()
 
 # Updated SQL query with GROUP BY
 query = """WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest,rasaya, tag, remaining_tags) AS (
-    SELECT aya_index, id, sub_subject, reading, qareesrest,rasaya,
+    SELECT aya_index, id, sub_subject1 sub_subject, reading, qareesrest,rasaya,
            TRIM(',' || CASE 
                WHEN INSTR(TRIM(tags), ',') > 0 THEN SUBSTR(TRIM(tags), 1, INSTR(TRIM(tags), ',') - 1)
                ELSE TRIM(tags)
