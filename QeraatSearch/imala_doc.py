@@ -22,6 +22,7 @@ WITH RECURSIVE tags_split(aya_index, id, sub_subject, reading, qareesrest, rasay
            END, ',')
     FROM quran_data 
     WHERE tags IS NOT NULL AND tags NOT LIKE '%nochange%' AND page_shmrly IS NOT NULL
+    and NOT(qarees ='خلف عن حمزة' or qarees ='خلاد عن حمزة' )
 
     UNION ALL
 
