@@ -4,7 +4,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 import sqlite3
 
 # Connect to the SQLite database
-db_path = "D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db"
+db_path = "E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db"
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
@@ -13,10 +13,14 @@ sql_query = """
 WITH summed_data AS (
     SELECT 
         page_shmrly,
-        CASE WHEN tags LIKE '%imala%' THEN 'بالإمالة' ELSE 'بالتقليل' END AS description,
-        CASE WHEN reading LIKE '%بخلف%' THEN ' بخلف ' ELSE '' END AS kholf,
+        CASE WHEN tags LIKE '%imala%' THEN 
+		'الإمالة' ELSE 
+		'التقليل' 
+		END AS description,
+        CASE WHEN reading LIKE '%بخلف%' THEN ' ـ بخلف عنه ـ' ELSE '' END AS kholf,
         IFNULL(resultnew, sub_subject1) AS sub_subject,
-        CASE WHEN rasaya IS NOT NULL THEN 'رؤوس الآي' ELSE 'ما ليس برأس آية' END AS rasaya,
+        --CASE WHEN rasaya IS NOT NULL THEN 'رؤوس الآي' ELSE 'ما ليس برأس آية' END AS rasaya,
+		'' as rasaya,
         SUM(q1) AS q1, SUM(r1_1) AS r1_1, SUM(r1_2) AS r1_2,
         SUM(q2) AS q2, SUM(r2_1) AS r2_1, SUM(r2_2) AS r2_2,
         SUM(q3) AS q3, SUM(r3_1) AS r3_1, SUM(r3_2) AS r3_2,
@@ -31,7 +35,7 @@ WITH summed_data AS (
     WHERE tags LIKE '%,imala,%' OR tags LIKE '%,taklel,%'
     GROUP BY page_shmrly, description, kholf, sub_subject, rasaya
 )
-SELECT page_shmrly,description,kholf,group_concat(sub_subject) sub_subject,rasaya,
+SELECT page_shmrly,description,kholf,group_concat(' ﴾'|| sub_subject || '﴿ ') sub_subject,rasaya,
     TRIM(
         CASE WHEN q1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q1') || ', ' ELSE '' END ||
         CASE WHEN q1 IS NULL AND r1_1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_1') || ', ' ELSE '' END ||
@@ -84,7 +88,7 @@ file_count = 1
 
 def save_and_create_new_doc():
     global doc, file_count
-    doc.save(f'D:/Qeraat/مشروع العشر/shmrly_imalataklel_{file_count}.docx')
+    doc.save(f'e:/Qeraat/مشروع العشر/shmrly_imalataklel_{file_count}.docx')
     file_count += 1
     doc = Document()
 
@@ -117,10 +121,10 @@ for row in rows:
         add_text(para, ' ', font_color=(0, 0, 0))  # Just add a space if rasaya is the same
 
     # Add Description, Kholf, Sub_subject, and Qareesall
-    add_text(para, description, font_color=(0, 0, 0))
-    add_text(para, kholf, font_color=(0, 0, 0))
+    add_text(para, description, font_color=(210, 35, 41))
     add_text(para, sub_subject, font_color=(0, 128, 0))
     add_text(para, qarees, font_color=(0, 0, 0))
+    add_text(para, kholf, font_color=(0, 0, 255))
 
 # Save the final document
 save_and_create_new_doc()
