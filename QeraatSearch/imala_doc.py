@@ -10,6 +10,7 @@ cursor = conn.cursor()
 
 # Define the SQL query
 sql_query = """
+
 WITH summed_data AS (
     SELECT 
         page_shmrly,
@@ -71,6 +72,7 @@ SELECT page_shmrly,description,kholf,group_concat(' ﴾'|| sub_subject || '﴿ '
 FROM summed_data
 group by page_shmrly, description, kholf, rasaya,qarees
 order by page_shmrly,  rasaya,description, kholf;
+
 """
 
 # Execute the SQL query
@@ -83,7 +85,7 @@ conn.close()
 # Initialize variables for document creation
 doc = Document()
 current_page_shmrly = None
-current_rasaya = None
+current_description = None
 file_count = 1
 
 def save_and_create_new_doc():
@@ -99,32 +101,41 @@ def add_text(paragraph, text, font_color, underline=False, bold=False, size=12):
     run.font.underline = underline
     run.font.bold = bold
     run.font.size = Pt(size)
-    run.add_text(' ')  # Add space after each run
+    run.add_text(' ')
+# Initialize variables for tracking the current group
+current_page_shmrly = None
+current_description = None
+first_row_in_group = True
 
 # Process each row
 for row in rows:
-    page_shmrly, description, kholf, sub_subject, rasaya,qarees = row
+    page_shmrly, description, kholf, sub_subject, rasaya, qarees = row
 
-    # Add a header for new page_shmrly
+    # Add a header for a new page_shmrly
     if page_shmrly != current_page_shmrly:
         doc.add_heading(f'صفحة: {page_shmrly}', level=1).alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
         current_page_shmrly = page_shmrly
-        current_rasaya = None  # Reset rasaya for new page
+        current_description = None
+        first_row_in_group = True
 
-    para = doc.add_paragraph()
+    # Start a new paragraph only if the description changes
+    if description != current_description:
+        para = doc.add_paragraph()
+        current_description = description
+        first_row_in_group = True
 
-    # Add Rasaya if it has changed, otherwise leave a space
-    if rasaya != current_rasaya:
-        add_text(para, rasaya, font_color=(0, 0, 128), underline=True)
-        current_rasaya = rasaya
-    else:
-        add_text(para, ' ', font_color=(0, 0, 0))  # Just add a space if rasaya is the same
+    # Add `/` at the beginning of the row if it's not the first row in the current group
+    if not first_row_in_group:
+        add_text(para, '/ ', font_color=(0, 0, 0))
 
-    # Add Description, Kholf, Sub_subject, and Qareesall
-    add_text(para, description, font_color=(210, 35, 41))
-    add_text(para, sub_subject, font_color=(0, 128, 0))
-    add_text(para, qarees, font_color=(0, 0, 0))
-    add_text(para, kholf, font_color=(0, 0, 255))
+    # Add text for each part with specific colors and suppress repeating description
+    if first_row_in_group:
+        add_text(para, description + ':', font_color=(210, 35, 41))  # Red color for description
+        first_row_in_group = False
+
+    add_text(para, sub_subject, font_color=(0, 128, 0))    # Green color for sub_subject
+    add_text(para, qarees, font_color=(0, 0, 0))           # Black color for qarees
+    add_text(para, kholf, font_color=(0, 0, 255))          # Blue color for kholf
 
 # Save the final document
 save_and_create_new_doc()
