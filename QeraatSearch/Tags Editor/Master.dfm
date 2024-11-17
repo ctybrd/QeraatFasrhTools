@@ -666,12 +666,11 @@ object MasterF: TMasterF
         'reading, count(*) Count, group_concat(DISTINCT sub_subject) Subj' +
         'ect, '
       'group_concat(DISTINCT qarees) qarees FROM quran_data'
-      'WHERE  r5_2 IS NULL '
       
-        'and (tags like '#39'%,farsh,%'#39' or tags like '#39'%2hamz%'#39' or tags like '#39 +
-        '%1hamz%'#39') '
-      'and '
-      'resultnew is null'
+        'WHERE  tags like '#39'%farsh%'#39' and (resultnew is null or resultnew =' +
+        #39#39' '
+      'or resultnew=sub_subject1 or resultnew=sub_subject)'
+      'and r5_2 is null'
       'GROUP BY reading'
       'ORDER BY count(*) DESC')
     Left = 16
