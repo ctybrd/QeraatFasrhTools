@@ -4,7 +4,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 import sqlite3
 
 # Connect to the SQLite database
-db_path = "E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db"
+db_path = "d:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db"
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
@@ -90,7 +90,7 @@ file_count = 1
 
 def save_and_create_new_doc():
     global doc, file_count
-    doc.save(f'e:/Qeraat/مشروع العشر/shmrly_imalataklel_{file_count}.docx')
+    doc.save(f'd:/Qeraat/مشروع العشر/shmrly_imalataklel_{file_count}.docx')
     file_count += 1
     doc = Document()
 
