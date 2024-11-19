@@ -16,7 +16,7 @@ fix_mojibake_escapes = partial(
     lambda m: bytes.fromhex(m[1].decode()),
 )
 
-filename = 'e:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
+filename = 'f:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
 
 # Step 1: Read the file in binary mode and fix encoding issues
 with open(filename, 'rb') as binary_data:
@@ -85,18 +85,25 @@ for row in cursor.fetchall():
 
 print("Generating Word documents...")
 
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
 def add_border(paragraph):
-  """Adds a rounded border and light background color to a paragraph."""
-  p = paragraph._element
-  pPr = p.get_or_add_pPr()
+    """Adds a rounded border and light background color to a paragraph."""
+    p = paragraph._element
+    pPr = p.get_or_add_pPr()
 
-  # Declare the WordprocessingML namespace
-  w_ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+    # Create a shading element for light background color
+    shd = OxmlElement('w:shd')
+    shd.set(qn('w:val'), 'clear')  # Type of shading (e.g., "clear" for background fill)
+    shd.set(qn('w:fill'), 'E6F7FF')  # Background color (light blue)
+    shd.set(qn('w:color'), 'auto')  # Text color (automatic)
 
-  # Create a shading element for light background color
-  shd = OxmlElement('w:shd')
-  shd.set(nsdecls('w') + 'fill', 'E6F7FF')
-  pPr.append(shd)
+    # Append the shading element to paragraph properties
+    pPr.append(shd)
+
+    # Add the shading to the paragraph properties
+    pPr.append(shd)
 
   
 for hashtag in all_hashtags:
