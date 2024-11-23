@@ -1,170 +1,13 @@
-import os
-from functools import partial
-import sqlite3
-import json
-import re
-from datetime import datetime
 from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.oxml.ns import nsdecls
-
-# Fix Mojibake escapes
-fix_mojibake_escapes = partial(
-    re.compile(rb'\\u00([\da-f]{2})').sub,
-    lambda m: bytes.fromhex(m[1].decode()),
-)
-
-filename = 'f:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
-
-# Step 1: Read the file in binary mode and fix encoding issues
-with open(filename, 'rb') as binary_data:
-    repaired = fix_mojibake_escapes(binary_data.read())
-    json_str = repaired.decode('utf-8', errors='replace')  # Decode with UTF-8, replacing errors
-
-# Step 2: Load the JSON data
-try:
-    data = json.loads(json_str)
-except json.JSONDecodeError as e:
-    print("Error parsing JSON:", e)
-    exit()
-
-# Connect to SQLite database (create if not exists)
-conn = sqlite3.connect('facebook_posts.db')
-cursor = conn.cursor()
-
-# Create a table if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp INTEGER,
-        real_datetime TEXT,
-        post_text TEXT,
-        hashtags TEXT,
-        title TEXT
-    )
-''')
-
-# Clear existing records from the table
-cursor.execute('DELETE FROM posts')
-
-# Parse and insert data into the SQLite table
-for entry in data:
-    timestamp = entry.get('timestamp')
-    real_datetime = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    posts_data = entry.get('data', [])
-    title = entry.get('title', '')
-
-    for post_entry in posts_data:
-        post_text = post_entry.get('post', '')
-        if post_text:
-            # Extract hashtags from the post text
-            hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
-            hashtags_str = ', '.join(hashtags)
-
-            # Insert data into the table
-            cursor.execute('''
-                INSERT INTO posts (timestamp, real_datetime, post_text, hashtags, title)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (timestamp, real_datetime, post_text, hashtags_str, title))
-
-# Commit the changes to the database
-conn.commit()
-
-# Step 3: Create output folder for Word documents
-output_folder = 'output_documents'
-os.makedirs(output_folder, exist_ok=True)
-
-# Step 4: Generate Word documents for each unique hashtag
-cursor.execute("SELECT DISTINCT hashtags FROM posts")
-all_hashtags = set()
-for row in cursor.fetchall():
-    hashtags = row[0].split(', ')
-    all_hashtags.update(hashtags)
-
-print("Generating Word documents...")
-
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-
+from docx.oxml import parse_xml
 import os
 import sqlite3
-import json
 import re
-from datetime import datetime
-from functools import partial
-from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-
-# Fix Mojibake escapes
-fix_mojibake_escapes = partial(
-    re.compile(rb'\\u00([\da-f]{2})').sub,
-    lambda m: bytes.fromhex(m[1].decode()),
-)
-
-filename = 'f:/facebook/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_1.json'
-
-# Step 1: Read the file in binary mode and fix encoding issues
-with open(filename, 'rb') as binary_data:
-    repaired = fix_mojibake_escapes(binary_data.read())
-    json_str = repaired.decode('utf-8', errors='replace')  # Decode with UTF-8, replacing errors
-
-# Step 2: Load the JSON data
-try:
-    data = json.loads(json_str)
-except json.JSONDecodeError as e:
-    print("Error parsing JSON:", e)
-    exit()
-
-# Connect to SQLite database (create if not exists)
-conn = sqlite3.connect('facebook_posts.db')
-cursor = conn.cursor()
-
-# Create a table if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp INTEGER,
-        real_datetime TEXT,
-        post_text TEXT,
-        hashtags TEXT,
-        title TEXT
-    )
-''')
-
-# Clear existing records from the table
-cursor.execute('DELETE FROM posts')
-
-# Parse and insert data into the SQLite table
-for entry in data:
-    timestamp = entry.get('timestamp')
-    real_datetime = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d')
-    posts_data = entry.get('data', [])
-    title = entry.get('title', '')
-
-    for post_entry in posts_data:
-        post_text = post_entry.get('post', '')
-        if post_text:
-            # Extract hashtags from the post text
-            hashtags = [word[1:] for word in post_text.split() if word.startswith('#')]
-            hashtags_str = ', '.join(hashtags)
-
-            # Insert data into the table
-            cursor.execute('''
-                INSERT INTO posts (timestamp, real_datetime, post_text, hashtags, title)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (timestamp, real_datetime, post_text, hashtags_str, title))
-
-# Commit the changes to the database
-conn.commit()
-
-# Step 3: Create output folder for Word documents
-output_folder = 'output_documents'
-os.makedirs(output_folder, exist_ok=True)
 
 # Define the add_border function
 def add_border(paragraph, color):
@@ -179,21 +22,47 @@ def add_border(paragraph, color):
     shd.set(qn('w:color'), 'auto')  # Use automatic text color
     pPr.append(shd)
 
+# Set RTL orientation and narrow margins
+from docx.shared import Cm
+
+def configure_doc_settings(doc):
+    """Sets document orientation to RTL and margins to 1.25 cm."""
+    # Enable RTL for the document
+    sectPr = doc.sections[0]._sectPr
+    rtl = OxmlElement('w:bidi')
+    rtl.set(qn('w:val'), '1')  # Enable RTL layout
+    sectPr.append(rtl)
+
+    # Set margins using the `Cm` utility
+    section = doc.sections[0]
+    section.top_margin = Cm(1.25)
+    section.bottom_margin = Cm(1.25)
+    section.left_margin = Cm(1.25)
+    section.right_margin = Cm(1.25)
+
+
 # Colors for alternating background
 colors = ['E6F7FF', 'FFE6E6']  # Light blue and light red
 
-# Step 4: Generate Word documents for each unique hashtag
+# Connect to SQLite and query hashtags
+conn = sqlite3.connect('facebook_posts.db')
+cursor = conn.cursor()
+
 cursor.execute("SELECT DISTINCT hashtags FROM posts")
 all_hashtags = set()
 for row in cursor.fetchall():
     hashtags = row[0].split(', ')
     all_hashtags.update(hashtags)
 
+output_folder = 'output_documents'
+os.makedirs(output_folder, exist_ok=True)
+
 print("Generating Word documents...")
 
 for hashtag in all_hashtags:
     # Create a new Word document
     doc = Document()
+    configure_doc_settings(doc)
     doc.add_heading(f'Posts for #{hashtag}', level=1)
 
     # Query posts with this hashtag
@@ -205,15 +74,15 @@ for hashtag in all_hashtags:
 
     # Alternate colors for each post
     for index, (real_datetime, post_text, hashtags) in enumerate(posts):
-        # Skip the post if it has more than 10 hashtags
         if len(hashtags.split(', ')) > 10:
-            continue
+            continue  # Skip if more than 10 hashtags
 
         # Create a paragraph for each post with enhanced appearance
         p = doc.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         run = p.add_run(f"{real_datetime}\n{post_text}")
-        run.font.size = Pt(12)
+        run.font.size = Pt(28)
+        run.font.name = "Sakkal Majalla"
         run.font.color.rgb = RGBColor(0, 0, 0)
 
         # Apply border and background color, alternating colors
