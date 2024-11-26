@@ -395,3 +395,42 @@ SET reallineno = (
 UPDATE words1 set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words1.wordindex);
 UPDATE words_temp set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words_temp.wordindex);
 """
+
+update_temp ="""
+-- Use a window function to carry the last non-NULL value forward
+WITH updated_lines AS (
+    SELECT 
+        wordindex,
+        page_number2,
+        lineno2,
+        MAX(lineno2) OVER (
+            PARTITION BY page_number2 
+            ORDER BY wordindex 
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS new_lineno2
+    FROM 
+        words_temp
+    WHERE 
+        page_number2 <= 150
+)
+-- Update the rows where lineno2 is NULL
+UPDATE words_temp
+SET lineno2 = (
+    SELECT new_lineno2
+    FROM updated_lines
+    WHERE updated_lines.wordindex = words_temp.wordindex
+)
+WHERE lineno2 IS NULL AND page_number2 <= 150;
+CREATE INDEX idx_wordindex_words1 ON words1(wordindex);
+CREATE INDEX idx_wordindex_words_temp ON words_temp(wordindex);
+
+UPDATE words1
+SET lineno2 = (
+    SELECT lineno2
+    FROM words_temp
+    WHERE words_temp.wordindex = words1.wordindex
+)
+WHERE lineno2 IS NULL;
+
+
+"""
