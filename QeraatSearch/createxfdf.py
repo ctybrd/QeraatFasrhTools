@@ -4,7 +4,7 @@ import datetime
 import os
 import html
 
-edition = 'S'
+edition = 'A'
 
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)

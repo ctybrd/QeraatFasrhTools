@@ -434,3 +434,78 @@ WHERE lineno2 IS NULL;
 
 
 """
+
+insert_from_words1="""
+INSERT INTO shmrly_words 
+(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno)
+SELECT 
+    '9' AS qaree, 
+    page_number2 AS page_number, 
+    '#ff0000' AS color,
+    -- Calculate x based on the ratio of total characters preceding the current word
+    COALESCE(
+        (SUM(LENGTH(rawword)) OVER (
+            PARTITION BY page_number2, lineno2 
+            ORDER BY wordindex ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+        ) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)), 
+        0
+    ) AS x,
+    -- Map lineno2 to y
+    CASE lineno2
+        WHEN 1 THEN 0.0878
+        WHEN 2 THEN 0.1537
+        WHEN 3 THEN 0.2172
+        WHEN 4 THEN 0.2802
+        WHEN 5 THEN 0.3463
+        WHEN 6 THEN 0.4108
+        WHEN 7 THEN 0.4782
+        WHEN 8 THEN 0.537
+        WHEN 9 THEN 0.6012
+        WHEN 10 THEN 0.6658
+        WHEN 11 THEN 0.7293
+        WHEN 12 THEN 0.7932
+        WHEN 13 THEN 0.8525
+        WHEN 14 THEN 0.9176
+        WHEN 15 THEN 0.9831
+    END AS y,
+    -- Calculate width based on the length of the current word
+    COALESCE(
+        (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)), 
+        0
+    ) AS width,
+    'S' AS style,
+    wordindex,
+    rawword,
+    lineno2 AS lineno,
+    surah AS surahno,
+    ayah AS ayahno,
+    wordsno AS ordr,
+    lineno2 AS reallineno
+FROM words1
+WHERE page_number2 <= 150
+  AND NOT EXISTS (
+      SELECT 1
+      FROM shmrly_words sw
+      WHERE sw.wordindex = words1.wordindex
+  );
+
+  -- Truncate the shmrly_temp table
+DELETE FROM shmrly_temp;
+
+-- Insert data into shmrly_temp from shmrly_words
+INSERT INTO shmrly_temp (qaree, page_number, color, x, y, width, style, circle, wordindex, rawword, lineno)
+SELECT 
+    qaree,
+    page_number,
+    color,
+    x,
+    y,
+    width,
+    style,
+    circle,
+    wordindex,
+    rawword,
+    lineno
+FROM shmrly_words;
+
+"""
