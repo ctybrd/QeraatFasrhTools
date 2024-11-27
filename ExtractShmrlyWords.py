@@ -435,21 +435,34 @@ WHERE lineno2 IS NULL;
 
 """
 
-insert_from_words1="""
+insert_from_words1="""delete from shmrly_words where circle='auto';
+
 INSERT INTO shmrly_words 
-(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno)
+(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno,circle)
 SELECT 
     '9' AS qaree, 
     page_number2 AS page_number, 
     '#ff0000' AS color,
     -- Calculate x based on the ratio of total characters preceding the current word
-    COALESCE(
-        (SUM(LENGTH(rawword)) OVER (
+CASE
+    -- First word of the line
+    WHEN wordindex = MIN(wordindex) OVER (PARTITION BY page_number2, lineno2)
+    THEN 1 - (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0))
+    
+    -- All other words
+    ELSE COALESCE(
+        1 - (SUM(LENGTH(rawword)) OVER (
             PARTITION BY page_number2, lineno2 
             ORDER BY wordindex ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-        ) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)), 
-        0
-    ) AS x,
+        ) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)) 
+        - (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)),
+        1
+    )
+END AS x
+
+
+
+,
     -- Map lineno2 to y
     CASE lineno2
         WHEN 1 THEN 0.0878
@@ -480,7 +493,8 @@ SELECT
     surah AS surahno,
     ayah AS ayahno,
     wordsno AS ordr,
-    lineno2 AS reallineno
+    lineno2 AS reallineno,
+  'auto' as circle
 FROM words1
 WHERE page_number2 <= 150
   AND NOT EXISTS (
@@ -488,7 +502,6 @@ WHERE page_number2 <= 150
       FROM shmrly_words sw
       WHERE sw.wordindex = words1.wordindex
   );
-
   -- Truncate the shmrly_temp table
 DELETE FROM shmrly_temp;
 
