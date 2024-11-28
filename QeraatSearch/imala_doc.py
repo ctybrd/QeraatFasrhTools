@@ -80,7 +80,7 @@ WITH summed_data AS (
     SELECT 
         page_shmrly,
         CASE WHEN tags LIKE '%imalah%' THEN 
-		' إمالة هاء التأنيث وقفا (الكسائي)'
+		' إمالة هاء التأنيث وقفا للكسائي'
 		ELSE 
 		'' 
 		END AS description,
@@ -102,7 +102,7 @@ WITH summed_data AS (
     WHERE tags LIKE '%,imalah,%' 
     GROUP BY page_shmrly, description, kholf, sub_subject, rasaya
 )
-SELECT page_shmrly,description,kholf,group_concat(' ﴾'|| sub_subject || '﴿ ') sub_subject,rasaya,
+SELECT page_shmrly,description,kholf,group_concat(' ﴿'|| sub_subject || '﴾ ') sub_subject,rasaya,
     TRIM(
         CASE WHEN q1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'Q1') || ', ' ELSE '' END ||
         CASE WHEN q1 IS NULL AND r1_1 IS NOT NULL THEN (SELECT name FROM qareemaster WHERE qkey = 'R1_1') || ', ' ELSE '' END ||
@@ -201,7 +201,7 @@ for row in rows:
     add_text(para, kholf, font_color=(0, 0, 255))          # Blue color for kholf
     add_text(para, sub_subject, font_color=(0, 128, 0))    # Green color for sub_subject
     # add_text(para, qarees, font_color=(0, 0, 0))           # Black color for qarees
-    
+    add_text(para, ' م', font_color=(0, 0, 0))
 
 # Save the final document
 save_and_create_new_doc()
