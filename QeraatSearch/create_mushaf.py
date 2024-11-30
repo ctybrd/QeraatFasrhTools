@@ -1,9 +1,9 @@
 import sqlite3
 
 # File paths
-db_path = r"d:/Qeraat/QeraatFasrhTools/qeraatSearch/qeraat_data_simple.db"
-txt_file_path = r"d:/Qeraat/QeraatFasrhTools/quran_txt.txt"
-output_file_path = r"d:/Qeraat/QeraatFasrhTools/quran_with_breaks.txt"
+db_path = r"e:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
+txt_file_path = r"e:\Qeraat\QeraatFasrhTools\quran_txt.txt"
+output_file_path = r"e:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
 
 # Arabic-Indic numerals and special words to ignore in counting
 excluded_words = {'۞', '۩'}
@@ -18,6 +18,7 @@ cursor = conn.cursor()
 cursor.execute("""
     SELECT wordindex, word, page_number2, lineno2
     FROM words1
+    WHERE wordindex NOT IN (1, 2, 3, 4, 30, 31, 32, 33)
     ORDER BY wordindex
 """)
 words_data = cursor.fetchall()
@@ -34,39 +35,64 @@ text_words = input_text.split()
 output_text = []
 current_page = None
 current_line = None
+line_words = []  # Collect words for the current line
 word_count = 0
 
-# Process words from database
+# Process words from the database
 for word_data in words_data:
     wordindex, db_word, page_number2, lineno2 = word_data
 
-    # Skip excluded words in the text file, but include them in the output
-    while word_count < len(text_words) and text_words[word_count] in excluded_set:
-        output_text.append(text_words[word_count])
-        word_count += 1
+    # Handle Surah headers
+    while word_count < len(text_words):
+        current_word = text_words[word_count]
 
-    # Add the current word to the output
+        # Handle surah headers
+        if current_word.startswith('سُورَةُ'):
+            output_text.append('\n')  # Add an empty line before surah header
+            surah_header = ' '.join(text_words[word_count:word_count + 2])  # Surah header
+            output_text.append(surah_header + '\n')  # Add surah header
+            bismillah = ' '.join(text_words[word_count + 2:word_count + 6])  # Bismillah
+            output_text.append(bismillah + '\n')  # Add Bismillah
+            word_count += 6  # Skip surah header and Bismillah
+            line_words = []  # Reset line words
+            current_line = None  # Reset line tracking for the surah
+            current_page = None  # Reset page tracking for the surah
+            break
+
+        # Skip excluded words
+        if current_word in excluded_set:
+            line_words.append(current_word)
+            word_count += 1
+            continue
+
+        break
+
+    # Add words to the current line
     if word_count < len(text_words):
-        output_text.append(text_words[word_count])
+        line_words.append(text_words[word_count])
         word_count += 1
 
-        # Add line breaks if the line changes
+        # Check if the line changes
         if lineno2 != current_line:
-            output_text.append('\n')
+            if line_words:
+                # Write the previous line's words to output
+                output_text.append(' '.join(line_words) + '\n')
+                line_words = []  # Reset line words
+
             current_line = lineno2
 
-        # Add page breaks if the page changes
+        # Check if the page changes
         if page_number2 != current_page:
-            output_text.append('\f')
+            if current_page is not None:  # Avoid adding a page break at the start
+                output_text.append('\f')  # Add page break
             current_page = page_number2
 
-# Add any remaining words from the text file (should not happen, but for completeness)
-while word_count < len(text_words):
-    output_text.append(text_words[word_count])
-    word_count += 1
+# Add remaining words in the last line
+if line_words:
+    output_text.append(' '.join(line_words) + '\n')
 
-# Write the output to a new file
+# Write the output to a file
 with open(output_file_path, 'w', encoding='utf-8') as file:
-    file.write(' '.join(output_text))
+    file.write(''.join(output_text))  # Avoid adding extra spaces
 
 print(f"Output written to: {output_file_path}")
