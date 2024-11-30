@@ -1,4 +1,5 @@
 import sqlite3
+import re
 
 # File paths
 db_path = r"e:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
@@ -7,8 +8,8 @@ output_file_path = r"e:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
 
 # Arabic-Indic numerals and special words to ignore in counting
 excluded_words = {'۞', '۩'}
-arabic_numerals = {'١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'}
-excluded_set = excluded_words | arabic_numerals
+arabic_numerals_pattern = r'[١٢٣٤٥٦٧٨٩٠]+'  # Regular expression to match Arabic numerals (1 or more)
+excluded_set = excluded_words
 
 # Connect to the database
 conn = sqlite3.connect(db_path)
@@ -38,6 +39,15 @@ current_line = None
 line_words = []  # Collect words for the current line
 word_count = 0
 
+# Function to check if the word is an excluded word or contains Arabic numerals
+def is_excluded(word):
+    # Check if the word is in the excluded words list or matches Arabic numerals
+    if word in excluded_words:
+        return True
+    if re.match(arabic_numerals_pattern, word):
+        return True
+    return False
+
 # Process words from the database
 for word_data in words_data:
     wordindex, db_word, page_number2, lineno2 = word_data
@@ -60,7 +70,7 @@ for word_data in words_data:
             break
 
         # Skip excluded words
-        if current_word in excluded_set:
+        if is_excluded(current_word):
             line_words.append(current_word)
             word_count += 1
             continue
