@@ -5,7 +5,7 @@ from docx.shared import Cm, RGBColor
 from docx.shared import Pt
 
 # Connect to the SQLite database
-conn = sqlite3.connect('D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
+conn = sqlite3.connect('E:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db')
 cursor = conn.cursor()
 
 # Updated SQL query with GROUP BY
@@ -55,6 +55,7 @@ FROM (
     LEFT JOIN tagsmaster tm ON ts.tag = tm.tag
     JOIN quran_data qd ON ts.aya_index = qd.aya_index AND ts.id = qd.id
     WHERE ts.tag != '' AND ts.tag NOT IN ('farsh', 'nakl', 'meemsela', 'sakt', 'saktharf','hoomoo','imalah','haasakt')
+    and qd.r1_2 is not null
     ORDER BY qd.page_shmrly, tm.srt, ts.tag,qd.rasaya desc,ts.aya_index, ts.id
 )
 GROUP BY page_shmrly, srt, tag,rasaya, description
@@ -83,7 +84,7 @@ def setup_document():
 # Function to save the document and reset for a new one
 def save_and_reset_document():
     global doc, file_index, page_count
-    doc.save(f'D:/Qeraat/مشروع العشر/shmrly_osoul_brief_part_{file_index}.docx')
+    doc.save(f'E:/Qeraat/مشروع العشر/shmrly_osoul_brief_part_{file_index}.docx')
     doc = Document()
     file_index += 1
     page_count = 0

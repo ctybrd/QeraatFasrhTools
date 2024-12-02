@@ -411,7 +411,7 @@ WITH updated_lines AS (
     FROM 
         words_temp
     WHERE 
-        page_number2 <= 300
+        page_number2 <= 350
 )
 -- Update the rows where lineno2 is NULL
 UPDATE words_temp
@@ -420,7 +420,7 @@ SET lineno2 = (
     FROM updated_lines
     WHERE updated_lines.wordindex = words_temp.wordindex
 )
-WHERE lineno2 IS NULL AND page_number2 <= 300;
+WHERE lineno2 IS NULL AND page_number2 <= 350;
 CREATE INDEX idx_wordindex_words1 ON words1(wordindex);
 CREATE INDEX idx_wordindex_words_temp ON words_temp(wordindex);
 
