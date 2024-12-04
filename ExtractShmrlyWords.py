@@ -496,7 +496,7 @@ END AS x
     lineno2 AS reallineno,
   'auto' as circle
 FROM words1
-WHERE page_number2 <= 150
+WHERE page_number2 <= 350
   AND NOT EXISTS (
       SELECT 1
       FROM shmrly_words sw

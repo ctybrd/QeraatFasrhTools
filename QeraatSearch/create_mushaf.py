@@ -2,9 +2,9 @@ import sqlite3
 import re
 
 # File paths
-db_path = r"D:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
-txt_file_path = r"D:\Qeraat\QeraatFasrhTools\quran_txt.txt"
-output_file_path = r"D:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
+db_path = r"E:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
+txt_file_path = r"E:\Qeraat\QeraatFasrhTools\quran_txt.txt"
+output_file_path = r"E:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
 
 # Arabic-Indic numerals and special words to ignore in counting
 excluded_words = {'۞', '۩'}
@@ -59,11 +59,15 @@ for word_data in words_data:
         # Handle surah headers
         if current_word.startswith('سُورَةُ'):
             output_text.append('\n')  # Add an empty line before surah header
+            
             surah_header = ' '.join(text_words[word_count:word_count + 2])  # Surah header
             output_text.append(surah_header + '\n')  # Add surah header
-            bismillah = ' '.join(text_words[word_count + 2:word_count + 6])  # Bismillah
-            output_text.append(bismillah + '\n')  # Add Bismillah
-            word_count += 6  # Skip surah header and Bismillah
+            if not ('التَّوۡبَةِ' in surah_header):
+                bismillah = ' '.join(text_words[word_count + 2:word_count + 6])  # Bismillah
+                output_text.append(bismillah + '\n')  # Add Bismillah
+                word_count += 6  # Skip surah header and Bismillah
+            else:
+                word_count += 2
             line_words = []  # Reset line words
             current_line = None  # Reset line tracking for the surah
             current_page = None  # Reset page tracking for the surah

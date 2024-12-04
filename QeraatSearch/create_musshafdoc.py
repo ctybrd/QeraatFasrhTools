@@ -4,9 +4,9 @@ from docx import Document
 from docx.shared import Pt
 
 # File paths
-db_path = r"D:\Qeraat\QeraatFasrhTools\qeraat_data_simple.db"
-docx_file_path = r"D:\Qeraat\QeraatFasrhTools\Quran_Txt.docx"
-output_file_path = r"D:\Qeraat\QeraatFasrhTools\quran_with_breaks.docx"
+db_path = r"E:\Qeraat\QeraatFasrhTools\qeraat_data_simple.db"
+docx_file_path = r"E:\Qeraat\QeraatFasrhTools\Quran_Txt.docx"
+output_file_path = r"E:\Qeraat\QeraatFasrhTools\quran_with_breaks.docx"
 
 # Arabic-Indic numerals and special words to ignore in counting
 excluded_words = {'۞', '۩'}
@@ -65,9 +65,12 @@ for word_data in words_data:
             output_doc.add_paragraph()  # Add an empty paragraph before surah header
             surah_header = ' '.join(text_words[word_count:word_count + 2])  # Surah header
             output_doc.add_paragraph(surah_header)  # Add Surah header
-            bismillah = ' '.join(text_words[word_count + 2:word_count + 6])  # Bismillah
-            output_doc.add_paragraph(bismillah)  # Add Bismillah
-            word_count += 6  # Skip surah header and Bismillah
+            if not ('التَّوۡبَةِ' in surah_header):
+                bismillah = ' '.join(text_words[word_count + 2:word_count + 6])  # Bismillah
+                output_doc.add_paragraph(bismillah)  # Add Bismillah
+                word_count += 6  # Skip surah header and Bismillah
+            else:
+                word_count += 2
             line_words = []  # Reset line words
             surah_started = True  # Mark surah as started
             current_line = None  # Reset line tracking for the surah
