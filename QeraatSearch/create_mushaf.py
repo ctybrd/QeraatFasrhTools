@@ -2,9 +2,9 @@ import sqlite3
 import re
 
 # File paths
-db_path = r"e:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
-txt_file_path = r"e:\Qeraat\QeraatFasrhTools\quran_txt.txt"
-output_file_path = r"e:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
+db_path = r"D:\Qeraat\QeraatFasrhTools\qeraatSearch\qeraat_data_simple.db"
+txt_file_path = r"D:\Qeraat\QeraatFasrhTools\quran_txt.txt"
+output_file_path = r"D:\Qeraat\QeraatFasrhTools\quran_with_breaks.txt"
 
 # Arabic-Indic numerals and special words to ignore in counting
 excluded_words = {'۞', '۩'}
