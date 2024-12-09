@@ -1,4 +1,7 @@
 DROP VIEW "main"."shmrly_all";
+DROP VIEW "main"."madina_all";
+DROP VIEW "main"."tjwid_all";
+DROP VIEW "main"."libya_all";
 CREATE VIEW shmrly_all as select *, 
 (select text from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_shmrly.aya_index) aya_text_full, 
@@ -51,13 +54,13 @@ CREATE VIEW shmrly_all as select *,
 (SELECT text FROM book_aldur WHERE aya_index = mosshf_shmrly.aya_index) AS aldur,
 (SELECT text FROM book_mgharieb WHERE aya_index = mosshf_shmrly.aya_index) AS mgharieb,
 (SELECT text FROM book_alnashir WHERE aya_index = mosshf_shmrly.aya_index) AS alnashir,
-(SELECT text FROM book_tahbeer WHERE aya_index = mosshf_shmrly.aya_index) AS tahbeer,
-(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_shmrly.aya_index) AS ibnatiyah
-
+(SELECT text FROM book_zadmaseer WHERE aya_index = mosshf_shmrly.aya_index) AS zadmaseer,
+(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_shmrly.aya_index) AS ibnatiyah,
+(SELECT text FROM book_sahihint WHERE aya_index = mosshf_shmrly.aya_index) AS sahihint
  from mosshf_shmrly;
 
 
-DROP VIEW "main"."madina_all";
+
 CREATE VIEW madina_all as select *, 
 (select text from book_quran where aya_index = mosshf_madina.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_madina.aya_index) aya_text_full, 
@@ -110,12 +113,12 @@ CREATE VIEW madina_all as select *,
 (SELECT text FROM book_aldur WHERE aya_index = mosshf_madina.aya_index) AS aldur,
 (SELECT text FROM book_mgharieb WHERE aya_index = mosshf_madina.aya_index) AS mgharieb,
 (SELECT text FROM book_alnashir WHERE aya_index = mosshf_madina.aya_index) AS alnashir,
-(SELECT text FROM book_tahbeer WHERE aya_index = mosshf_madina.aya_index) AS tahbeer,
-(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_madina.aya_index) AS ibnatiyah
-
+(SELECT text FROM book_zadmaseer WHERE aya_index = mosshf_madina.aya_index) AS zadmaseer,
+(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_madina.aya_index) AS ibnatiyah,
+(SELECT text FROM book_sahihint WHERE aya_index = mosshf_madina.aya_index) AS sahihint
  from mosshf_madina;
 
-DROP VIEW "main"."tjwid_all";
+
 CREATE VIEW tjwid_all as select *, 
 (select text from book_quran where aya_index = mosshf_tjwid.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_tjwid.aya_index) aya_text_full, 
@@ -168,12 +171,12 @@ CREATE VIEW tjwid_all as select *,
 (SELECT text FROM book_aldur WHERE aya_index = mosshf_tjwid.aya_index) AS aldur,
 (SELECT text FROM book_mgharieb WHERE aya_index = mosshf_tjwid.aya_index) AS mgharieb,
 (SELECT text FROM book_alnashir WHERE aya_index = mosshf_tjwid.aya_index) AS alnashir,
-(SELECT text FROM book_tahbeer WHERE aya_index = mosshf_tjwid.aya_index) AS tahbeer,
-(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_tjwid.aya_index) AS ibnatiyah
+(SELECT text FROM book_zadmaseer WHERE aya_index = mosshf_tjwid.aya_index) AS zadmaseer,
+(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_tjwid.aya_index) AS ibnatiyah,
+ (SELECT text FROM book_sahihint WHERE aya_index = mosshf_tjwid.aya_index) AS sahihint
+from mosshf_tjwid;
 
- from mosshf_tjwid;
 
- DROP VIEW "main"."libya_all";
 CREATE VIEW libya_all as select *, 
 (select text from book_quran where aya_index = mosshf_libya.aya_index) aya_text,
 (select text_full from book_quran where aya_index = mosshf_libya.aya_index) aya_text_full, 
@@ -226,7 +229,8 @@ CREATE VIEW libya_all as select *,
 (SELECT text FROM book_aldur WHERE aya_index = mosshf_libya.aya_index) AS aldur,
 (SELECT text FROM book_mgharieb WHERE aya_index = mosshf_libya.aya_index) AS mgharieb,
 (SELECT text FROM book_alnashir WHERE aya_index = mosshf_libya.aya_index) AS alnashir,
-(SELECT text FROM book_tahbeer WHERE aya_index = mosshf_libya.aya_index) AS tahbeer,
-(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_libya.aya_index) AS ibnatiyah
+(SELECT text FROM book_zadmaseer WHERE aya_index = mosshf_libya.aya_index) AS zadmaseer,
+(SELECT text FROM book_ibnatiyah WHERE aya_index = mosshf_libya.aya_index) AS ibnatiyah,
+(SELECT text FROM book_sahihint WHERE aya_index = mosshf_libya.aya_index) AS sahihint
 
  from mosshf_libya;
