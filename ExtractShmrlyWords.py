@@ -392,8 +392,8 @@ SET reallineno = (
   FROM updated_lines
   WHERE shmrly_words.id = updated_lines.id
 );
-UPDATE words1 set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words1.wordindex);
-UPDATE words_temp set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words_temp.wordindex);
+--UPDATE words1 set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words1.wordindex);
+--UPDATE words_temp set lineno2=(SELECT reallineno from shmrly_words where shmrly_words.wordindex=words_temp.wordindex);
 """
 
 update_temp ="""
@@ -436,33 +436,31 @@ CREATE INDEX idx_wordindex_words_temp ON words_temp(wordindex);
 """
 
 insert_from_words1="""delete from shmrly_words where circle='auto';
-
 INSERT INTO shmrly_words 
-(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno,circle)
+(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno, circle)
 SELECT 
     '9' AS qaree, 
     page_number2 AS page_number, 
     '#ff0000' AS color,
     -- Calculate x based on the ratio of total characters preceding the current word
-CASE
-    -- First word of the line
-    WHEN wordindex = MIN(wordindex) OVER (PARTITION BY page_number2, lineno2)
-    THEN 1 - (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0))
+    CASE
+        -- First word of the line (rightmost position)
+        WHEN wordindex = MIN(wordindex) OVER (PARTITION BY page_number2, lineno2)
+        THEN 1 - 0.05 -- Start at the rightmost position minus the margin
+        
+        -- All other words
+        ELSE COALESCE(
+            1 - 0.05 -  -- Start from the rightmost position minus the margin
+            (
+                SUM(LENGTH(rawword) + 0.02 * LENGTH(rawword)) OVER (
+                    PARTITION BY page_number2, lineno2 
+                    ORDER BY wordindex ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)
+            ),
+            1 - 0.05 -- Default to the first word's position if calculation fails
+        )
+    END AS x,
     
-    -- All other words
-    ELSE COALESCE(
-        1 - (SUM(LENGTH(rawword)) OVER (
-            PARTITION BY page_number2, lineno2 
-            ORDER BY wordindex ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-        ) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)) 
-        - (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)),
-        1
-    )
-END AS x
-
-
-
-,
     -- Map lineno2 to y
     CASE lineno2
         WHEN 1 THEN 0.0878
@@ -481,11 +479,13 @@ END AS x
         WHEN 14 THEN 0.9176
         WHEN 15 THEN 0.9831
     END AS y,
+    
     -- Calculate width based on the length of the current word
     COALESCE(
         (LENGTH(rawword) * 1.0 / NULLIF(SUM(LENGTH(rawword)) OVER (PARTITION BY page_number2, lineno2), 0)), 
         0
     ) AS width,
+    
     'S' AS style,
     wordindex,
     rawword,
@@ -494,14 +494,14 @@ END AS x
     ayah AS ayahno,
     wordsno AS ordr,
     lineno2 AS reallineno,
-  'auto' as circle
+    'auto' AS circle
 FROM words1
-WHERE page_number2 <= 350
-  AND NOT EXISTS (
-      SELECT 1
-      FROM shmrly_words sw
-      WHERE sw.wordindex = words1.wordindex
-  );
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM shmrly_words sw
+    WHERE sw.wordindex = words1.wordindex
+);
+
   -- Truncate the shmrly_temp table
 DELETE FROM shmrly_temp;
 
