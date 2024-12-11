@@ -1,8 +1,8 @@
 import sqlite3
 import pandas as pd
 
-def insert_words(db_path, words_data):
-    """Inserts words into the shmrly_words table.
+def insert_words_with_margins(db_path, words_data):
+    """Inserts words into the shmrly_words table with margin adjustments.
 
     Args:
         db_path: Path to the SQLite database.
@@ -15,26 +15,45 @@ def insert_words(db_path, words_data):
     delete_query = "DELETE FROM shmrly_words WHERE circle='auto';"
     cursor.execute(delete_query)
 
+    # Margins and spacing
+    left_margin = 0.05
+    right_margin = 0.05
+    inter_word_margin = 0.02
+
     # Prepare the output list for insertions
     output_rows = []
 
     # Process each line grouped by page_number and lineno
     for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
-        total_width = line_data['rawword_length'].sum()
-        x_position = 1 - 0.05  # Start from the right margin with 0.05 margin
+        print(f"Processing page {page_number}, line {lineno} with {len(line_data)} words.")  # Debug log
+
+        # Calculate total usable width
+        total_raw_width = line_data['rawword_length'].sum()
+        num_words = len(line_data)
+        total_margin_space = left_margin + right_margin + (num_words - 1) * inter_word_margin
+        total_width = total_raw_width + total_margin_space
+
+        if total_width == 0:
+            print("Skipped due to zero total width.")  # Debug
+            continue
+
+        # Initialize x position to start from the right-most position
+        x_position = 1 - right_margin
 
         for _, row in line_data.iterrows():
             # Check if the word already exists in shmrly_words
             check_query = "SELECT 1 FROM shmrly_words WHERE wordindex = ?"
             cursor.execute(check_query, (row['wordindex'],))
             if cursor.fetchone():
-                continue  # Skip if wordindex already exists
+                print(f"Word {row['rawword']} (index {row['wordindex']}) exists. Skipping.")  # Debug
+                continue
 
-            # Calculate width as a ratio
-            width = row['rawword_length'] / total_width if total_width else 0
+            # Calculate width as a proportion of the total raw width
+            width = row['rawword_length'] / total_raw_width * (1 - total_margin_space) if total_raw_width else 0
+
             # Calculate x and update for next word
             x = x_position - width
-            x_position = x - 0.02  # Add spacing of 0.02
+            x_position = x - inter_word_margin  # Update x_position for the next word
 
             # Append the processed row, ensuring correct column order
             output_rows.append((
@@ -94,4 +113,4 @@ y_positions = {
 }
 
 # Run the insertion function
-insert_words(db_path, words_data)
+insert_words_with_margins(db_path, words_data)
