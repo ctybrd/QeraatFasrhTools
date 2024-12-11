@@ -1,20 +1,89 @@
 import sqlite3
 import pandas as pd
 
-# Connect to the SQLite database
+def insert_words(db_path, words_data):
+    """Inserts words into the shmrly_words table.
+
+    Args:
+        db_path: Path to the SQLite database.
+        words_data: Pandas DataFrame containing word data.
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Delete previously auto-inserted lines
+    delete_query = "DELETE FROM shmrly_words WHERE circle='auto';"
+    cursor.execute(delete_query)
+
+    # Prepare the output list for insertions
+    output_rows = []
+
+    # Process each line grouped by page_number and lineno
+    for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
+        total_width = line_data['rawword_length'].sum()
+        x_position = 1 - 0.05  # Start from the right margin with 0.05 margin
+
+        for _, row in line_data.iterrows():
+            # Check if the word already exists in shmrly_words
+            check_query = "SELECT 1 FROM shmrly_words WHERE wordindex = ?"
+            cursor.execute(check_query, (row['wordindex'],))
+            if cursor.fetchone():
+                continue  # Skip if wordindex already exists
+
+            # Calculate width as a ratio
+            width = row['rawword_length'] / total_width if total_width else 0
+            # Calculate x and update for next word
+            x = x_position - width
+            x_position = x - 0.02  # Add spacing of 0.02
+
+            # Append the processed row, ensuring correct column order
+            output_rows.append((
+                9,  # qaree
+                int(page_number),  # page_number
+                '#ff0000',  # color
+                round(x, 6),  # x
+                y_positions.get(int(lineno), 0),  # y
+                round(width, 6),  # width
+                'S',  # style
+                int(row['wordindex']),  # wordindex
+                row['rawword'],  # rawword
+                int(lineno),  # lineno
+                int(row['surah']),  # surahno
+                int(row['ayah']),  # ayahno
+                int(row['wordsno']),  # ordr
+                int(lineno),  # reallineno
+                'auto'  # circle
+            ))
+
+    # Insert into shmrly_words table
+    insert_query = """
+    INSERT INTO shmrly_words 
+    (qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno, circle)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
+
+    try:
+        # Uncomment for bulk insert
+        # cursor.executemany(insert_query, output_rows)
+
+        # Use single inserts for debugging
+        for row in output_rows:
+            print("Inserting row:", row)  # Debug: Inspect each row
+            cursor.execute(insert_query, row)
+
+        conn.commit()
+        print("Insertion complete.")
+    except sqlite3.Error as e:
+        print(f"Error inserting data: {e}")
+    finally:
+        conn.close()
+
+# Main execution
 db_path = r'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
-conn = sqlite3.connect(db_path)
+query = "SELECT * FROM words1 ORDER BY wordindex"
+words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 
-# Delete previously auto-inserted lines
-delete_query = "DELETE FROM shmrly_words WHERE circle='auto';"
-cursor = conn.cursor()
-cursor.execute(delete_query)
-
-# Load words1 table into a pandas DataFrame
-query = "SELECT * FROM words1 order by wordindex"
-words_data = pd.read_sql_query(query, conn)
-
-# Add a column for the rawword lengths
+# Calculate word lengths
 words_data['rawword_length'] = words_data['rawword'].apply(len)
 
 # Define y positions for lines
@@ -24,59 +93,5 @@ y_positions = {
     11: 0.7293, 12: 0.7932, 13: 0.8525, 14: 0.9176, 15: 0.9831
 }
 
-# Prepare the output list for insertions
-output_rows = []
-
-# Process each line grouped by page_number and lineno
-for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
-    total_width = line_data['rawword_length'].sum()
-    x_position = 1 - 0.05  # Start from the right margin with 0.05 margin
-
-    for index, row in line_data.iterrows():
-        # Check if the word already exists in shmrly_words
-        check_query = """
-        SELECT 1 FROM shmrly_words WHERE wordindex = ?
-        """
-        cursor.execute(check_query, (row['wordindex'],))
-        if cursor.fetchone():
-            continue  # Skip if wordindex already exists
-
-        # Calculate width as a ratio
-        width = row['rawword_length'] / total_width if total_width else 0
-        # Calculate x and update for next word
-        x = x_position - width
-        x_position = x - 0.02  # Add spacing of 0.02
-
-        # Append the processed row
-        output_rows.append({
-            'qaree': 9,
-            'page_number': page_number,
-            'color': '#ff0000',
-            'x': x,
-            'y': y_positions.get(lineno, 0),
-            'width': width,
-            'style': 'S',
-            'wordindex': row['wordindex'],
-            'rawword': row['rawword'],
-            'lineno': lineno,
-            'surahno': row['surah'],
-            'ayahno': row['ayah'],
-            'ordr': row['wordsno'],
-            'reallineno': lineno,
-            'circle': 'auto'
-        })
-
-# Insert into shmrly_words table
-insert_query = """
-INSERT INTO shmrly_words 
-(qaree, page_number, color, x, y, width, style, wordindex, rawword, lineno, surahno, ayahno, ordr, reallineno, circle)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-"""
-
-# Execute the insertions
-for row in output_rows:
-    cursor.execute(insert_query, tuple(row.values()))
-
-# Commit changes and close the connection
-conn.commit()
-conn.close()
+# Run the insertion function
+insert_words(db_path, words_data)
