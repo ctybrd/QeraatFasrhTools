@@ -4,7 +4,7 @@ import datetime
 import os
 import html
 
-edition = 'A'
+edition = 'W'
 
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
@@ -16,8 +16,14 @@ def create_xfdf(output_xfdf, db_file):
         table_name = 'shmrly_temp'
     elif edition == 'A':
         table_name = 'shmrly_words'
-    
-    cursor.execute(f'SELECT page_number, color, x, y, width, style, circle, rawword FROM {table_name}')
+    elif edition == 'W':
+        table_name = 'wordsall'
+
+    if edition == 'W':
+        xsql = f"SELECT page_number2 page_number, case when wordsno<999 then '#ff0000' else '#0000ff' end color, x, y, width, 'S' style, '' circle, rawword FROM wordsall "
+    else:
+        xsql = f'SELECT page_number, color, x, y, width, style, circle, rawword FROM {table_name}'
+    cursor.execute(xsql)
     data = cursor.fetchall()
     conn.close()
 
@@ -70,18 +76,18 @@ def create_xfdf(output_xfdf, db_file):
 
         # Create the contents-richtext XML snippet
         contents_richtext = ''
-        if rawword:
-            contents_richtext = f'''
-            <contents-richtext>
-                <body xmlns="http://www.w3.org/1999/xhtml" 
-                    xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" 
-                    xfa:APIVersion="Acrobat:10.1.5" 
-                    xfa:spec="2.1" 
-                    style="text-align:left;font-family:Arial;font-size:12pt;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;">
-                    <p><span>{rawword_escaped}</span></p>
-                </body>
-            </contents-richtext>
-            '''
+        # if rawword:
+        #     contents_richtext = f'''
+        #     <contents-richtext>
+        #         <body xmlns="http://www.w3.org/1999/xhtml" 
+        #             xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" 
+        #             xfa:APIVersion="Acrobat:10.1.5" 
+        #             xfa:spec="2.1" 
+        #             style="text-align:left;font-family:Arial;font-size:12pt;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;">
+        #             <p><span>{rawword_escaped}</span></p>
+        #         </body>
+        #     </contents-richtext>
+        #     '''
 
         # Determine the additional attribute based on the circle value
         additional_attribute = ''
