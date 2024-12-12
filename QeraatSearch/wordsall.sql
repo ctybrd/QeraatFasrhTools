@@ -41,7 +41,8 @@ JOIN (
 ON  w1.aya_index = w2.aya_index 
    AND w1.wordindex = w2.max_wordindex
 JOIN quran_quarter qq
-ON w1.surah = qq.sora_number
+ON w1.aya_index =(select aya_index from mosshf_shmrly where mosshf_shmrly.sora_number=qq.sora_number
 AND
-w1.ayah = qq.aya_number
+mosshf_shmrly.aya_number=qq.aya_number)-1
+
 ORDER BY w1.aya_index;
