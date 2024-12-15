@@ -88,3 +88,23 @@ ORDER BY w1.aya_index;
 [العلق: 19]
 
 1160,1722,1951,2138,2308,2613,2672,2915,3185,3518,4256,3994,4846,5905,6125
+
+WITH updated_values AS (
+    SELECT 
+        wordsall.rowid AS target_rowid,
+        shmrly_words.x AS new_x,
+        shmrly_words.width AS new_width
+    FROM 
+        wordsall
+    JOIN 
+        shmrly_words 
+    ON 
+        wordsall.wordindex = shmrly_words.wordindex
+    WHERE 
+        wordsall.wordsno <= 1001
+)
+UPDATE wordsall
+SET 
+    x = (SELECT new_x FROM updated_values WHERE wordsall.rowid = updated_values.target_rowid),
+    width = (SELECT new_width FROM updated_values WHERE wordsall.rowid = updated_values.target_rowid)
+WHERE rowid IN (SELECT target_rowid FROM updated_values);

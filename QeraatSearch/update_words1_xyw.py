@@ -28,7 +28,7 @@ def update_words_with_margins(db_path, words_data):
         x_position = 1 - right_margin
 
         for _, row in line_data.iterrows():
-            if row['wordsno'] in [999, 1000]:
+            if row['wordsno'] in [999, 1000,1001]:
                 # Fixed width for landmarks
                 width = row['rawword_length']
             else:
@@ -70,7 +70,7 @@ words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 
 # Calculate word lengths, assigning fixed lengths for landmarks and regular lengths for others
 words_data['rawword_length'] = words_data.apply(
-    lambda row: 0.05 if row['wordsno'] == 999 else (0.03 if row['wordsno'] == 1000 else len(row['rawword'])),
+    lambda row: 0.05 if row['wordsno'] == 999 else (0.03 if row['wordsno'] >= 1000 else len(row['rawword'])),
     axis=1
 )
 
