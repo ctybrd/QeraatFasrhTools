@@ -6,7 +6,7 @@ def update_words_with_margins(db_path, words_data):
     cursor = conn.cursor()
 
     # Margins and spacing
-    left_margin = 0.05
+    left_margin = 0.03
     right_margin = 0.05
     inter_word_margin = 0.01
 
@@ -14,30 +14,40 @@ def update_words_with_margins(db_path, words_data):
     for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
         print(f"Processing page {page_number}, line {lineno} with {len(line_data)} words.")  # Debug log
 
-        # Calculate total usable width
-        total_raw_width = line_data['rawword_length'].sum()
+        # Calculate total margin space
         num_words = len(line_data)
         total_margin_space = left_margin + right_margin + (num_words - 1) * inter_word_margin
-        total_width = total_raw_width + total_margin_space
 
-        if total_width == 0:
-            print("Skipped due to zero total width.")  # Debug
-            continue
+        # Separate fixed and proportional words
+        fixed_words = line_data[line_data['wordsno'].isin([999, 1000, 1001])]
+        proportional_words = line_data[~line_data['wordsno'].isin([999, 1000, 1001])]
 
-        # Initialize x position to start from the right-most position
-        x_position = 1 - right_margin
+        # Step 1: Calculate widths
+        fixed_total_width = fixed_words['rawword_length'].sum()
+        remaining_width = 1 - total_margin_space - fixed_total_width  # Total width left for proportional words
 
-        for _, row in line_data.iterrows():
-            if row['wordsno'] in [999, 1000,1001]:
-                # Fixed width for landmarks
-                width = row['rawword_length']
-            else:
-                # Proportional width for regular words
-                width = row['rawword_length'] / total_raw_width * (1 - total_margin_space) if total_raw_width else 0
+        if remaining_width < 0:
+            print("Warning: Not enough space for proportional words.")  # Debug
+            remaining_width = 0  # Handle edge cases gracefully
 
-            # Calculate x and update for the next word
-            x = x_position - width
-            x_position = x - inter_word_margin  # Update x_position for the next word
+        # Assign proportional widths
+        proportional_total_raw_width = proportional_words['rawword_length'].sum()
+        if proportional_total_raw_width > 0:
+            proportional_words['width'] = (
+                proportional_words['rawword_length'] / proportional_total_raw_width * remaining_width
+            )
+        else:
+            proportional_words['width'] = 0
+
+        # Combine fixed and proportional words
+        line_data = pd.concat([fixed_words, proportional_words]).sort_index()
+
+        # Step 2: Calculate x positions
+        x_position = 1 - right_margin  # Start at the right-most margin
+        for idx, row in line_data.iterrows():
+            width = row['width'] if 'width' in row else row['rawword_length']
+            x = x_position - width  # Current word's x position
+            x_position = x - inter_word_margin  # Update for the next word
 
             # Update the wordsall table
             update_query = """
@@ -64,7 +74,7 @@ def update_words_with_margins(db_path, words_data):
 # Main execution
 
 db_path = r'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
-query = "SELECT * FROM wordsall ORDER BY wordindex, wordsno"
+query = "SELECT * FROM wordsall  ORDER BY wordindex, wordsno"
 
 words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 
