@@ -88,16 +88,8 @@ words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 #علامة الربع غير موجودة لأوائل السور
 conn = sqlite3.connect(db_path)
 query = """
-SELECT DISTINCT wordsall.page_number2 
-FROM wordsall 
-JOIN mosshf_shmrly 
-ON mosshf_shmrly.sora_number = wordsall.surah 
-WHERE wordsall.wordsno = 1001 
-AND mosshf_shmrly.aya_index = (
-    SELECT MAX(aya_index) 
-    FROM mosshf_shmrly 
-    WHERE mosshf_shmrly.sora_number = wordsall.surah
-)
+select distinct page_number2 from wordsall where wordsno=1001 and aya_index
+=(SELECT max(aya_index) from mosshf_shmrly where mosshf_shmrly.sora_number=wordsall.surah)
 """
 eligible_pages = pd.read_sql_query(query, conn)['page_number2'].tolist()
 conn.close()
