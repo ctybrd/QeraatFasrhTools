@@ -6,14 +6,19 @@ def update_words_with_margins(db_path, words_data):
     cursor = conn.cursor()
 
     # Margins and spacing
-    left_margin = 0.03
-    right_margin = 0.05
+    # left_margin = 0.03
+    # right_margin = 0.05
     inter_word_margin = 0.01
 
     # Process each line grouped by page_number and lineno
     for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
         print(f"Processing page {page_number}, line {lineno} with {len(line_data)} words.")  # Debug log
-
+        if page_number % 2 == 0:  # Even pages
+            left_margin = 0.03
+            right_margin = 0.03
+        else:    
+            left_margin = 0.02
+            right_margin = 0.04
         # Calculate total margin space
         num_words = len(line_data)
         total_margin_space = left_margin + right_margin + (num_words - 1) * inter_word_margin
@@ -74,15 +79,38 @@ def update_words_with_margins(db_path, words_data):
 # Main execution
 
 db_path = r'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
-query = "SELECT * FROM wordsall  ORDER BY wordindex, wordsno"
+query = "SELECT * FROM wordsall where page_number2<530 ORDER BY wordindex, wordsno"
 
 words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 
 # Calculate word lengths, assigning fixed lengths for landmarks and regular lengths for others
+# Pre-fetch the relevant pages for wordsno=1001 to improve efficiency
+#علامة الربع غير موجودة لأوائل السور
+conn = sqlite3.connect(db_path)
+query = """
+SELECT DISTINCT wordsall.page_number2 
+FROM wordsall 
+JOIN mosshf_shmrly 
+ON mosshf_shmrly.sora_number = wordsall.surah 
+WHERE wordsall.wordsno = 1001 
+AND mosshf_shmrly.aya_index = (
+    SELECT MAX(aya_index) 
+    FROM mosshf_shmrly 
+    WHERE mosshf_shmrly.sora_number = wordsall.surah
+)
+"""
+eligible_pages = pd.read_sql_query(query, conn)['page_number2'].tolist()
+conn.close()
+
+# Assign rawword_length based on conditions
 words_data['rawword_length'] = words_data.apply(
-    lambda row: 0.05 if row['wordsno'] == 999 else (0.03 if row['wordsno'] >= 1000 else len(row['rawword'])),
+    lambda row: 0.05 if row['wordsno'] == 999 else
+                (0.03 if row['wordsno'] == 1000 else
+                (0.001 if row['wordsno'] == 1001 and row['page_number2'] in eligible_pages else
+                 (0.02 if row['wordsno'] == 1001 else len(row['rawword'])))),
     axis=1
 )
+
 
 # Define y positions for lines
 y_positions = {

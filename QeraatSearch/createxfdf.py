@@ -20,9 +20,9 @@ def create_xfdf(output_xfdf, db_file):
         table_name = 'wordsall'
 
     if edition == 'W':
-        xsql = f"SELECT page_number2 page_number, case when wordsno<999 then '#ff0000' else '#0000ff' end color, x, y, width, 'S' style, '' circle, rawword FROM wordsall "
+        xsql = f"SELECT page_number2 page_number, case when wordsno<999 then '#ff0000' else '#0000ff' end color, x, y, width, 'S' style, '' circle, rawword,wordindex,wordsno,surah,ayah FROM wordsall "
     else:
-        xsql = f'SELECT page_number, color, x, y, width, style, circle, rawword FROM {table_name}'
+        xsql = f'SELECT page_number, color, x, y, width, style, circle, rawword,0 as wordindex,0 as wordsno,0 as surah,0 ayah FROM {table_name}'
     cursor.execute(xsql)
     data = cursor.fetchall()
     conn.close()
@@ -68,7 +68,10 @@ def create_xfdf(output_xfdf, db_file):
         rawword = row[7]
 
         creation_date = datetime.datetime.now().strftime("D:%Y%m%d%H%M%S+03'00'")
-        annot_name = str(uuid.uuid4())
+        if edition == 'W':
+            annot_name = str(row[8]) +'-' +str(row[9]) +'-' +str(row[10]) +'-' +str(row[11])
+        else:
+            annot_name = str(uuid.uuid4())
 
         # Escape the rawword and encode to HTML entities
 
@@ -100,7 +103,7 @@ def create_xfdf(output_xfdf, db_file):
 
         if circle != "4":
             annot = f'''
-            <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="Me" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute} endingScale="0.7,0.7" width="4">
+            <line start="{x_start},{y_start}" end="{x_end},{y_end}" title="{rawword}" creationdate="{creation_date}" subject="Line" page="{page_number}" date="{creation_date}" flags="print" name="{annot_name}" rect="{x_start},{y_start - 0.5},{x_end},{y_start + 0.5}" color="{color}" interior-color="{color}"{additional_attribute} endingScale="0.7,0.7" width="4">
                 {contents_richtext}
             </line>
             '''
