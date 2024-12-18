@@ -41,6 +41,7 @@ def extract_line_comments(pdf_path):
                                 comment['circle'] = '2'
                             elif le_value == "['/None', '/Circle']":
                                 comment['circle'] = '1'
+                        print(f"Processing page {pageno}, wordindex {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
                         comments.append(comment)
         except Exception as e:
             pass
@@ -59,6 +60,7 @@ def update_words_xyw(comments):
                 x1, y1, x2, y2 = map(float, matches)
                 wordindex = comment.get('wordindex')
                 wordsno = comment.get('wordsno')
+                print(f"updating  page {str(comment['pageno'])} word {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
                 if wordindex and wordsno:
                     c.execute(
                         "UPDATE wordsall SET x = ?, y = ?, width = ? WHERE wordindex = ? AND wordsno = ?",
