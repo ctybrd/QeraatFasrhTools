@@ -79,7 +79,7 @@ def update_words_with_margins(db_path, words_data):
 # Main execution
 
 db_path = r'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
-query = "SELECT * FROM wordsall where page_number2<530 ORDER BY wordindex, wordsno"
+query = "SELECT * FROM wordsall where wordindex>11629 page_number2<530 ORDER BY wordindex, wordsno"
 
 words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 

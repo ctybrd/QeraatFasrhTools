@@ -89,9 +89,14 @@ ORDER BY w1.aya_index;
 
 1160,1722,1951,2138,2308,2613,2672,2915,3185,3518,4256,3994,4846,5905,6125
 
-WITH updated_values AS (
+
+-- استدعاء ما أتمه كريم من إحداثيات
+
+-- Step 1: Prepare a CTE for matching rows with both wordindex and wordsno
+WITH MatchUpdates AS (
     SELECT 
-        wordsall.rowid AS target_rowid,
+        wordsall.wordindex,
+        wordsall.wordsno,
         shmrly_words.x AS new_x,
         shmrly_words.width AS new_width
     FROM 
@@ -101,10 +106,40 @@ WITH updated_values AS (
     ON 
         wordsall.wordindex = shmrly_words.wordindex
     WHERE 
-        wordsall.wordsno <= 1001
+        wordsall.wordsno < 999
+
+    UNION ALL
+
+    SELECT 
+        wordsall.wordindex,
+        wordsall.wordsno,
+        shmrly_words.x AS new_x,
+        shmrly_words.width AS new_width
+    FROM 
+        wordsall
+    JOIN 
+        shmrly_words 
+    ON 
+        case 
+            when wordsall.wordsno = 999 then '#0000ff' 
+            else '#ff0000' 
+        end = shmrly_words.color
+        AND wordsall.surah = shmrly_words.surahno
+        AND wordsall.ayah = shmrly_words.ayahno
+    WHERE 
+        wordsall.wordsno = 999
 )
+
+-- Step 2: Update rows in wordsall based on the CTE
 UPDATE wordsall
 SET 
-    x = (SELECT new_x FROM updated_values WHERE wordsall.rowid = updated_values.target_rowid),
-    width = (SELECT new_width FROM updated_values WHERE wordsall.rowid = updated_values.target_rowid)
-WHERE rowid IN (SELECT target_rowid FROM updated_values);
+    x = (SELECT new_x FROM MatchUpdates 
+         WHERE MatchUpdates.wordindex = wordsall.wordindex 
+           AND MatchUpdates.wordsno = wordsall.wordsno),
+    width = (SELECT new_width FROM MatchUpdates 
+             WHERE MatchUpdates.wordindex = wordsall.wordindex 
+               AND MatchUpdates.wordsno = wordsall.wordsno)
+WHERE 
+    (wordindex, wordsno) IN (
+        SELECT wordindex, wordsno FROM MatchUpdates
+    );
