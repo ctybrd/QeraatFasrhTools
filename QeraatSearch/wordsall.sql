@@ -144,16 +144,167 @@ WHERE
         SELECT wordindex, wordsno FROM MatchUpdates
     );
 
+-- ضبط wordindex
+CREATE INDEX idx_quran_data_sub_subject ON quran_data (sub_subject);
+CREATE INDEX idx_quran_data_ayah_sura ON quran_data (aya, sora);
+CREATE INDEX idx_wordsall_nxtword ON wordsall (nextword);
+CREATE INDEX idx_wordsall_ayah_surah ON wordsall (ayah, surah);
+CREATE INDEX idx_wordsall_wordindex ON wordsall (wordindex);
+CREATE INDEX idx_quran_data_wordindex ON quran_data (wordindex);
+
+
+update quran_data set wordindex=Null;
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			quran_data.sub_subject =xy.nextword	
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+ UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			quran_data.sub_subject=xy.rawword			
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+ UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			xy.rawword LIKE '%' || quran_data.sub_subject ||'%'
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			xy.rawword LIKE '%' || quran_data.sub_subject ||'%'
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(xy.rawword,' ','') = quran_data.sub_subject
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(xy.rawword,' ','') = replace(quran_data.sub_subject,' ','')
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(xy.rawword,' ','') LIKE '%' || REPLACE(quran_data.sub_subject,' ','') ||'%'
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(quran_data.sub_subject,' ','') LIKE '%' || REPLACE(xy.rawword,' ','') ||'%'
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(quran_data.sub_subject,
+			'يا ويلتى'
+			,
+			'ياويلتا') 
+			=xy.rawword
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+UPDATE quran_data
+SET wordindex = (
+    SELECT MIN(xy.wordindex)
+    FROM wordsall xy
+    WHERE 
+			REPLACE(quran_data.sub_subject,
+			'يا أسفى'
+			,
+	'ياأسفا'
+			)
+			=xy.rawword
+    AND xy.ayah = quran_data.aya 
+    AND xy.surah = quran_data.sora
+)
+where wordindex is null
+;
+
+
+-- الإحداثيات
+UPDATE quran_data
+SET x2 = (
+    SELECT x
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
+
+UPDATE quran_data
+SET y2 = (
+    SELECT y
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
 
 -- استخراج خطوط فرش
 
 delete from shmrly_temp ;
-insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
-select 'M',page_number1,'#800080'
- ,x,y,0.05, 'S', '4'
+insert into shmrly_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number2,'#800080'
+ ,x2,y2,0.05, 'S', '4'
 from quran_data where 
   ((R6_1 IS NOT NULL ) and (R6_2 IS NULL )) AND
              (IFNULL(r5_2, 0) = 0) and
-(reading like '%غنة%' 
+(TAGS like '%,idghamn,%' 
 )
+AND page_number2>=42
 order by aya_index,id;
