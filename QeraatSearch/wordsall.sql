@@ -143,3 +143,17 @@ WHERE
     (wordindex, wordsno) IN (
         SELECT wordindex, wordsno FROM MatchUpdates
     );
+
+
+-- استخراج خطوط فرش
+
+delete from shmrly_temp ;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#800080'
+ ,x,y,0.05, 'S', '4'
+from quran_data where 
+  ((R6_1 IS NOT NULL ) and (R6_2 IS NULL )) AND
+             (IFNULL(r5_2, 0) = 0) and
+(reading like '%غنة%' 
+)
+order by aya_index,id;
