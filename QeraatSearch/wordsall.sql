@@ -318,13 +318,30 @@ SET page_shmrly = (
 )
 ;
 update quran_data set page_number2 = page_shmrly;
-
+UPDATE quran_data
+SET rasaya = (
+    SELECT rasaya
+    FROM wordsall xy
+    WHERE 
+    xy.wordindex = quran_data.wordindex  and
+    xy.wordsno<999
+)
+;
+UPDATE quran_data
+SET wordsno = (
+    SELECT wordsno
+    FROM wordsall xy
+    WHERE 
+    xy.wordindex = quran_data.wordindex  AND
+	xy.wordsno<999
+)
+;
 -- استخراج خطوط فرش
 
 delete from shmrly_temp ;
 insert into shmrly_temp(qaree,page_number,color,x,y,width,style,circle)
 select 'M',page_number2,'#8080FF'
- ,x2,y2-0.04,0.05, 'S', '4'
+ ,x2-0.02,y2-0.04,0.05, 'S', '4'
 from quran_data where 
   ((R6_1 IS NOT NULL ) and (R6_2 IS NULL )) AND
              (IFNULL(r5_2, 0) = 0) and
