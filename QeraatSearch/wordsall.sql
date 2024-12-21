@@ -294,6 +294,13 @@ SET y2 = (
     FROM wordsall xy
     WHERE xy.wordindex=quran_data.wordindex
 );
+UPDATE quran_data
+SET width2 = (
+    SELECT width
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
+
 
 -- استخراج خطوط فرش
 
