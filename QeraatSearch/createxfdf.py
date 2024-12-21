@@ -4,7 +4,7 @@ import datetime
 import os
 import html
 
-edition = 'S'
+edition = 'W'
 
 def create_xfdf(output_xfdf, db_file):
     conn = sqlite3.connect(db_file)
@@ -20,7 +20,7 @@ def create_xfdf(output_xfdf, db_file):
         table_name = 'wordsall'
 
     if edition == 'W':
-        xsql = f"SELECT page_number2 page_number, case when wordsno<999 then '#ff0000' else '#0000ff' end color, x, y, width, 'S' style, '' circle, rawword,wordindex,wordsno,surah,ayah FROM wordsall "
+        xsql = f"SELECT page_number2 page_number, case when wordsno<999 then '#ff0000' else '#0000ff' end color, x, y, width, 'S' style, '' circle, rawword,wordindex,wordsno,surah,ayah FROM wordsall order by wordindex,wordsno  "
     else:
         xsql = f'SELECT page_number, color, x, y, width, style, circle, rawword,0 as wordindex,0 as wordsno,0 as surah,0 ayah FROM {table_name}'
     cursor.execute(xsql)
