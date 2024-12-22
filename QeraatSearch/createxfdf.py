@@ -24,11 +24,26 @@ def create_xfdf(output_xfdf, db_file):
     # Query data
     if edition == 'W':
         xsql = """
-        SELECT page_number2 AS page_number,
-               CASE WHEN wordsno < 999 THEN '#ff0000' ELSE '#0000ff' END AS color,
-               x, y, width, 'S' AS style, '' AS circle, rawword, wordindex, wordsno, surah, ayah, lineno2
-        FROM wordsall
-        ORDER BY page_number2, lineno2, wordindex, wordsno
+            WITH ranked_rows AS (
+                SELECT 
+                    page_number2 AS page_number,
+                    x, y, width, rawword, wordindex, wordsno, surah, ayah, lineno2,
+                    ROW_NUMBER() OVER (PARTITION BY page_number2, lineno2 ORDER BY wordindex) AS rownum,
+                    COUNT(*) OVER (PARTITION BY page_number2, lineno2) AS total_rows
+                FROM wordsall
+            )
+            SELECT 
+                page_number,
+                CASE 
+                    WHEN wordsno >= 999 THEN '#0000ff'            -- Always blue for wordsno >= 999
+                    WHEN rownum = total_rows THEN '#ff0000'       -- Red for the last word if wordsno < 999
+                    ELSE 'AUTO'                                   -- AUTO for all other words
+                END AS color,
+                x, y, width, 'S' AS style, '' AS circle, rawword, wordindex, wordsno, surah, ayah, lineno2
+            FROM ranked_rows
+            ORDER BY page_number, lineno2, wordindex, wordsno;
+
+
         """
     else:
         xsql = f"""
@@ -74,24 +89,29 @@ def create_xfdf(output_xfdf, db_file):
         width = float(row[4]) * page_width1
         x_start, y_start = max(0, min(x, page_width)), max(0, min(y, page_height))
         x_end, y_end = max(0, min(x + width, page_width)), y_start
+        if edition == 'W':
+            # Handle color alternation and reset by page and line
+            lineno2 = row[12]
+            key = (page_number, lineno2)
+            if key not in color_tracker:
+                color_tracker[key] = 0  # Initialize tracker for this page-line combination
 
-        # Handle color alternation and reset by page and line
-        lineno2 = row[12]
-        key = (page_number, lineno2)
-        if key not in color_tracker:
-            color_tracker[key] = 0  # Initialize tracker for this page-line combination
+            total_words = word_counts_by_line_and_page.get(key, 0)
 
-        total_words = word_counts_by_line_and_page.get(key, 0)
-        if color_tracker[key] == 0:
-            color = '#FF0000'  # First word red
-        elif color_tracker[key] == total_words - 1:
-            color = '#FF0000'  # Last word red
-        elif color_tracker[key] % 2 == 1:
-            color = '#90EE90'  # Alternating green
-        else:
-            color = '#FF0000'  # Alternating red
+            # Apply alternation logic only for AUTO color
+            if row[1] == 'AUTO':
+                if color_tracker[key] == 0:
+                    color = '#FF0000'  # First word red
+                elif color_tracker[key] == total_words - 1:
+                    color = '#FF0000'  # Last word red
+                elif color_tracker[key] % 2 == 1:
+                    color = '#E6E6FA'  # Alternating green
+                else:
+                    color = '#FF0000'  # Alternating red
 
-        color_tracker[key] += 1
+                color_tracker[key] += 1
+            else:
+                color = row[1]  # Use predefined color if not 'AUTO'
 
         # Annotation details
         rawword = row[7]
