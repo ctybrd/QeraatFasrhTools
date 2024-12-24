@@ -83,6 +83,71 @@ def update_words_xyw(comments):
 
     conn.commit()
     conn.close()
+def adjust_line_positions():
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    # Retrieve all rows ordered by wordindex
+    c.execute("SELECT wordindex, wordsno, x, width, clc FROM wordsall ORDER BY wordindex")
+    rows = c.fetchall()
+
+    if not rows:
+        print("No rows found.")
+        conn.close()
+        return
+
+    margin = 0.01  # Define the margin
+
+    # Helper function to find the nearest prior and next rows with clc == 0 or NULL
+    def find_neighbors(index):
+        prior = None
+        next_ = None
+
+        # Search backward for the prior row
+        for j in range(index - 1, -1, -1):
+            if rows[j][4] in (0, None):  # clc == 0 or NULL
+                prior = rows[j]
+                break
+
+        # Search forward for the next row
+        for j in range(index + 1, len(rows)):
+            if rows[j][4] in (0, None):  # clc == 0 or NULL
+                next_ = rows[j]
+                break
+
+        return prior, next_
+
+    # Process each row
+    for i, row in enumerate(rows):
+        wordindex, wordsno, x, width, clc = row
+
+        # Skip rows that don't need updating
+        if clc != 1:
+            continue
+
+        # Find the prior and next neighbors
+        prior, next_ = find_neighbors(i)
+
+        # Calculate new x and width
+        if prior and next_:
+            new_x = prior[2] + prior[3] + margin  # Align with prior's right edge + margin
+            new_width = max(next_[2] - margin - new_x, 0)  # Align with next's left edge - margin
+        else:
+            # If no valid neighbors found, skip update
+            print(f"Skipping update for wordindex {wordindex}, wordsno {wordsno}: no valid neighbors.")
+            continue
+
+        # Update the row in the database
+        c.execute(
+            "UPDATE wordsall SET x = ?, width = ? WHERE wordindex = ? AND wordsno = ?",
+            (new_x, new_width, wordindex, wordsno)
+        )
+
+        print(f"Updated wordindex {wordindex}, wordsno {wordsno}: x = {new_x}, width = {new_width}")
+
+    conn.commit()
+    conn.close()
+    print("Adjustment process completed.")
 
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
@@ -100,3 +165,5 @@ if os.path.exists(qaree_file):
     print("Line comments extracted and inserted from", qaree_file)
 else:
     print("File not found:", qaree_file)
+
+adjust_line_positions()
