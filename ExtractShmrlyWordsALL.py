@@ -30,6 +30,11 @@ def extract_line_comments(pdf_path):
                             if len(parts) >= 2:
                                 comment['wordindex'] = parts[0]  # First part before the dash
                                 comment['wordsno'] = parts[1]   # Second part after the first dash
+                        if annotation.get_object()['/C']:
+                            color = annotation.get_object()['/C']
+                            # Check if color is not red [1,0,0] or blue [0,0,1]
+                            if color != [1,0,0] and color != [0,0,1]:
+                                comment['clc'] = 1
                         if '/BS' in annotation.get_object():
                             if '/S' in annotation.get_object()['/BS']:
                                 comment['style'] = str(annotation.get_object()['/BS']['/S'])
@@ -63,11 +68,12 @@ def update_words_xyw(comments):
                 print(f"updating  page {str(comment['pageno'])} word {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
                 if wordindex and wordsno:
                     c.execute(
-                        "UPDATE wordsall SET x = ?, y = ?, width = ? WHERE wordindex = ? AND wordsno = ?",
+                        "UPDATE wordsall SET x = ?, /* y = ?, */ width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
                         (
                             (x1 - xshift) / 443.0,  # Normalize x
-                            1 - (y1 - 81.0) / 691.0,  # Normalize y
+                            # 1 - (y1 - 81.0) / 691.0,  # Normalize y
                             (x2 - x1) / 443.0,  # Calculate width
+                            comment.get('clc', 0),  # Get clc value, default to 0 if not present
                             wordindex,
                             wordsno
                         )

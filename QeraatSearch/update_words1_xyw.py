@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+import os
 
 def update_words_with_margins(db_path, words_data):
     conn = sqlite3.connect(db_path)
@@ -78,7 +79,11 @@ def update_words_with_margins(db_path, words_data):
 
 # Main execution
 
-db_path = r'D:\\Qeraat\\QeraatFasrhTools\\QeraatSearch\\qeraat_data_simple.db'
+script_path = os.path.abspath(__file__)
+drive, _ = os.path.splitdrive(script_path)
+drive = drive + '/'
+
+db_path = drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
 query = "SELECT * FROM wordsall where wordindex>11629 page_number2<530 ORDER BY wordindex, wordsno"
 
 words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
