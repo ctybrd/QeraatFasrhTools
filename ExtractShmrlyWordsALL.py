@@ -88,7 +88,7 @@ def adjust_line_positions():
     c = conn.cursor()
 
     # Retrieve all rows ordered by wordindex
-    c.execute("SELECT wordindex, wordsno, x, width, clc FROM wordsall ORDER BY wordindex")
+    c.execute("SELECT wordindex, wordsno, x, width, clc FROM wordsall ORDER BY wordindex,wordsno")
     rows = c.fetchall()
 
     if not rows:
@@ -103,16 +103,16 @@ def adjust_line_positions():
         prior = None
         next_ = None
 
+        # Search forward for the next row (reversed logic, so "next" is actually earlier in list)
+        for j in range(index + 1, len(rows)):
+            if rows[j][4] in (0, None):  # clc == 0 or NULL
+                next_ = rows[j]
+                break
+
         # Search backward for the prior row
         for j in range(index - 1, -1, -1):
             if rows[j][4] in (0, None):  # clc == 0 or NULL
                 prior = rows[j]
-                break
-
-        # Search forward for the next row
-        for j in range(index + 1, len(rows)):
-            if rows[j][4] in (0, None):  # clc == 0 or NULL
-                next_ = rows[j]
                 break
 
         return prior, next_
@@ -130,8 +130,9 @@ def adjust_line_positions():
 
         # Calculate new x and width
         if prior and next_:
-            new_x = prior[2] + prior[3] + margin  # Align with prior's right edge + margin
-            new_width = max(next_[2] - margin - new_x, 0)  # Align with next's left edge - margin
+            # Reverse logic for estimation
+            new_x = next_[2] + next_[3] +margin
+            new_width = abs(prior[2] - new_x ) - margin
         else:
             # If no valid neighbors found, skip update
             print(f"Skipping update for wordindex {wordindex}, wordsno {wordsno}: no valid neighbors.")
@@ -148,22 +149,21 @@ def adjust_line_positions():
     conn.commit()
     conn.close()
     print("Adjustment process completed.")
-
+#استخدم هذا المتغير في حالة تكون عملت تعديلات في المعادلات ومش عايز تقرا الملف
+run_adjustment_only = False  # Set this to True to only run adjust_line_positions
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive + '/'
-
-# Construct the database path correctly
 db_path = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools', 'QeraatSearch', 'qeraat_data_simple.db')
+if __name__ == '__main__':
+    if not run_adjustment_only:
+        # Define the path for the qaree PDF file
+        qaree_file = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'ShmrlyWords.pdf')
 
-# Define the path for the qaree PDF file
-qaree_file = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'ShmrlyWords.pdf')
-
-if os.path.exists(qaree_file):
-    comments = extract_line_comments(qaree_file)
-    update_words_xyw(comments)
-    print("Line comments extracted and inserted from", qaree_file)
-else:
-    print("File not found:", qaree_file)
-
+        if os.path.exists(qaree_file):
+            comments = extract_line_comments(qaree_file)
+            update_words_xyw(comments)
+            print("Line comments extracted and inserted from", qaree_file)
+        else:
+            print("File not found:", qaree_file)
 adjust_line_positions()
