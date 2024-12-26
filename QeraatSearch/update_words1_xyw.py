@@ -15,11 +15,11 @@ def update_words_with_margins(db_path, words_data):
     for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
         print(f"Processing page {page_number}, line {lineno} with {len(line_data)} words.")  # Debug log
         if page_number % 2 == 0:  # Even pages
-            left_margin = 0.03
-            right_margin = 0.03
+            left_margin = 0.0
+            right_margin = 0.0
         else:    
-            left_margin = 0.02
-            right_margin = 0.04
+            left_margin = 0.0
+            right_margin = 0.0
         # Calculate total margin space
         num_words = len(line_data)
         total_margin_space = left_margin + right_margin + (num_words - 1) * inter_word_margin
@@ -84,7 +84,7 @@ drive, _ = os.path.splitdrive(script_path)
 drive = drive + '/'
 
 db_path = drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db'
-query = "SELECT * FROM wordsall where wordindex>11629 page_number2<530 ORDER BY wordindex, wordsno"
+query = "SELECT * FROM wordsall where page_number2>76 ORDER BY wordindex, wordsno"
 
 words_data = pd.read_sql_query(query, sqlite3.connect(db_path))
 
@@ -115,6 +115,17 @@ y_positions = {
     6: 0.4108, 7: 0.4782, 8: 0.537, 9: 0.6012, 10: 0.6658,
     11: 0.7293, 12: 0.7932, 13: 0.8525, 14: 0.9176, 15: 0.9831
 }
+# Define page ranges to be excluded from updates
+excluded_page_ranges = [(1, 76), (103, 103),(521,522)] 
 
+# Function to check if a page is in the excluded ranges
+def is_page_excluded(page_number, excluded_ranges):
+    for start, end in excluded_ranges:
+        if start <= page_number <= end:
+            return True
+    return False
+
+# Filter out words_data that fall within the excluded page ranges
+words_data = words_data[~words_data['page_number2'].apply(lambda x: is_page_excluded(x, excluded_page_ranges))]
 # Run the update function
 update_words_with_margins(db_path, words_data)
