@@ -68,10 +68,10 @@ def update_words_xyw(comments):
                 print(f"updating  page {str(comment['pageno'])} word {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
                 if wordindex and wordsno:
                     c.execute(
-                        "UPDATE wordsall SET x = ?, /* y = ?, */ width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
+                        "UPDATE wordsall SET x = ?,  y = ?,  width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
                         (
                             (x1 - xshift) / 443.0,  # Normalize x
-                            # 1 - (y1 - 81.0) / 691.0,  # Normalize y
+                             1 - (y1 - 81.0) / 691.0,  # Normalize y
                             (x2 - x1) / 443.0,  # Calculate width
                             comment.get('clc', 0),  # Get clc value, default to 0 if not present
                             wordindex,
@@ -145,8 +145,27 @@ def adjust_line_positions():
         )
 
         print(f"Updated wordindex {wordindex}, wordsno {wordsno}: x = {new_x}, width = {new_width}")
-
     conn.commit()
+    c = conn.cursor()
+    #normalize y
+    sqly ="""
+        WITH MaxValues AS (
+            SELECT 
+                page_number2, 
+                lineno2, 
+                MAX(y) AS max_y
+            FROM wordsall
+            GROUP BY page_number2, lineno2
+        )
+        UPDATE wordsall 
+        SET y = (
+            SELECT max_y 
+            FROM MaxValues mv
+            WHERE mv.page_number2 = wordsall.page_number2 AND mv.lineno2 = wordsall.lineno2
+        );
+
+        """
+    c.execute(sqly)
     conn.close()
     print("Adjustment process completed.")
 #استخدم هذا المتغير في حالة تكون عملت تعديلات في المعادلات ومش عايز تقرا الملف
