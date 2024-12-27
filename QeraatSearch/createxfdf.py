@@ -3,7 +3,7 @@ import uuid
 import datetime
 import os
 
-edition = 'W'
+edition = 'M'
 
 def create_xfdf(output_xfdf, db_file):
     color_tracker = {}
@@ -59,6 +59,7 @@ def create_xfdf(output_xfdf, db_file):
     for row in data:
         page_number = row[0]
         lineno2 = row[12]
+        color = row[1]  
         key = (page_number, lineno2)
         if key not in word_counts_by_line_and_page:
             word_counts_by_line_and_page[key] = 0
