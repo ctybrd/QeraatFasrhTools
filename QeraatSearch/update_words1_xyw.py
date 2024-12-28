@@ -15,11 +15,11 @@ def update_words_with_margins(db_path, words_data):
     for (page_number, lineno), line_data in words_data.groupby(['page_number2', 'lineno2']):
         print(f"Processing page {page_number}, line {lineno} with {len(line_data)} words.")  # Debug log
         if page_number % 2 == 0:  # Even pages
-            left_margin = 0.0
-            right_margin = 0.0
+            left_margin = 0.03
+            right_margin = 0.03
         else:    
-            left_margin = 0.0
-            right_margin = 0.0
+            left_margin = 0.03
+            right_margin = 0.03
         # Calculate total margin space
         num_words = len(line_data)
         total_margin_space = left_margin + right_margin + (num_words - 1) * inter_word_margin

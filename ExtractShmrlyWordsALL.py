@@ -55,7 +55,7 @@ def extract_line_comments(pdf_path):
 def update_words_xyw(comments):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    xshift = 85.0
+    xshift = 81.0
    
     for comment in comments:
         try:
@@ -70,9 +70,9 @@ def update_words_xyw(comments):
                     c.execute(
                         "UPDATE wordsall SET x = ?,  y = ?,  width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
                         (
-                            (x1) / 596.66,  # Normalize x
-                             1 - (y1 ) / 842.96  # Normalize y
-                            (x2 - x1) / 596.66,  # Calculate width
+                            (float(x1)-xshift)/443.0 ,  # Normalize x
+                            1 - (float((float(y1)-81.0)/691.0))  # Normalize y
+                            (x2 - x1) /  443.0,  # Calculate width
                             comment.get('clc', 0),  # Get clc value, default to 0 if not present
                             wordindex,
                             wordsno

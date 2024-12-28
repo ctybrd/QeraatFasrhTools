@@ -3,7 +3,7 @@ import uuid
 import datetime
 import os
 
-edition = 'M'
+edition = 'W'
 
 def create_xfdf(output_xfdf, db_file):
     color_tracker = {}
@@ -80,8 +80,8 @@ def create_xfdf(output_xfdf, db_file):
             ymargin = 67
         else:  # Shamarly
             page_width, page_height = 595.22, 842
-            page_width1, page_height1 = 446, 693
-            xmargin = 80 if (page_number + 1) % 2 == 0 else 84
+            page_width1, page_height1 = 443, 691
+            xmargin = 81 if (page_number + 1) % 2 == 0 else 81
             ymargin = 80
 
         # Calculate positions
