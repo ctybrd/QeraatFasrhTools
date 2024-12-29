@@ -82,7 +82,7 @@ def create_xfdf(output_xfdf, db_file):
             page_width, page_height = 595.22, 842
             page_width1, page_height1 = 443, 691
             xmargin = 81 if (page_number + 1) % 2 == 0 else 81
-            ymargin = 80
+            ymargin = 83
 
         # Calculate positions
         x = float(row[2]) * page_width1 + xmargin

@@ -7,6 +7,8 @@ def extract_line_comments(pdf_path):
     comments = []
     pdf = PdfReader(pdf_path)
     for pageno, page in enumerate(pdf.pages):
+        # if pageno != 77:
+        #     continue
         try:
             annotations = page['/Annots']        
             if annotations:
@@ -49,6 +51,7 @@ def extract_line_comments(pdf_path):
                         print(f"Processing page {pageno}, wordindex {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
                         comments.append(comment)
         except Exception as e:
+            print(f"Error processing annotations on page {pageno}: {e}")
             pass
     return comments
 
@@ -71,7 +74,7 @@ def update_words_xyw(comments):
                         "UPDATE wordsall SET x = ?,  y = ?,  width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
                         (
                             (float(x1)-xshift)/443.0 ,  # Normalize x
-                            1 - (float((float(y1)-81.0)/691.0))  # Normalize y
+                            1 - (float((float(y1)-81.0)/691.0)),  # Normalize y
                             (x2 - x1) /  443.0,  # Calculate width
                             comment.get('clc', 0),  # Get clc value, default to 0 if not present
                             wordindex,
@@ -79,6 +82,7 @@ def update_words_xyw(comments):
                         )
                     )
         except Exception as e:
+            print(f"Error processing annotations on page {comment['wordindex']}: {e}")
             pass
 
     conn.commit()

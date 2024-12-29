@@ -100,7 +100,7 @@ def extract_line_comments(pdf_path):
                     
                         
         except Exception as e:
-            # print(f"Error processing annotations on page {pageno}: {e}")
+            print(f"Error processing annotations on page {pageno}: {e}")
             pass
 
 
