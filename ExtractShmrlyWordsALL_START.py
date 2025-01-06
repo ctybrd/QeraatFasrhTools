@@ -7,10 +7,8 @@ def extract_line_comments(pdf_path):
     comments = []
     pdf = PdfReader(pdf_path)
     for pageno, page in enumerate(pdf.pages):
-        # if pageno != 77:
-        #     continue
         try:
-            annotations = page['/Annots']        
+            annotations = page['/Annots']
             if annotations:
                 for annotation in annotations:
                     if isinstance(annotation, str):
@@ -25,18 +23,15 @@ def extract_line_comments(pdf_path):
                             'color': annotation.get_object()['/C']
                         }
                         if '/NM' in annotation.get_object():
-                            # Extract wordindex and wordsno from linename
-                            # Name pattern: /NM (wordindex-wordsno-surah-ayah)
-                            linename = str(annotation.get_object()['/NM']).strip('()')  # Remove brackets
+                            linename = str(annotation.get_object()['/NM']).strip('()')
                             parts = linename.split('-')
                             if len(parts) >= 2:
-                                comment['wordindex'] = parts[0]  # First part before the dash
-                                comment['wordsno'] = parts[1]   # Second part after the first dash
+                                comment['wordindex'] = parts[0]
+                                comment['wordsno'] = parts[1]
                         if annotation.get_object()['/C']:
                             color = annotation.get_object()['/C']
-                            # Check if color is not red [1,0,0] or blue [0,0,1]
-                            if color != [1,0,0] and color != [0,0,1]:
-                                comment['clc'] = 1
+                            if color != [1, 0, 0] and color != [0, 0, 1]:
+                                comment['clc'] = 2
                         if '/BS' in annotation.get_object():
                             if '/S' in annotation.get_object()['/BS']:
                                 comment['style'] = str(annotation.get_object()['/BS']['/S'])
@@ -68,15 +63,14 @@ def update_words_xyw(comments):
                 x1, y1, x2, y2 = map(float, matches)
                 wordindex = comment.get('wordindex')
                 wordsno = comment.get('wordsno')
-                print(f"updating  page {str(comment['pageno'])} word {str(comment['wordindex'])} -  {str(comment['wordsno'])}")  
+                print(f"Updating page {str(comment['pageno'])} word {str(comment['wordindex'])} - {str(comment['wordsno'])}")  
                 if wordindex and wordsno:
                     c.execute(
-                        "UPDATE wordsall SET x = ?,  y = ?,  width = ?, clc = ? WHERE wordindex = ? AND wordsno = ?",
+                        "UPDATE wordsall SET x = ?, y = ?, width = ?, clc = 2 WHERE wordindex = ? AND wordsno = ?",
                         (
-                            (float(x1)-xshift)/443.0 ,  # Normalize x
-                            1 - (float((float(y1)-81.0)/691.0)),  # Normalize y
-                            (x2 - x1) /  443.0,  # Calculate width
-                            comment.get('clc', 0),  # Get clc value, default to 0 if not present
+                            (float(x1) - xshift) / 443.0,  # Normalize x
+                            1 - (float((float(y1) - 81.0) / 691.0)),  # Normalize y
+                            (x2 - x1) / 443.0,  # Calculate width
                             wordindex,
                             wordsno
                         )
@@ -87,72 +81,56 @@ def update_words_xyw(comments):
 
     conn.commit()
     conn.close()
+
 def adjust_line_positions():
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    # Retrieve all rows ordered by wordindex
-    c.execute("SELECT wordindex, wordsno, x, width, clc FROM wordsall ORDER BY wordindex,wordsno")
+    # Retrieve all rows with clc = 2, ordered by page_number2, lineno2, and wordindex
+    c.execute("SELECT wordindex, wordsno, x, width, clc, lineno2 FROM wordsall WHERE clc = 2 ORDER BY page_number2,lineno2, x")
     rows = c.fetchall()
 
     if not rows:
-        print("No rows found.")
+        print("No rows found with clc = 2.")
         conn.close()
         return
 
     margin = 0.01  # Define the margin
+    current_lineno2 = None
+    line_rows = []
 
-    # Helper function to find the nearest prior and next rows with clc == 0 or NULL
-    def find_neighbors(index):
-        prior = None
-        next_ = None
+    def process_line_rows(line_rows):
+        for i, row in enumerate(line_rows):
+            wordindex, wordsno, x, width, clc, lineno2 = row
 
-        # Search forward for the next row (reversed logic, so "next" is actually earlier in list)
-        for j in range(index + 1, len(rows)):
-            if rows[j][4] in (0, None):  # clc == 0 or NULL
-                next_ = rows[j]
-                break
+            if i < len(line_rows) - 1:
+                next_x = line_rows[i + 1][2]  # x of the next row
+                new_width = abs(next_x - x) - margin
+            else:
+                new_width = 0.98 - x  # Last row
 
-        # Search backward for the prior row
-        for j in range(index - 1, -1, -1):
-            if rows[j][4] in (0, None):  # clc == 0 or NULL
-                prior = rows[j]
-                break
+            c.execute(
+                "UPDATE wordsall SET width = ? WHERE wordindex = ? AND wordsno = ?",
+                (new_width, wordindex, wordsno)
+            )
+            print(f"Updated wordindex {wordindex}, wordsno {wordsno}, lineno2 {lineno2}: width = {new_width}")
 
-        return prior, next_
+    for row in rows:
+        _, _, _, _, _, lineno2 = row
+        if current_lineno2 is None:
+            current_lineno2 = lineno2
 
-    # Process each row
-    for i, row in enumerate(rows):
-        wordindex, wordsno, x, width, clc = row
+        if lineno2 != current_lineno2:
+            process_line_rows(line_rows)
+            current_lineno2 = lineno2
+            line_rows = []
 
-        # Skip rows that don't need updating
-        if clc != 1:
-            continue
+        line_rows.append(row)
 
-        # Find the prior and next neighbors
-        prior, next_ = find_neighbors(i)
+    if line_rows:
+        process_line_rows(line_rows)
 
-        # Calculate new x and width
-        if prior and next_:
-            # Reverse logic for estimation
-            new_x = next_[2] + next_[3] +margin
-            new_width = abs(prior[2] - new_x ) - margin
-        else:
-            # If no valid neighbors found, skip update
-            print(f"Skipping update for wordindex {wordindex}, wordsno {wordsno}: no valid neighbors.")
-            continue
-
-        # Update the row in the database
-        c.execute(
-            "UPDATE wordsall SET x = ?, width = ? WHERE wordindex = ? AND wordsno = ?",
-            (new_x, new_width, wordindex, wordsno)
-        )
-
-        print(f"Updated wordindex {wordindex}, wordsno {wordsno}: x = {new_x}, width = {new_width}")
-    conn.commit()
-    c = conn.cursor()
-    #normalize y
-    sqly ="""
+    sqly = """
         WITH MaxValues AS (
             SELECT 
                 page_number2, 
@@ -166,22 +144,23 @@ def adjust_line_positions():
             SELECT max_y 
             FROM MaxValues mv
             WHERE mv.page_number2 = wordsall.page_number2 AND mv.lineno2 = wordsall.lineno2
-        );
-
-        """
+        )
+        WHERE clc = 2;
+    """
     c.execute(sqly)
+    conn.commit()
     conn.close()
     print("Adjustment process completed.")
-#استخدم هذا المتغير في حالة تكون عملت تعديلات في الإحداثيات في الجدول ومش عايز تقرا الملف
-run_adjustment_only = False  # Set this to True to only run adjust_line_positions
+
+run_adjustment_only = False
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive + '/'
 db_path = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools', 'QeraatSearch', 'qeraat_data_simple.db')
+
 if __name__ == '__main__':
     if not run_adjustment_only:
-        # Define the path for the qaree PDF file
-        qaree_file = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'ShmrlyWords.pdf')
+        qaree_file = os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'Musshaf', 'ShmrlyWords_start.pdf')
 
         if os.path.exists(qaree_file):
             comments = extract_line_comments(qaree_file)
@@ -189,4 +168,4 @@ if __name__ == '__main__':
             print("Line comments extracted and inserted from", qaree_file)
         else:
             print("File not found:", qaree_file)
-adjust_line_positions()
+    adjust_line_positions()
