@@ -100,7 +100,7 @@ def adjust_line_positions():
         conn.close()
         return
 
-    margin = 0.01  # Define the margin
+    margin = 0.005  # Define the margin
 
     # Helper function to find the nearest prior and next rows with clc == 0 or NULL
     def find_neighbors(index):
