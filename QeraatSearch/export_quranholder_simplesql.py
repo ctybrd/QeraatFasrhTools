@@ -8,8 +8,8 @@ script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive +'/'
 
-source_db_path = drive + r'Qeraat/Wursha_QuranHolder/other/data/data_v18.db'
-destination_db_path = drive +  r'Qeraat/QeraatFasrhTools/QeraatSearch/data_v18.db'
+source_db_path = drive + r'Qeraat/Wursha_QuranHolder/other/data/data_v19.db'
+destination_db_path = drive +  r'Qeraat/QeraatFasrhTools/QeraatSearch/data_v19.db'
 shutil.copyfile(source_db_path, destination_db_path)
 
 # changed to be here in py 
@@ -242,7 +242,7 @@ def process_result(result, table_name):
 
 
 # Connect to the databases
-conn_data_v18 = sqlite3.connect(drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/data_v18.db')
+conn_data_v18 = sqlite3.connect(drive + 'Qeraat/QeraatFasrhTools/QeraatSearch/data_v19.db')
 db_path = drive +"Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db"
 connection = sqlite3.connect(db_path)
 cursor = connection.cursor()

@@ -7,7 +7,7 @@ import webcolors
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive +'/'
-db_path = os.path.join(drive, 'Qeraat', 'farsh_v9.db')
+db_path = os.path.join(drive, 'Qeraat', 'farsh_v10.db')
 tmp_db_path = os.path.join(drive, 'Qeraat', 'tmp.db')
 qaree_files = {
     "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Asbahani-Madina-Shalaby.pdf'),
@@ -308,7 +308,7 @@ destination_folders = [
 
 
 for folder in destination_folders:
-    destination_file = folder + '/farsh_v9.db'
+    destination_file = folder + '/farsh_v10.db'
     try:
         shutil.copy(file_path, destination_file)
         print(f"File copied to {destination_file} successfully.")

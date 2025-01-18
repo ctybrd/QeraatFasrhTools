@@ -20,7 +20,7 @@ QeraatSearch/Tags Editor/TagsEditor.identcache
 QeraatSearch/Tags Editor/TagsEditor.res
 QeraatSearch/Tags Editor/Win32/Debug/qeraat_data_simple.db
 *.ini
-QeraatSearch/data_v18.db
+QeraatSearch/data_v19.db
 ShmrlyFarsh/Warsh-Azraq-Shamarly-Shalaby.xfdf
 facebook_posts.db
 shmrly_osoul_brief.docx
@@ -445,3 +445,5 @@ output_documents/hashtag_يعني_إيه_أهداف.docx
 output_documents/hashtag_ﺣﺴﺎﻡ_ﻋﻴﺴﻰ_ﻭ_ﻗﺒﻠﺔ_ﺗﻬﺎﻧﻰ.docx
 QeraatSearch/imala_doc.py
 output_documents/hashtag_باب_ال_توبة.pdf
+ShmrlyFarsh/ShmrlyWordsALL.xfdf
+QeraatSearch/data_v18.db
