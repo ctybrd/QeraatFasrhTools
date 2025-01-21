@@ -578,6 +578,18 @@ update madina_temp set circle= '' where circle is null;
 update madina_temp set STYLE= 'S' where style  is null;
 update madina_temp set x= 0.0 where x<0.0;
 
+delete from madina_temp;
+insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
+select 'M',page_number1,'#808000',x,y+0.005,width,'S','' circle
+from all_qeraat where 
+             (IFNULL(r5_2, 0) = 0) and
+R6_1 is not null
+AND tags like '%waqfhamza%' and waqf is not null;
+
+update madina_temp set circle= '' where circle is null;
+update madina_temp set STYLE= 'S' where style  is null;
+update madina_temp set x= 0.0 where x<0.0;
+
 -- فرش حمزة
 delete from madina_temp;
 insert into madina_temp(qaree,page_number,color,x,y,width,style,circle)
