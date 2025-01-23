@@ -3,7 +3,7 @@ import uuid
 import datetime
 import os
 
-edition = 'M'
+edition = 'W'
 
 def create_xfdf(output_xfdf, db_file):
     color_tracker = {}

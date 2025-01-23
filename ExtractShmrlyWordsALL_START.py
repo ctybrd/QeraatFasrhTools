@@ -95,7 +95,7 @@ def adjust_line_positions():
         conn.close()
         return
 
-    margin = 0.01  # Define the margin
+    margin = 0.005  # Define the margin
     current_lineno2 = None
     line_rows = []
 
