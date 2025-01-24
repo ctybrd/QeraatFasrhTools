@@ -160,3 +160,27 @@ drive, _ = os.path.splitdrive(script_path)
 drive = drive + '/'
 
 create_xfdf(drive + "Qeraat/output_annots.xfdf", drive + "Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db")
+
+#for shmrlywords use past to predict the future
+xsql="""UPDATE wordsall 
+SET width = (
+    SELECT 
+        CASE 
+            WHEN AVG(w2.width) > wordsall.width THEN AVG(w2.width)
+            ELSE wordsall.width
+        END
+    FROM wordsall w2
+    WHERE wordsall.rawword = w2.rawword 
+      AND w2.page_number2 < 227
+)
+WHERE (page_number2 between 227 and 235)
+  AND clc = 0
+  AND EXISTS (
+    SELECT 1
+    FROM wordsall w2
+    WHERE wordsall.rawword = w2.rawword 
+      AND w2.page_number2 < 227
+      AND w2.width IS NOT NULL
+);
+
+"""
