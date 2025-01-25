@@ -171,15 +171,15 @@ SET width = (
         END
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND w2.page_number2 < 227
+      AND w2.page_number2 < 271 and w2.page_number2>3
 )
-WHERE (page_number2 between 227 and 235)
+WHERE (page_number2 between 271 and 280)
   AND clc = 0
   AND EXISTS (
     SELECT 1
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND w2.page_number2 < 227
+      AND  w2.page_number2 < 271 and w2.page_number2>3
       AND w2.width IS NOT NULL
 );
 
