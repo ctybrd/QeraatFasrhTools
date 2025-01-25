@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="E:/Qeraat/QeraatFasrhTools/QeraatSearch/qeraat_data_simple.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="query structure pragmas browser" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="7192"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,13:mainMadinaWordsXY"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">        WITH MaxValues AS (
+            SELECT 
+                page_number2, 
+                lineno2, 
+                MAX(y) AS max_y
+            FROM wordsall
+            GROUP BY page_number2, lineno2
+        )
+        UPDATE wordsall 
+        SET y = (
+            SELECT max_y 
+            FROM MaxValues mv
+            WHERE mv.page_number2 = wordsall.page_number2 AND mv.lineno2 = wordsall.lineno2
+        );</sql><current_tab id="0"/></tab_sql></sqlb_project>
