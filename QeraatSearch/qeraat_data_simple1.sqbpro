@@ -4,14 +4,14 @@ SET width = (
  AVG(w2.width) 
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND w2.page_number2 &lt; 263 and w2.page_number2&gt;3
+      AND w2.page_number2 &lt; 272 and w2.page_number2&gt;3
 )
-WHERE (page_number2 between 263 and 280)
+WHERE (page_number2 between 272 and 290)
   AND clc = 0
   AND EXISTS (
     SELECT 1
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND  w2.page_number2 &lt; 263 and w2.page_number2&gt;3
+      AND  w2.page_number2 &lt; 272 and w2.page_number2&gt;3
       AND w2.width IS NOT NULL
 );</sql><current_tab id="0"/></tab_sql></sqlb_project>
