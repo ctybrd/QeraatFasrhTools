@@ -165,21 +165,19 @@ create_xfdf(drive + "Qeraat/output_annots.xfdf", drive + "Qeraat/QeraatFasrhTool
 xsql="""UPDATE wordsall 
 SET width = (
     SELECT 
-        CASE 
-            WHEN AVG(w2.width) > wordsall.width THEN AVG(w2.width)
-            ELSE wordsall.width
-        END
+AVG(w2.width)
+
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND w2.page_number2 < 271 and w2.page_number2>3
+      AND w2.page_number2 < 281 and w2.page_number2>3
 )
-WHERE (page_number2 between 271 and 280)
+WHERE (page_number2 between 281 and 290)
   AND clc = 0
   AND EXISTS (
     SELECT 1
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND  w2.page_number2 < 271 and w2.page_number2>3
+      AND  w2.page_number2 < 281 and w2.page_number2>3
       AND w2.width IS NOT NULL
 );
 
