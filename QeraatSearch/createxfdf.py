@@ -180,7 +180,9 @@ WHERE (page_number2 between 281 and 290)
       AND  w2.page_number2 < 281 and w2.page_number2>3
       AND w2.width IS NOT NULL
 );
-
+select wordindex,ayah,word,page_number2,lineno2 from wordsall w1 where exists(select 1 from wordsall w2 WHERE
+w1.page_number2 =w2.page_number2 AND w1.lineno2=w2.lineno2 and w2.wordindex>w1.wordindex
+and w2.x>w1.x);
 CREATE INDEX idx_rawword_page_number2 ON wordsall (rawword, page_number2);
 CREATE INDEX idx_page_number2 ON wordsall (page_number2);
 
@@ -192,15 +194,15 @@ AVG(w2.width)
 
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND ((w2.page_number2 < 301 and w2.page_number2>3) or (w2.page_number2>=508))
+      AND ((w2.page_number2 < 346 and w2.page_number2>3) or (w2.page_number2>497))
 )
-WHERE (page_number2 between 301 and 507)
+WHERE (page_number2 between 346 and 497)
   AND clc = 0
   AND EXISTS (
     SELECT 1
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND  ((w2.page_number2 < 301 and w2.page_number2>3) or (w2.page_number2>=508))
+      AND  ((w2.page_number2 < 346 and w2.page_number2>3) or (w2.page_number2>497))
       AND w2.width IS NOT NULL
 );
 
