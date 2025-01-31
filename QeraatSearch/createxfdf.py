@@ -208,6 +208,10 @@ WHERE (page_number2 between 356 and 497)
 
 """
 #اختبار الدقة
-XSQL = """select wordindex,ayah,word,page_number2,lineno2 from wordsall w1 where exists(select 1 from wordsall w2 WHERE
+XSQL = """SELECT page_number2,ayah,word,lineno2 from wordsall w1 where exists(select 1 from wordsall w2 WHERE
 w1.page_number2 =w2.page_number2 AND w1.lineno2=w2.lineno2 and w2.wordindex>w1.wordindex
-and w2.x>w1.x)"""
+and w2.x>w1.x)
+UNION ALL 
+SELECT page_number2,ayah,word,lineno2 FROM WORDSALL WHERE width <0.005 AND WORDSNO<=999
+ORDER BY page_number2;
+"""
