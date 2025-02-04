@@ -194,15 +194,15 @@ AVG(w2.width)
 
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND ((w2.page_number2 < 386 and w2.page_number2>3) or (w2.page_number2>497))
+      AND ((w2.page_number2 < 451 and w2.page_number2>3) or (w2.page_number2>497))
 )
-WHERE (page_number2 between 386 and 497)
+WHERE (page_number2 between 451 and 497)
   AND clc = 0
   AND EXISTS (
     SELECT 1
     FROM wordsall w2
     WHERE wordsall.rawword = w2.rawword 
-      AND  ((w2.page_number2 < 386 and w2.page_number2>3) or (w2.page_number2>497))
+      AND  ((w2.page_number2 < 451 and w2.page_number2>3) or (w2.page_number2>497))
       AND w2.width IS NOT NULL
 );
 
