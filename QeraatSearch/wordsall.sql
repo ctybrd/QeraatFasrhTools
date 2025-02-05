@@ -350,3 +350,26 @@ from quran_data where
 )
 AND page_number2>=42
 order by aya_index,id;
+
+-- عد الآي
+SELECT * from shmrly where (color='#8B0000' or color ='#8b0000')
+and circle =4 and qaree in('K','B','I','C','A');
+
+SELECT 
+    aya_count.*, 
+    wordsall.wordindex, 
+    wordsall.x AS word_x, 
+    wordsall.y AS word_y, 
+    wordsall.width AS word_width,
+  wordsall.rawword
+FROM 
+    aya_count
+left JOIN 
+    wordsall 
+ON 
+    aya_count.x + .07 BETWEEN wordsall.x AND wordsall.x + wordsall.width
+    AND aya_count.y BETWEEN wordsall.y - 0.075 AND wordsall.y
+    AND wordsall.page_number2 = aya_count.page_number
+WHERE aya_count.qaree='K' 
+
+	ORDER by aya_count.page_number,aya_count.y,aya_count.x desc;
