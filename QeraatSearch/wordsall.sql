@@ -291,36 +291,37 @@ update quran_data set page_number2 = page_shmrly;
 -- الإحداثيات
 UPDATE quran_data
 SET x2 = (
-    SELECT x
+    SELECT max(x)
     FROM wordsall xy
     WHERE xy.wordindex=quran_data.wordindex
 );
 
 UPDATE quran_data
 SET y2 = (
-    SELECT y
+    SELECT min(y)
     FROM wordsall xy
     WHERE xy.wordindex=quran_data.wordindex
 );
 UPDATE quran_data
 SET width2 = (
-    SELECT width
+    SELECT max(width)
     FROM wordsall xy
     WHERE xy.wordindex=quran_data.wordindex
 );
 
 UPDATE quran_data
 SET page_shmrly = (
-    SELECT page_number2
+    SELECT min(page_number2)
     FROM wordsall xy
     WHERE 
     xy.wordindex = quran_data.wordindex 
 )
 ;
 update quran_data set page_number2 = page_shmrly;
+
 UPDATE quran_data
 SET rasaya = (
-    SELECT rasaya
+    SELECT max(rasaya)
     FROM wordsall xy
     WHERE 
     xy.wordindex = quran_data.wordindex  and
@@ -329,7 +330,7 @@ SET rasaya = (
 ;
 UPDATE quran_data
 SET wordsno = (
-    SELECT wordsno
+    SELECT min(wordsno)
     FROM wordsall xy
     WHERE 
     xy.wordindex = quran_data.wordindex  AND
