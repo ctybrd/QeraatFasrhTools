@@ -355,21 +355,60 @@ order by aya_index,id;
 SELECT * from shmrly where (color='#8B0000' or color ='#8b0000')
 and circle =4 and qaree in('K','B','I','C','A');
 
+update wordsall set y=0.3 where wordindex=4 and wordsno=999;
+
 SELECT 
-    aya_count.*, 
+    aya_count.qaree,
+	aya_count.style,
     wordsall.wordindex, 
+	wordsall.page_number2,
     wordsall.x AS word_x, 
     wordsall.y AS word_y, 
     wordsall.width AS word_width,
-  wordsall.rawword
+  (select rawword from wordsall w1 where w1.wordindex=wordsall.wordindex and w1.wordsno<999) rawword1
 FROM 
     aya_count
 left JOIN 
     wordsall 
 ON 
-    aya_count.x + .07 BETWEEN wordsall.x AND wordsall.x + wordsall.width
-    AND aya_count.y BETWEEN wordsall.y - 0.075 AND wordsall.y
+    aya_count.x + case when aya_count.style ='H' then 0.000 else 0.02 end BETWEEN wordsall.x AND wordsall.x + wordsall.width
+    AND aya_count.y BETWEEN wordsall.y - 0.07 AND wordsall.y
     AND wordsall.page_number2 = aya_count.page_number
-WHERE aya_count.qaree='K' 
+WHERE aya_count.qaree ='K'
 
-	ORDER by aya_count.page_number,aya_count.y,aya_count.x desc;
+ORDER by page_number2,wordindex;
+
+
+UPDATE wordsall
+SET madani1 = (
+    SELECT CASE 
+             WHEN aya_count.style = 'S' THEN 1 
+             WHEN aya_count.style = 'H' THEN 0 
+           END
+    FROM aya_count
+    LEFT JOIN wordsall AS w ON 
+        aya_count.x + CASE 
+                        WHEN aya_count.style = 'H' THEN 0.000 
+                        ELSE 0.02 
+                      END 
+        BETWEEN w.x AND w.x + w.width
+        AND aya_count.y BETWEEN w.y - 0.07 AND w.y
+        AND w.page_number2 = aya_count.page_number
+    WHERE aya_count.qaree = 'K'
+      AND w.wordindex = wordsall.wordindex
+    LIMIT 1
+)
+WHERE wordsno <999 and EXISTS (
+    SELECT 1 
+    FROM aya_count
+    LEFT JOIN wordsall AS w ON 
+        aya_count.x + CASE 
+                        WHEN aya_count.style = 'H' THEN 0.000 
+                        ELSE 0.02 
+                      END 
+        BETWEEN w.x AND w.x + w.width
+        AND aya_count.y BETWEEN w.y - 0.07 AND w.y
+        AND w.page_number2 = aya_count.page_number
+    WHERE aya_count.qaree = 'K'
+      AND w.wordindex = wordsall.wordindex
+);
