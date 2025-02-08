@@ -3,7 +3,7 @@ import uuid
 import datetime
 import os
 
-edition = 'W'
+edition = 'M'
 
 def create_xfdf(output_xfdf, db_file):
     color_tracker = {}
@@ -116,7 +116,10 @@ def create_xfdf(output_xfdf, db_file):
 
         # Annotation details
         rawword = row[7]
-        annot_name = f"{row[8]}-{row[9]}-{row[10]}-{row[11]}"
+        if edition == 'W':
+            annot_name = f"{row[8]}-{row[9]}-{row[10]}-{row[11]}"
+        else:
+            annot_name = str(uuid.uuid4())
         creation_date = datetime.datetime.now().strftime("D:%Y%m%d%H%M%S+03'00'")
         additional_attribute = ''
         circle, style = row[6], row[5]
