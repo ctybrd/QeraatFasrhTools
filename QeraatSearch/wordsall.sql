@@ -412,3 +412,99 @@ WHERE wordsno <999 and EXISTS (
     WHERE aya_count.qaree = 'K'
       AND w.wordindex = wordsall.wordindex
 );
+
+
+SELECT wordindex,surah,ayah,word,page_number2,
+case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end as kofi,
+case madani1 when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as madani1,
+case madani2 when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as madani2,
+case maki when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as maki,
+case shami when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as shami,
+case basri when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as basri
+,* from wordsall where 
+madani1 is not null 
+or 
+madani2 is not null
+or 
+maki is not null
+or
+shami is not NULL
+or 
+basri is not NULL
+order by wordindex
+
+-- عد الآي
+SELECT wordindex,surah,ayah,word,page_number2,
+
+case madani1 when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as madani1,
+case madani2 when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as madani2,
+case maki when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as maki,
+case basri when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as basri
+,
+case shami when 0 then 'لم يعدها' 
+when 1 then 'عدها'
+else case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end 
+end as shami,
+case rasaya when 1 then 'عدها'
+else 'لم يعدها'
+end as kofi from wordsall where 
+madani1 is not null 
+or 
+madani2 is not null
+or 
+maki is not null
+or
+shami is not NULL
+or 
+basri is not NULL
+order by wordindex
+
