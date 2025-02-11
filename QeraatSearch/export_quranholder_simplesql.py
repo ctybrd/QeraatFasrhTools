@@ -51,7 +51,7 @@ settings=[
     },
     {
         "table_name": "book_aboamro",
-        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  resultnew, CASE WHEN q3 IS NOT NULL THEN '' ELSE CASE WHEN r3_1 IS NOT NULL THEN 'ألدوري ' ELSE 'السوسي ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
+        "sql": "SELECT aya_index, sub_subject || case when count_words =1 then '' when count_words =2 THEN ' (معا)' else '  (جميعا)' end as sub_subject,  resultnew, CASE WHEN q3 IS NOT NULL THEN '' ELSE CASE WHEN r3_1 IS NOT NULL THEN 'الدوري ' ELSE 'السوسي ' END END as subqaree, reading FROM quran_data WHERE (1 = 1) ORDER BY aya_index, id;",
         "filtering_conditions": [
             " (R3_1 IS NOT NULL or R3_2 IS NOT NULL) " ,
             " IFNULL(r5_2, 0) = 0 ",
