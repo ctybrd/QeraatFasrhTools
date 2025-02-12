@@ -128,10 +128,6 @@ def insert_words_into_db(tokens):
     for ayah_number, start_index in ayah_updates:
         cursor.execute("UPDATE wordsall_warsh SET ayah = ? WHERE wordindex >= ? AND wordsno < 999", (ayah_number, start_index))
     conn.commit()
-    # Correct wordindex for special marks
-    cursor.execute("UPDATE wordsall_warsh SET wordindex = wordindex - 1 WHERE wordsno IN (999, 1000, 1001)")
-    
-    conn.commit()
     conn.close()
 
 # Execute script
@@ -139,3 +135,8 @@ create_table()
 tokens = extract_tokens(doc_path)
 insert_words_into_db(tokens)
 print("Database has been updated successfully.")
+
+adj ="""
+UPDATE wordsall_warsh SET wordindex = wordindex - 1 WHERE wordsno IN (999, 1000, 1001);
+UPDATE wordsall_warsh set ayah=ayah +1 where wordsno= 1000;
+"""
