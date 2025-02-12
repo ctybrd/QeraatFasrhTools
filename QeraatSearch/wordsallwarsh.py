@@ -91,8 +91,24 @@ def insert_words_into_db(tokens):
             wordsno = 999
             current_ayah = convert_arabic_numerals(token)  # Convert Arabic to Western numerals
             ayah_updates.append((current_ayah, last_wordsno_1_index))  # Store ayah change
-        elif token == '۩':  # Sajdah mark
-            wordsno = 1000
+        elif token.endswith("۩"):  # If sajdah mark is attached to the word
+            token = token[:-1]  # Remove sajdah mark from the word
+            rawword = token
+            mshfword = token
+            mshfrawword = remove_diacritics(token)
+            wordsno = wordsno + 1 if wordsno < 999 else 1
+            if wordsno == 1:
+                last_wordsno_1_index = wordindex
+            
+            cursor.execute('''
+                INSERT INTO wordsall_warsh (wordindex, wordsno, rawword, mshfword, mshfrawword, surah, ayah)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (wordindex, wordsno, rawword, mshfword, mshfrawword, current_surah, current_ayah))
+            
+            cursor.execute('''
+                INSERT INTO wordsall_warsh (wordindex, wordsno, rawword, mshfword, mshfrawword, surah, ayah)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (wordindex, 1000, "۩", "۩", "۩", current_surah, current_ayah))
         elif token == '۞':  # Ruku mark
             wordsno = 1001
         else:
@@ -105,14 +121,15 @@ def insert_words_into_db(tokens):
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (wordindex, wordsno, rawword, mshfword, mshfrawword, current_surah, current_ayah))
         
-        if wordsno == 999 or wordsno == 1000 or wordsno == 1001:
-            continue  # Keep same wordindex for special marks
-        
-        wordindex += 1  # Increment wordindex for new words
+        if wordsno < 999:
+            wordindex += 1  # Increment wordindex for normal words
     
     # Assign ayah numbers retroactively
     for ayah_number, start_index in ayah_updates:
         cursor.execute("UPDATE wordsall_warsh SET ayah = ? WHERE wordindex >= ? AND wordsno < 999", (ayah_number, start_index))
+    
+    # Correct wordindex for special marks
+    cursor.execute("UPDATE wordsall_warsh SET wordindex = wordindex - 1 WHERE wordsno IN (999, 1000, 1001)")
     
     conn.commit()
     conn.close()
