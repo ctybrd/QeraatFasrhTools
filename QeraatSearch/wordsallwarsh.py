@@ -127,7 +127,7 @@ def insert_words_into_db(tokens):
     # Assign ayah numbers retroactively
     for ayah_number, start_index in ayah_updates:
         cursor.execute("UPDATE wordsall_warsh SET ayah = ? WHERE wordindex >= ? AND wordsno < 999", (ayah_number, start_index))
-    
+    conn.commit()
     # Correct wordindex for special marks
     cursor.execute("UPDATE wordsall_warsh SET wordindex = wordindex - 1 WHERE wordsno IN (999, 1000, 1001)")
     
