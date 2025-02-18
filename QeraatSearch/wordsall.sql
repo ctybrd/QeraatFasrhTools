@@ -337,6 +337,41 @@ SET wordsno = (
 	xy.wordsno<999
 )
 ;
+
+
+-- الإحداثيات المدينة
+UPDATE quran_data
+SET x = (
+    SELECT max(x1)
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
+
+UPDATE quran_data
+SET y = (
+    SELECT min(y1)
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
+UPDATE quran_data
+SET width = (
+    SELECT max(width1)
+    FROM wordsall xy
+    WHERE xy.wordindex=quran_data.wordindex
+);
+
+UPDATE quran_data
+SET page_number1 = (
+    SELECT min(page_number1)
+    FROM wordsall xy
+    WHERE 
+    xy.wordindex = quran_data.wordindex 
+)
+;
+
+
+
+
 -- استخراج خطوط فرش
 
 delete from shmrly_temp ;
