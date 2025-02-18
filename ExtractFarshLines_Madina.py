@@ -7,7 +7,9 @@ import webcolors
 script_path = os.path.abspath(__file__)
 drive, _ = os.path.splitdrive(script_path) 
 drive = drive +'/'
+source_file = os.path.join(drive, 'Qeraat', 'Wursha_QuranHolder', 'other', 'data', 'farsh_v10.db')
 db_path = os.path.join(drive, 'Qeraat', 'farsh_v10.db')
+shutil.copy(source_file, os.path.join(drive, 'Qeraat'))
 tmp_db_path = os.path.join(drive, 'Qeraat', 'tmp.db')
 qaree_files = {
     "W": os.path.join(drive, 'Qeraat', 'QeraatFasrhTools_Data', 'MusshafM', 'Asbahani-Madina-Shalaby.pdf'),
