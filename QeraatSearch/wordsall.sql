@@ -543,3 +543,23 @@ or
 basri is not NULL
 order by wordindex
 
+--- فحص الكلمات المتكررة لتصحيح
+-- wordindex
+WITH repeated_words AS (
+    SELECT rawword, surah, ayah, group_concat(distinct wordindex) AS wordindexes
+    FROM wordsall
+    WHERE wordsno < 999
+    GROUP BY rawword, surah, ayah
+    HAVING COUNT(*) > 1
+)
+SELECT w.rawword, w.nextword, r.wordindexes,q.wordindex, q.*
+FROM wordsall w
+JOIN repeated_words r 
+ON w.rawword = r.rawword 
+AND w.surah = r.surah 
+AND w.ayah = r.ayah
+JOIN quran_data q 
+ON (q.sub_subject = w.rawword OR q.sub_subject = w.nextword)
+AND q.sora = w.surah  
+AND q.aya = w.ayah
+ORDER BY q.aya_index,q.id;
