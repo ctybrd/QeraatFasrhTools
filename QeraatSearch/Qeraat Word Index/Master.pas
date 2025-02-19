@@ -44,7 +44,6 @@ type
     HQaya: TIntegerField;
     HQsub_subject: TWideMemoField;
     HQqarees: TWideMemoField;
-    HQqareesrest: TWideMemoField;
     HQwordindex: TIntegerField;
     DQsurah: TIntegerField;
     DQayah: TIntegerField;
@@ -52,6 +51,9 @@ type
     DQnextword: TWideMemoField;
     DQwordindex: TIntegerField;
     SearchBtn: TButton;
+    HQid: TIntegerField;
+    HQreading: TWideMemoField;
+    DQnextword2: TWideMemoField;
     procedure FormCreate(Sender: TObject);
     procedure DDSDataChange(Sender: TObject; Field: TField);
     procedure DBAfterConnect(Sender: TObject);
@@ -128,14 +130,14 @@ begin
   AssignWideMemoFieldEvents(HQ);
   AssignWideMemoFieldEvents(DQ);
 
-  SqlH := 'SELECT sora, aya, sub_subject, qarees, qareesrest, wordindex '
+  SqlH := 'SELECT sora, aya, id, sub_subject, qarees, reading, wordindex '
     + 'FROM quran_data ';
-  WhrH := 'Where sora = 100 ';
+  WhrH := 'Where sora = 1 ';
   OrdrH := 'order by sora, aya';
   HQ.SQL.Text := SqlH + WhrH + OrdrH;
   HQ.Open();
 
-  SqlD := 'select surah, ayah, word, nextword, wordindex from wordsall ';
+  SqlD := 'select surah, ayah, word, nextword, nextword2, wordindex from wordsall ';
   WhrD := 'where surah = :sora and ayah = :aya ';
   OrdrD := 'order by surah, ayah, wordindex';
   DQ.SQL.Text := SqlD + WhrD + OrdrD;

@@ -695,10 +695,6 @@ object MasterF: TMasterF
       Caption = #1576#1581#1579
       TabOrder = 2
       OnClick = SearchBtnClick
-      ExplicitLeft = 376
-      ExplicitTop = 8
-      ExplicitWidth = 75
-      ExplicitHeight = 25
     end
   end
   object StatPnl: TGridPanel
@@ -870,8 +866,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 0
-      ExplicitLeft = 149
-      ExplicitWidth = 140
       object DecFontShp: TShape
         Left = 0
         Top = 0
@@ -916,8 +910,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 1
-      ExplicitLeft = 578
-      ExplicitWidth = 122
       object IncFontShp: TShape
         Left = 0
         Top = 0
@@ -960,8 +952,6 @@ object MasterF: TMasterF
       BevelOuter = bvNone
       ShowCaption = False
       TabOrder = 2
-      ExplicitLeft = 295
-      ExplicitWidth = 139
       object RequeryShp: TShape
         Left = 0
         Top = 0
@@ -1059,7 +1049,7 @@ object MasterF: TMasterF
     CommandTimeout = 60000
     Parameters = <>
     SQL.Strings = (
-      'SELECT sora, aya, sub_subject, qarees, qareesrest, wordindex '
+      'SELECT sora, aya, id, sub_subject, qarees, reading, wordindex'
       'FROM quran_data'
       'order by sora, aya')
     Left = 16
@@ -1070,6 +1060,9 @@ object MasterF: TMasterF
     object HQaya: TIntegerField
       FieldName = 'aya'
     end
+    object HQid: TIntegerField
+      FieldName = 'id'
+    end
     object HQsub_subject: TWideMemoField
       FieldName = 'sub_subject'
       BlobType = ftWideMemo
@@ -1078,8 +1071,8 @@ object MasterF: TMasterF
       FieldName = 'qarees'
       BlobType = ftWideMemo
     end
-    object HQqareesrest: TWideMemoField
-      FieldName = 'qareesrest'
+    object HQreading: TWideMemoField
+      FieldName = 'reading'
       BlobType = ftWideMemo
     end
     object HQwordindex: TIntegerField
@@ -1119,7 +1112,9 @@ object MasterF: TMasterF
         Value = Null
       end>
     SQL.Strings = (
-      'select surah, ayah, word, nextword, wordindex from wordsall'
+      
+        'select surah, ayah, word, nextword, nextword2, wordindex from wo' +
+        'rdsall'
       'where surah = :sora and ayah = :aya'
       'order by surah, ayah, wordindex')
     Left = 16
@@ -1136,6 +1131,10 @@ object MasterF: TMasterF
     end
     object DQnextword: TWideMemoField
       FieldName = 'nextword'
+      BlobType = ftWideMemo
+    end
+    object DQnextword2: TWideMemoField
+      FieldName = 'nextword2'
       BlobType = ftWideMemo
     end
     object DQwordindex: TIntegerField
