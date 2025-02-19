@@ -3,7 +3,7 @@ import uuid
 import datetime
 import os
 
-edition = 'M'
+edition = 'Q'
 
 def create_xfdf(output_xfdf, db_file):
     color_tracker = {}
@@ -20,6 +20,8 @@ def create_xfdf(output_xfdf, db_file):
         table_name = 'shmrly_words'
     elif edition == 'W':
         table_name = 'wordsall'
+    elif edition == 'Q':
+        table_name = 'quran_data'
 
     # Query data
     if edition == 'W':
@@ -44,6 +46,12 @@ def create_xfdf(output_xfdf, db_file):
             ORDER BY page_number, lineno2, wordindex, wordsno;
 
 
+        """
+    elif edition == 'Q':
+        xsql = f"""
+        SELECT page_number2, '#ff0000' color, x2 x, y2 y, width2 width, 'S' style, '' circle, sub_subject rawword,
+                wordindex,  wordsno, sora AS surah, aya AS ayah, 0 AS lineno2
+        FROM {table_name}
         """
     else:
         xsql = f"""
@@ -90,7 +98,7 @@ def create_xfdf(output_xfdf, db_file):
         width = float(row[4]) * page_width1
         x_start, y_start = max(0, min(x, page_width)), max(0, min(y, page_height))
         x_end, y_end = max(0, min(x + width, page_width)), y_start
-        if edition == 'W':
+        if edition == 'W' :
             # Handle color alternation and reset by page and line
             lineno2 = row[12]
             key = (page_number, lineno2)
@@ -116,7 +124,7 @@ def create_xfdf(output_xfdf, db_file):
 
         # Annotation details
         rawword = row[7]
-        if edition == 'W':
+        if edition == 'W' or edition == 'Q':
             annot_name = f"{row[8]}-{row[9]}-{row[10]}-{row[11]}"
         else:
             annot_name = str(uuid.uuid4())
