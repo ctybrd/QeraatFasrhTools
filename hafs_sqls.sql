@@ -732,3 +732,140 @@ WHERE (
 )
    AND surah = 30  
 ORDER BY wordindex;
+
+--15) ملحق (15): جمع مواضع
+--إدغام المتقاربين الصغير
+--- todo
+
+
+--16) ملحق (16): جمع مواضع
+--لام الفعل الساكنة المتوسطة
+---- todo refine
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like '%لْ%')
+and rawword not like 'ال%'
+   AND surah = 30  
+ORDER BY wordindex;
+
+-- 17) ملحق (17): جمع مواضع
+-- لام الفعل الساكنة المتطرفة
+-- todo refine
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+word like '%لْ'
+and rawword not like 'ال%'
+   AND surah = 30  
+ORDER BY wordindex;
+--18) ملحق (18): جمع مواضع لام الأمر الساكنة
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like 'وَلْ%'
+or word like 'فَلْ%'
+)
+   AND surah = 30  
+ORDER BY wordindex;
+
+--19) ملحق (19): جمع مواضع لام الاسم الساكنة
+--todo refine
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like '%لْ%')
+   AND surah = 30  
+ORDER BY wordindex;
+
+-- 20) ملحق (20): جمع الراءات المرققات
+-- 1. الراءات المرققات وصلًا ووقفًا
+-- todo refine بِنَصْرِ...
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like '%رِ%'
+or 
+word like '%ِرْ%'
+)
+   AND surah = 30  
+ORDER BY wordindex;
+
+-- 2. الراءات المرققات وقفًا لا وصلًا 
+
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like '%رُ'
+or 
+word like '%رَ'
+or
+word like '%رً'
+or
+word like '%رٌ'
+)
+
+and
+(word like '%ِر%'
+or
+word like '%ير%'
+or
+word like '%يْر%'
+)
+
+   AND surah = 30  
+ORDER BY wordindex;
+
+--3. الراءات المرققات وصلًا  لا وقفًا
+-- todo 
+--بِنَصْرِ آثَارِ ٱلنَّهَارِ ٱلۡبَرِّ وَالْبَحْرِ
+
+-- 21) ملحق (21): جمع مواضع
+-- الراء الساكنة المسبوقة بهمزة وصل
+
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word like '%ارْ%')
+
+  AND surah = 30  
+ORDER BY wordindex;
+
+--22) ملحق (22): جمع مواضع
+-- اسم الجلالة المرقق اللام
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+(word ='لِلَّهِ'
+or
+nextword2 like '%ِ اللَّه%'
+)
+  AND surah = 30  
+ORDER BY wordindex;
+
+--23) ملحق (23): جمع المدود اللازمة
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE (((word LIKE '%َا_ّ%'
+   OR word LIKE '%ي_ّ%'
+   OR word LIKE '%و_ّ%'
+  
+   )
+ and 
+ word not like '%وَالَّ%'
+ and 
+ word not like '%كَالَّ%'
+ AND
+ rawword not like 'فا%'
+ and
+ rawword not like 'وا%'
+ AND
+ rawword not like 'لا%'
+ AND
+ rawword not like '%اتخذ%'
+ )
+ or
+ ( mshfword like 'الٓمٓ%'
+ ))
+   AND surah = 30  
+ORDER BY wordindex;
