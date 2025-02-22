@@ -563,3 +563,13 @@ ON (q.sub_subject = w.rawword OR q.sub_subject = w.nextword)
 AND q.sora = w.surah  
 AND q.aya = w.ayah
 ORDER BY q.aya_index,q.id;
+
+
+
+UPDATE wordsall
+SET nextmshfword = (
+    SELECT wordsall.mshfword || ' ' || w2.mshfword
+    FROM wordsall w2
+    WHERE w2.wordindex = wordsall.wordindex + 1  
+)
+where wordsno<999;
