@@ -869,3 +869,37 @@ WHERE (((word LIKE '%َا_ّ%'
  ))
    AND surah = 30  
 ORDER BY wordindex;
+-- 25) ملحق (25): جمع مواضع
+-- التقاءالساكنين من كلمتين
+-- 1. المكسور لالتقاء الساكنين
+-- يراجع بالنظر
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+nextword2 like '%ِ ا%'
+   AND surah = 30  
+ORDER BY wordindex;
+-- 2. المضموم لالتقاء الساكنين
+-- يراجع بالنظر
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+nextword2 like '%ُ ا%'
+   AND surah = 30  
+ORDER BY wordindex;
+-- 3. المفتوح لالتقاء الساكنين
+-- يراجع بالنظر
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+WHERE 
+nextword2 like '%َ ا%'
+   AND surah = 30  
+ORDER BY wordindex;
+
+--28) ملحق (28): الكلمات التي خالفت الرسم الإملائي
+SELECT wordindex, ayah, word, mshfword, nextword2 
+FROM wordsall 
+ where mshfrawword <>rawword
+ 
+    AND surah = 30  
+ORDER BY wordindex;
